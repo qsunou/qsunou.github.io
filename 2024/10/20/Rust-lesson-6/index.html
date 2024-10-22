@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="所有权零开销内存回收的一种高效实现方式 Rust是一种系统变成语言，其设计目的是确保内存安全并防止数据竞争，而不是依赖垃圾回收器。这种内存安全性主要通过所有权系统来实现 内存回收为什么要内存回收？因为硬件内存大小受限（就只有这么多)，数据泄露，隐私安全（回收以避免其他软件读取数据） 主流编程语言内存回收机制对比：静态语言： 在编译时对变量进行检查和确定的语言。 例如：c 、c++ 、 rust">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Rust lesson 6 - 所有权">
+<meta property="og:url" content="http://example.com/2024/10/20/Rust-lesson-6/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="所有权零开销内存回收的一种高效实现方式 Rust是一种系统变成语言，其设计目的是确保内存安全并防止数据竞争，而不是依赖垃圾回收器。这种内存安全性主要通过所有权系统来实现 内存回收为什么要内存回收？因为硬件内存大小受限（就只有这么多)，数据泄露，隐私安全（回收以避免其他软件读取数据） 主流编程语言内存回收机制对比：静态语言： 在编译时对变量进行检查和确定的语言。 例如：c 、c++ 、 rust">
+<meta property="og:locale">
+<meta property="og:image" content="http://example.com/images/d_j_difference.png">
+<meta property="article:published_time" content="2024-10-20T05:32:34.127Z">
+<meta property="article:modified_time" content="2024-10-22T09:27:03.306Z">
+<meta property="article:author" content="QsunOu">
+<meta property="article:tag" content="rust">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/images/d_j_difference.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://example.com/2024/10/20/Rust-lesson-6/"/>
+
+
+
+
+
+  <title>Rust lesson 6 - 所有权 | Hexo</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hexo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/10/20/Rust-lesson-6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Rust lesson 6 - 所有权</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-10-20T13:32:34+08:00">
+                2024-10-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>所有权零开销内存回收的一种高效实现方式</p>
+<p>Rust是一种系统变成语言，其设计目的是确保内存安全并防止数据竞争，而不是依赖垃圾回收器。这种内存安全性主要通过所有权系统来实现</p>
+<h1 id="内存回收"><a href="#内存回收" class="headerlink" title="内存回收"></a>内存回收</h1><h2 id="为什么要内存回收？"><a href="#为什么要内存回收？" class="headerlink" title="为什么要内存回收？"></a>为什么要内存回收？</h2><p>因为硬件内存大小受限（就只有这么多)，数据泄露，隐私安全（回收以避免其他软件读取数据）</p>
+<h2 id="主流编程语言内存回收机制对比："><a href="#主流编程语言内存回收机制对比：" class="headerlink" title="主流编程语言内存回收机制对比："></a>主流编程语言内存回收机制对比：</h2><h3 id="静态语言："><a href="#静态语言：" class="headerlink" title="静态语言："></a>静态语言：</h3><ol>
+<li>在编译时对变量进行检查和确定的语言。</li>
+<li>例如：c 、c++ 、 rust</li>
+</ol>
+<h3 id="动态语言："><a href="#动态语言：" class="headerlink" title="动态语言："></a>动态语言：</h3><ol>
+<li>在运行时进行类型检查和确定的语言。</li>
+<li>例如：js 、python</li>
+</ol>
+<h3 id="差异对比："><a href="#差异对比：" class="headerlink" title="差异对比："></a>差异对比：</h3><p><img src="/images/d_j_difference.png" alt="Pasted image 20241020134551.png"></p>
+<p>各种编程语言都有属于自己内存回收机制，有些是手动的，有些是自动的，这里只介绍Rust 的，其它语言暂不赘述，请自行查找学习。</p>
+<h1 id="Rust-内存回收："><a href="#Rust-内存回收：" class="headerlink" title="Rust 内存回收："></a>Rust 内存回收：</h1><h2 id="内存管理方式：所有权系统（Ownership-System"><a href="#内存管理方式：所有权系统（Ownership-System" class="headerlink" title="内存管理方式：所有权系统（Ownership System)"></a>内存管理方式：所有权系统（Ownership System)</h2><h3 id="特点："><a href="#特点：" class="headerlink" title="特点："></a>特点：</h3><ol>
+<li>Rust使用所有权系统进行内存管理，编译期在编译时通过静态分析来确保内存安全。</li>
+<li>每个值都有一个所有者，在任何时候都只能有一个有效所有者</li>
+<li>通过借用（引用）机制来共享数据，同时保证数据竞争和悬垂指针安全。</li>
+</ol>
+<h3 id="优点："><a href="#优点：" class="headerlink" title="优点："></a>优点：</h3><ol>
+<li>在编译时保证内存安全，没有运行时开销。</li>
+<li>避免了数据竞争和悬垂指针。</li>
+</ol>
+<h3 id="缺点："><a href="#缺点：" class="headerlink" title="缺点："></a>缺点：</h3><ol>
+<li>需要使用人员理解和遵循所有权和借用规则，学习曲线较陡。</li>
+</ol>
+<h2 id="所有权规则："><a href="#所有权规则：" class="headerlink" title="所有权规则："></a>所有权规则：</h2><p>Rust为了确保内存安全并防止数据竞争，使用所有权系统来实现，而不依赖垃圾回收器。</p>
+<h3 id="规则："><a href="#规则：" class="headerlink" title="规则："></a>规则：</h3><ol>
+<li>每一个值都有一个所有者(owner)。</li>
+<li>在任一时刻，值只能有一个所有者。</li>
+<li>当所有者离开作用域（scope)，值会被丢弃（drop)。</li>
+</ol>
+<h3 id="代码示例："><a href="#代码示例：" class="headerlink" title="代码示例："></a>代码示例：</h3><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line"></span><br><span class="line">    <span class="title function_ invoke__">feature</span>();</span><br><span class="line">    <span class="title function_ invoke__">block_scope</span>();</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">feature</span>() &#123;</span><br><span class="line">	<span class="comment">// 这里的 y=x ,是y的地址空间里面存了个值为5</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">x</span> = <span class="number">5</span>;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">y</span> = x;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">//这里栈上创建s1, 堆上创建了个String对象，并存储了hello这个字符串，然后s1 指向了这个String对象</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">s1</span> = <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;hello&quot;</span>);</span><br><span class="line">    <span class="comment">//hello的所有权会从s1 转移到（叫做 Move）s2 ,s2 是hello 的唯一拥有者，相当于s1不指向这个String对象了，换成s2 指向String对象</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">s2</span> = s1;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//直接打印s1会报错，因为s1 没有所有权，borrow of moved value: `s1`</span></span><br><span class="line">    <span class="comment">//println!(&quot;s1: &#123;&#125;&quot;,s1);</span></span><br><span class="line"></span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;s2: &#123;&#125;&quot;</span>,s2);</span><br><span class="line">    </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">block_scope</span>()&#123;</span><br><span class="line"></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">let</span> <span class="variable">s1</span> = <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;hello&quot;</span>);</span><br><span class="line">        <span class="comment">//编译完成后，Rust会自动添加 drop(s1)这个操作，相当于这个作用域结束后释放s1内存</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//离开作用域(Scope)&#123;&#125;后s1 已经被释放</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">//s1和println不在一个作用域（Scope)，所以打印s1报错，cannot find value `s1` in this scope</span></span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;s1 is &#123;&#125;&quot;</span>,s1)</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2024/10/19/Rust-lesson-5/" rel="next" title="Rust lesson 5 - 数据类型">
+                <i class="fa fa-chevron-left"></i> Rust lesson 5 - 数据类型
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2024/10/21/Rust-lesson-7/" rel="prev" title="Rust lesson 7 - 引用">
+                Rust lesson 7 - 引用 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%20%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E5%9B%9E%E6%94%B6"><span class="nav-number">1.</span> <span class="nav-text">内存回收</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E5%86%85%E5%AD%98%E5%9B%9E%E6%94%B6%EF%BC%9F"><span class="nav-number">1.1.</span> <span class="nav-text">为什么要内存回收？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BB%E6%B5%81%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80%E5%86%85%E5%AD%98%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6%E5%AF%B9%E6%AF%94%EF%BC%9A"><span class="nav-number">1.2.</span> <span class="nav-text">主流编程语言内存回收机制对比：</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9D%99%E6%80%81%E8%AF%AD%E8%A8%80%EF%BC%9A"><span class="nav-number">1.2.1.</span> <span class="nav-text">静态语言：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8A%A8%E6%80%81%E8%AF%AD%E8%A8%80%EF%BC%9A"><span class="nav-number">1.2.2.</span> <span class="nav-text">动态语言：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B7%AE%E5%BC%82%E5%AF%B9%E6%AF%94%EF%BC%9A"><span class="nav-number">1.2.3.</span> <span class="nav-text">差异对比：</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Rust-%E5%86%85%E5%AD%98%E5%9B%9E%E6%94%B6%EF%BC%9A"><span class="nav-number">2.</span> <span class="nav-text">Rust 内存回收：</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E6%96%B9%E5%BC%8F%EF%BC%9A%E6%89%80%E6%9C%89%E6%9D%83%E7%B3%BB%E7%BB%9F%EF%BC%88Ownership-System"><span class="nav-number">2.1.</span> <span class="nav-text">内存管理方式：所有权系统（Ownership System)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%89%B9%E7%82%B9%EF%BC%9A"><span class="nav-number">2.1.1.</span> <span class="nav-text">特点：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BC%98%E7%82%B9%EF%BC%9A"><span class="nav-number">2.1.2.</span> <span class="nav-text">优点：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%BA%E7%82%B9%EF%BC%9A"><span class="nav-number">2.1.3.</span> <span class="nav-text">缺点：</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%89%80%E6%9C%89%E6%9D%83%E8%A7%84%E5%88%99%EF%BC%9A"><span class="nav-number">2.2.</span> <span class="nav-text">所有权规则：</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A7%84%E5%88%99%EF%BC%9A"><span class="nav-number">2.2.1.</span> <span class="nav-text">规则：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E7%A4%BA%E4%BE%8B%EF%BC%9A"><span class="nav-number">2.2.2.</span> <span class="nav-text">代码示例：</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">QsunOu</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
