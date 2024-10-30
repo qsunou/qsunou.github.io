@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="包（package）包（package）是一个包含一个或多个 crates 的目录树。包是 Rust 项目的基本单位，可以是一个库（library）或一个可执行文件（binary），也可以同时包含两者。包通常由 Cargo.toml 文件定义，这是一个配置文件，用于指定包的元数据、依赖关系和其他构建选项。 包的结构：123456my_package&#x2F;├── Cargo.toml├── src&#x2F;│">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Rust lesson 15 - 模块化">
+<meta property="og:url" content="http://example.com/2024/10/28/Rust-lesson-15/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="包（package）包（package）是一个包含一个或多个 crates 的目录树。包是 Rust 项目的基本单位，可以是一个库（library）或一个可执行文件（binary），也可以同时包含两者。包通常由 Cargo.toml 文件定义，这是一个配置文件，用于指定包的元数据、依赖关系和其他构建选项。 包的结构：123456my_package&#x2F;├── Cargo.toml├── src&#x2F;│">
+<meta property="og:locale">
+<meta property="article:published_time" content="2024-10-28T09:13:12.107Z">
+<meta property="article:modified_time" content="2024-10-28T12:34:35.718Z">
+<meta property="article:author" content="QsunOu">
+<meta property="article:tag" content="rust">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://example.com/2024/10/28/Rust-lesson-15/"/>
+
+
+
+
+
+  <title>Rust lesson 15 - 模块化 | Hexo</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hexo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/10/28/Rust-lesson-15/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Rust lesson 15 - 模块化</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-10-28T17:13:12+08:00">
+                2024-10-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="包（package）"><a href="#包（package）" class="headerlink" title="包（package）"></a>包（package）</h1><p>包（package）是一个包含一个或多个 crates 的目录树。包是 Rust 项目的基本单位，可以是一个库（library）或一个可执行文件（binary），也可以同时包含两者。包通常由 Cargo.toml 文件定义，这是一个配置文件，用于指定包的元数据、依赖关系和其他构建选项。</p>
+<h2 id="包的结构："><a href="#包的结构：" class="headerlink" title="包的结构："></a>包的结构：</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">my_package/</span><br><span class="line">├── Cargo.toml</span><br><span class="line">├── src/</span><br><span class="line">│   ├── lib.rs  # 库入口文件（如果包是一个库）</span><br><span class="line">│   └── main.rs  # 可执行文件入口文件（如果包是一个二进制程序）</span><br><span class="line">└── tests/  # 集成测试文件</span><br></pre></td></tr></table></figure>
+
+<h2 id="包的组成："><a href="#包的组成：" class="headerlink" title="包的组成："></a>包的组成：</h2><ol>
+<li>cargo.toml</li>
+</ol>
+<ul>
+<li>这是包的配置文件，定义了包的元数据、依赖关系和其他构建选项。</li>
+<li>一个基本的 <code>Cargo.toml</code> 文件可能如下所示：&#96;&#96;&#96;rust</li>
+</ul>
+<figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[package]</span></span><br><span class="line"><span class="attr">name</span> = <span class="string">&quot;my_package&quot;</span></span><br><span class="line"><span class="attr">version</span> = <span class="string">&quot;0.1.0&quot;</span></span><br><span class="line"><span class="attr">authors</span> = [<span class="string">&quot;Your Name &lt;you@example.com&gt;&quot;</span>]</span><br><span class="line"><span class="attr">edition</span> = <span class="string">&quot;2021&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="section">[dependencies]</span></span><br><span class="line"><span class="attr">serde</span> = <span class="string">&quot;1.0&quot;</span></span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>src&#x2F; 目录：</li>
+</ol>
+<ul>
+<li>包含源代码文件。</li>
+<li><code>lib.rs</code>：库的入口文件。如果包是一个库，这是主文件。</li>
+<li><code>main.rs</code>：可执行文件的入口文件。如果包是一个二进制程序，这是主文件。</li>
+</ul>
+<ol start="3">
+<li>tests&#x2F; 目录：</li>
+</ol>
+<ul>
+<li>包含集成测试文件。每个文件都是一个单独的模块，可以包含多个测试函数。</li>
+</ul>
+<h2 id="包的类型："><a href="#包的类型：" class="headerlink" title="包的类型："></a>包的类型：</h2><ol>
+<li>库包（Library Package）：<br> 提供可重用的代码。<br> 通常包含一个 lib.rs 文件。<br> 可以被其他包依赖。</li>
+<li>可执行文件包（Binary Package）：<br> 生成一个可执行文件。<br> 通常包含一个 main.rs 文件。<br> 可以包含多个可执行文件（通过在 src&#x2F;bin&#x2F; 目录下添加多个 *.rs 文件）。</li>
+<li>混合包（Mixed Package）：<br> 同时包含库和可执行文件。<br> 通常包含 lib.rs 和 main.rs 文件。</li>
+</ol>
+<h2 id="依赖管理："><a href="#依赖管理：" class="headerlink" title="依赖管理："></a>依赖管理：</h2><p>在 <code>Cargo.toml</code> 文件中，你可以指定包的依赖关系。依赖关系可以是其他包或本地路径。</p>
+<h3 id="添加依赖："><a href="#添加依赖：" class="headerlink" title="添加依赖："></a>添加依赖：</h3><figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[dependencies]</span></span><br><span class="line"><span class="attr">serde</span> = <span class="string">&quot;1.0&quot;</span></span><br><span class="line"><span class="attr">tokio</span> = &#123; version = <span class="string">&quot;1.0&quot;</span>, features = [<span class="string">&quot;full&quot;</span>] &#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="本地路径依赖"><a href="#本地路径依赖" class="headerlink" title="本地路径依赖:"></a>本地路径依赖:</h3><figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[dependencies]</span></span><br><span class="line"><span class="attr">my_local_lib</span> = &#123; path = <span class="string">&quot;../my_local_lib&quot;</span> &#125;</span><br></pre></td></tr></table></figure>
+
+
+<h1 id="库（crates）"><a href="#库（crates）" class="headerlink" title="库（crates）"></a>库（crates）</h1><p>crate 是编译和链接的基本单位。一个 crate 可以是一个库（library）或一个可执行文件（binary），也可以同时包含两者。crate 是 Rust 项目的核心组成部分，通过 <code>Cargo.toml</code> 文件进行管理和配置。</p>
+<h2 id="什么是库？"><a href="#什么是库？" class="headerlink" title="什么是库？"></a>什么是库？</h2><ol>
+<li>库（Library Crate）：<br> 提供可重用的代码。<br> 通常包含一个 lib.rs 文件。<br> 可以被其他 crate 依赖。</li>
+<li>可执行文件（Binary Crate）：<br> 生成一个可执行文件。<br> 通常包含一个 main.rs 文件。<br> 可以包含多个可执行文件（通过在 src&#x2F;bin&#x2F; 目录下添加多个 *.rs 文件）。</li>
+</ol>
+<h2 id="crate结构："><a href="#crate结构：" class="headerlink" title="crate结构："></a>crate结构：</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">my_crate/</span><br><span class="line">├── Cargo.toml</span><br><span class="line">├── src/</span><br><span class="line">│   ├── lib.rs  # 库入口文件（如果 <span class="keyword">crate</span> 是一个库）</span><br><span class="line">│   └── main.rs  # 可执行文件入口文件（如果 <span class="keyword">crate</span> 是一个二进制程序）</span><br><span class="line">└── tests/  # 集成测试文件</span><br></pre></td></tr></table></figure>
+
+<h2 id="crate的类型："><a href="#crate的类型：" class="headerlink" title="crate的类型："></a>crate的类型：</h2><ol>
+<li>库 crate：<br> 提供可重用的代码。<br> 通常包含一个 lib.rs 文件。<br> 可以被其他 crate 依赖。</li>
+<li>可执行文件 crate：<br> 生成一个可执行文件。<br> 通常包含一个 main.rs 文件。<br> 可以包含多个可执行文件（通过在 src&#x2F;bin&#x2F; 目录下添加多个 *.rs 文件）。</li>
+<li>混合 crate：<br> 同时包含库和可执行文件。<br> 通常包含 lib.rs 和 main.rs 文件。</li>
+</ol>
+<h2 id="依赖管理：-1"><a href="#依赖管理：-1" class="headerlink" title="依赖管理："></a>依赖管理：</h2><p>在 <code>Cargo.toml</code> 文件中，你可以指定 crate 的依赖关系。依赖关系可以是其他 crate 或本地路径。</p>
+<h3 id="添加依赖：-1"><a href="#添加依赖：-1" class="headerlink" title="添加依赖："></a>添加依赖：</h3><figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[dependencies]</span></span><br><span class="line"><span class="attr">serde</span> = <span class="string">&quot;1.0&quot;</span></span><br><span class="line"><span class="attr">tokio</span> = &#123; version = <span class="string">&quot;1.0&quot;</span>, features = [<span class="string">&quot;full&quot;</span>] &#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="本地路径依赖："><a href="#本地路径依赖：" class="headerlink" title="本地路径依赖："></a>本地路径依赖：</h3><figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[dependencies]</span></span><br><span class="line"><span class="attr">my_local_lib</span> = &#123; path = <span class="string">&quot;../my_local_lib&quot;</span> &#125;</span><br></pre></td></tr></table></figure>
+
+
+<h1 id="包和库的区别："><a href="#包和库的区别：" class="headerlink" title="包和库的区别："></a>包和库的区别：</h1><ol>
+<li><strong>范围</strong>：<ul>
+<li><strong>包</strong>：是一个包含一个或多个 crates 的目录树，由 <code>Cargo.toml</code> 文件定义。</li>
+<li><strong>库</strong>：是一个可重用的代码集合，通常包含一个 <code>lib.rs</code> 文件。</li>
+</ul>
+</li>
+<li><strong>文件结构</strong>：<ul>
+<li><strong>包</strong>：包含 <code>Cargo.toml</code> 文件、<code>src</code> 目录、测试文件等。</li>
+<li><strong>库</strong>：主要包含 <code>src/lib.rs</code> 文件及其相关的模块文件。</li>
+</ul>
+</li>
+<li><strong>功能</strong>：<ul>
+<li><strong>包</strong>：管理项目的元数据、依赖关系和构建选项。</li>
+<li><strong>库</strong>：提供可重用的代码，供其他 crate 使用。</li>
+</ul>
+</li>
+<li><strong>用途</strong>：<ul>
+<li><strong>包</strong>：用于组织和管理整个项目，可以发布到 crates.io。</li>
+<li><strong>库</strong>：用于封装可重用的代码，提高代码的模块化和复用性。</li>
+</ul>
+</li>
+</ol>
+<h1 id="模块（mod"><a href="#模块（mod" class="headerlink" title="模块（mod)"></a>模块（mod)</h1><p>模块系统允许你将代码分成逻辑单元，提高代码的可读性和可维护性。</p>
+<h2 id="模块系统的基本概念"><a href="#模块系统的基本概念" class="headerlink" title="模块系统的基本概念"></a>模块系统的基本概念</h2><ol>
+<li><p><strong>模块</strong>：</p>
+<ul>
+<li>模块是一个包含其他项（如函数、结构体、枚举、其他模块等）的逻辑单元。</li>
+<li>模块可以通过 <code>mod</code> 关键字定义。</li>
+</ul>
+</li>
+<li><p><strong>可见性</strong>：</p>
+<ul>
+<li>默认情况下，模块中的项是私有的（private），只能在定义它们的模块内访问。</li>
+<li>使用 <code>pub</code> 关键字可以将项声明为公有的（public），使其在父模块或其他模块中可见。</li>
+</ul>
+</li>
+<li><p><strong>路径</strong>：</p>
+<ul>
+<li>路径是用于引用模块或模块中项的标识符，可以是绝对路径或相对路径。</li>
+</ul>
+</li>
+<li><p><strong>重新导出</strong>：</p>
+<ul>
+<li>使用 <code>pub use</code> 关键字将模块中的项重新导出到父模块中，使其在父模块中可见。</li>
+</ul>
+</li>
+</ol>
+<p>项目结构示例：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">my_project/</span><br><span class="line">├── Cargo.toml</span><br><span class="line">└── src/</span><br><span class="line">    ├── lib.rs</span><br><span class="line">    └── shapes/</span><br><span class="line">        ├── <span class="keyword">mod</span>.rs</span><br><span class="line">        ├── circle.rs</span><br><span class="line">        └── rectangle.rs</span><br></pre></td></tr></table></figure>
+
+<h3 id="定义模块"><a href="#定义模块" class="headerlink" title="定义模块"></a>定义模块</h3><ol>
+<li><p>src&#x2F;lib.rs<br> 这是库的入口文件，定义顶层模块并重新导出子模块中的项。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// src/lib.rs</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">mod</span> shapes;</span><br><span class="line"></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">use</span> shapes::circle::draw_circle <span class="keyword">as</span> draw;</span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">use</span> shapes::rectangle::draw_rectangle <span class="keyword">as</span> draw_rect;</span><br><span class="line"></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">say_hello</span>() &#123;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;Hello from the library!&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>src&#x2F;shapes&#x2F;mod.rs<br>这是 shapes 模块的入口文件，定义子模块。</p>
+</li>
+</ol>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// src/shapes/mod.rs</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">mod</span> circle;</span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">mod</span> rectangle;</span><br><span class="line"></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">draw_shapes</span>() &#123;</span><br><span class="line">    circle::<span class="title function_ invoke__">draw_circle</span>();</span><br><span class="line">    rectangle::<span class="title function_ invoke__">draw_rectangle</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>src&#x2F;shapes&#x2F;circle.rs<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// src/shapes/circle.rs</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">draw_circle</span>() &#123;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;Drawing a circle&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">calculate_area</span>(radius: <span class="type">f64</span>) <span class="punctuation">-&gt;</span> <span class="type">f64</span> &#123;</span><br><span class="line">    std::<span class="type">f64</span>::consts::PI * radius * radius</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h3 id="使用模块"><a href="#使用模块" class="headerlink" title="使用模块"></a>使用模块</h3><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// src/main.rs</span></span><br><span class="line"><span class="keyword">extern</span> <span class="keyword">crate</span> my_project;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> my_project::&#123;draw, draw_rect&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    my_project::<span class="title function_ invoke__">say_hello</span>();</span><br><span class="line">    <span class="title function_ invoke__">draw</span>();          <span class="comment">// 调用 draw_circle</span></span><br><span class="line">    <span class="title function_ invoke__">draw_rect</span>();     <span class="comment">// 调用 draw_rectangle</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="工作区（workspace）"><a href="#工作区（workspace）" class="headerlink" title="工作区（workspace）"></a>工作区（workspace）</h1><p>工作区（workspace）是一种组织多个包（packages）的方式，这些包共享相同的依赖关系和构建配置。工作区允许你在单个 <code>Cargo.toml</code> 文件中管理多个包，从而简化大型项目的管理和构建过程。</p>
+<h2 id="工作区的基本概念"><a href="#工作区的基本概念" class="headerlink" title="工作区的基本概念"></a>工作区的基本概念</h2><ol>
+<li><strong>工作区</strong>：<ul>
+<li>工作区是一个包含多个包的目录树。</li>
+<li>每个包都有自己的 <code>Cargo.toml</code> 文件，但工作区有一个顶级的 <code>Cargo.toml</code> 文件来管理所有包的依赖关系和构建配置。</li>
+</ul>
+</li>
+<li><strong>成员包</strong>：<ul>
+<li>成员包是工作区中的每个包，每个包都可以是一个独立的库或可执行文件。</li>
+<li>成员包的 <code>Cargo.toml</code> 文件可以指定自己的依赖关系和构建选项。</li>
+</ul>
+</li>
+<li>**顶级 <code>Cargo.toml</code>**：<ul>
+<li>顶级 <code>Cargo.toml</code> 文件定义了工作区的成员包，并可以指定共享的依赖关系和构建配置。</li>
+</ul>
+</li>
+</ol>
+<h2 id="工作区的结构"><a href="#工作区的结构" class="headerlink" title="工作区的结构"></a>工作区的结构</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">my_workspace/</span><br><span class="line">├── Cargo.toml  # 顶级 Cargo.toml 文件</span><br><span class="line">├── my_library/</span><br><span class="line">│   ├── Cargo.toml  # my_library 的 Cargo.toml 文件</span><br><span class="line">│   └── src/</span><br><span class="line">│       └── lib.rs</span><br><span class="line">└── my_binary/</span><br><span class="line">    ├── Cargo.toml  # my_binary 的 Cargo.toml 文件</span><br><span class="line">    └── src/</span><br><span class="line">        └── main.rs</span><br><span class="line">        </span><br></pre></td></tr></table></figure>
+
+<h2 id="创建工作区："><a href="#创建工作区：" class="headerlink" title="创建工作区："></a>创建工作区：</h2><ol>
+<li>创建顶级 Cargo.toml 文件：</li>
+</ol>
+<figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[workspace]</span></span><br><span class="line"><span class="attr">members</span> = [</span><br><span class="line">    <span class="string">&quot;my_library&quot;</span>,</span><br><span class="line">    <span class="string">&quot;my_binary&quot;</span></span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>创建成员包</li>
+</ol>
+<ul>
+<li>使用 <code>cargo new</code> 命令创建成员包。<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cargo new my_library --lib</span><br><span class="line">cargo new my_binary</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h1 id="可见性-visibility"><a href="#可见性-visibility" class="headerlink" title="可见性(visibility)"></a>可见性(visibility)</h1><p>指代码项（如函数、结构体、枚举、模块等）在代码中的可见范围。</p>
+<p>项目结构：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">my_project/</span><br><span class="line">├── Cargo.toml</span><br><span class="line">└── src/</span><br><span class="line">    ├── lib.rs</span><br><span class="line">    └── shapes/</span><br><span class="line">        ├── mod.rs</span><br><span class="line">        ├── circle.rs</span><br><span class="line">        └── rectangle.rs</span><br></pre></td></tr></table></figure>
+
+<h2 id="可见性关键字"><a href="#可见性关键字" class="headerlink" title="可见性关键字"></a>可见性关键字</h2><ol>
+<li>**<code>pub</code>**：<ul>
+<li>将项声明为公有（public），使其在父模块及其子模块之外可见。</li>
+<li>如果不使用 <code>pub</code>，项默认为私有（private），只能在定义它的模块内访问。</li>
+</ul>
+</li>
+<li>**<code>pub(in path)</code>**：<ul>
+<li>将项声明为在指定路径内的公有，限制其可见范围。</li>
+<li><code>path</code> 可以是绝对路径或相对路径。</li>
+</ul>
+</li>
+<li>**<code>pub(crate)</code>**：<ul>
+<li>将项声明为在当前 crate 内公有，使其在整个 crate 内可见。</li>
+</ul>
+</li>
+<li>**<code>pub(super)</code>**：<ul>
+<li>将项声明为在其父模块内公有，使其在父模块及其子模块内可见。</li>
+</ul>
+</li>
+</ol>
+<h3 id="示例："><a href="#示例：" class="headerlink" title="示例："></a>示例：</h3><ol>
+<li>公有（pub）：<br> 将项声明为公有，使其在父模块及其子模块之外可见。</li>
+</ol>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// src/shapes/circle.rs</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">draw_circle</span>() &#123;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;Drawing a circle&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">calculate_area</span>(radius: <span class="type">f64</span>) <span class="punctuation">-&gt;</span> <span class="type">f64</span> &#123;</span><br><span class="line">    std::<span class="type">f64</span>::consts::PI * radius * radius</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li><p>限制可见范围（pub(in path)）：<br> 将项声明为在指定路径内的公有，限制其可见范围。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// src/shapes/circle.rs</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">draw_circle</span>() &#123;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;Drawing a circle&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="title function_ invoke__">pub</span>(<span class="keyword">in</span> crate::shapes) <span class="keyword">fn</span> <span class="title function_">calculate_area</span>(radius: <span class="type">f64</span>) <span class="punctuation">-&gt;</span> <span class="type">f64</span> &#123;</span><br><span class="line">    std::<span class="type">f64</span>::consts::PI * radius * radius</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>当前 crate 内公有（pub(crate)）：<br> 将项声明为在当前 crate 内公有，使其在整个 crate 内可见。</p>
+</li>
+</ol>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// src/shapes/circle.rs</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">draw_circle</span>() &#123;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;Drawing a circle&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="title function_ invoke__">pub</span>(<span class="keyword">crate</span>) <span class="keyword">fn</span> <span class="title function_">calculate_area</span>(radius: <span class="type">f64</span>) <span class="punctuation">-&gt;</span> <span class="type">f64</span> &#123;</span><br><span class="line">    std::<span class="type">f64</span>::consts::PI * radius * radius</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li>父模块内公有（pub(super)）：<br> 将项声明为在其父模块内公有，使其在父模块及其子模块内可见。</li>
+</ol>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// src/shapes/circle.rs</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">draw_circle</span>() &#123;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;Drawing a circle&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="title function_ invoke__">pub</span>(<span class="keyword">super</span>) <span class="keyword">fn</span> <span class="title function_">calculate_area</span>(radius: <span class="type">f64</span>) <span class="punctuation">-&gt;</span> <span class="type">f64</span> &#123;</span><br><span class="line">    std::<span class="type">f64</span>::consts::PI * radius * radius</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="路径（Path）"><a href="#路径（Path）" class="headerlink" title="路径（Path）"></a>路径（Path）</h1><p>路径（Path）用于引用模块或模块中的项（如函数、结构体、枚举、常量等）。路径可以是绝对路径或相对路径，通过路径，你可以在代码中访问不同模块中的项。</p>
+<h2 id="路径的基本概念"><a href="#路径的基本概念" class="headerlink" title="路径的基本概念"></a>路径的基本概念</h2><ol>
+<li><strong>绝对路径</strong>：<ul>
+<li>从根模块开始的路径。</li>
+<li>根模块通常是 crate 的入口点（<code>lib.rs</code> 或 <code>main.rs</code>）。</li>
+</ul>
+</li>
+<li><strong>相对路径</strong>：<ul>
+<li>从当前模块开始的路径。</li>
+<li>使用 <code>self</code>、<code>super</code> 和模块名称来表示相对路径。</li>
+</ul>
+</li>
+</ol>
+<h3 id="路径的语法"><a href="#路径的语法" class="headerlink" title="路径的语法"></a>路径的语法</h3><ol>
+<li><strong>绝对路径</strong>：<ul>
+<li>以 <code>crate</code>、<code>self</code> 或 <code>super</code> 开头。</li>
+<li>例如：<code>crate::module::item</code>、<code>self::module::item</code>、<code>super::module::item</code>。</li>
+</ul>
+</li>
+<li><strong>相对路径</strong>：<ul>
+<li>从当前模块开始，使用模块名称。</li>
+<li>例如：<code>module::item</code>。</li>
+</ul>
+</li>
+</ol>
+<p>示例目录结构：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">my_project/</span><br><span class="line">├── Cargo.toml</span><br><span class="line">└── src/</span><br><span class="line">    ├── lib.rs</span><br><span class="line">    └── shapes/</span><br><span class="line">        ├── mod.rs</span><br><span class="line">        ├── circle.rs</span><br><span class="line">        └── rectangle.rs</span><br></pre></td></tr></table></figure>
+
+<h3 id="绝对路径示例"><a href="#绝对路径示例" class="headerlink" title="绝对路径示例"></a>绝对路径示例</h3><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// src/main.rs</span></span><br><span class="line"><span class="keyword">extern</span> <span class="keyword">crate</span> my_project;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> my_project::shapes::circle::draw_circle;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    my_project::<span class="title function_ invoke__">say_hello</span>();</span><br><span class="line">    <span class="title function_ invoke__">draw_circle</span>();  <span class="comment">// 调用 draw_circle</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="相对路径示例"><a href="#相对路径示例" class="headerlink" title="相对路径示例"></a>相对路径示例</h3><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// src/shapes/mod.rs</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">mod</span> circle;</span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">mod</span> rectangle;</span><br><span class="line"></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">draw_shapes</span>() &#123;</span><br><span class="line">    self::circle::<span class="title function_ invoke__">draw_circle</span>();</span><br><span class="line">    self::rectangle::<span class="title function_ invoke__">draw_rectangle</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="单元测试（unit-test"><a href="#单元测试（unit-test" class="headerlink" title="单元测试（unit test)"></a>单元测试（unit test)</h1><p>单元测试（unit testing）是确保代码正确性和健壮性的重要手段。</p>
+<h2 id="单元测试的基本概念"><a href="#单元测试的基本概念" class="headerlink" title="单元测试的基本概念"></a>单元测试的基本概念</h2><ol>
+<li><strong>测试模块</strong>：<ul>
+<li>测试代码通常放在模块的 <code>#[cfg(test)]</code> 属性中，这样测试代码不会在生产环境中编译。</li>
+<li>每个模块可以有自己的测试模块。</li>
+</ul>
+</li>
+<li><strong>测试函数</strong>：<ul>
+<li>测试函数使用 <code>#[test]</code> 属性标记。</li>
+<li>测试函数必须没有参数且返回类型为 <code>()</code>。</li>
+</ul>
+</li>
+<li><strong>断言</strong>：<ul>
+<li>使用 <code>assert!</code> 宏来检查条件是否为真。</li>
+<li>使用 <code>assert_eq!</code> 和 <code>assert_ne!</code> 宏来比较值是否相等或不相等。</li>
+</ul>
+</li>
+</ol>
+<p>项目结构：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">my_project/</span><br><span class="line">├── Cargo.toml</span><br><span class="line">└── src/</span><br><span class="line">    ├── lib.rs</span><br><span class="line">    └── tests/</span><br><span class="line">        └── integration_test.rs</span><br></pre></td></tr></table></figure>
+
+<h3 id="代码示例："><a href="#代码示例：" class="headerlink" title="代码示例："></a>代码示例：</h3><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// src/lib.rs</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">mod</span> math &#123;</span><br><span class="line">    <span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">add</span>(a: <span class="type">i32</span>, b: <span class="type">i32</span>) <span class="punctuation">-&gt;</span> <span class="type">i32</span> &#123;</span><br><span class="line">        a + b</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">subtract</span>(a: <span class="type">i32</span>, b: <span class="type">i32</span>) <span class="punctuation">-&gt;</span> <span class="type">i32</span> &#123;</span><br><span class="line">        a - b</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">multiply</span>(a: <span class="type">i32</span>, b: <span class="type">i32</span>) <span class="punctuation">-&gt;</span> <span class="type">i32</span> &#123;</span><br><span class="line">        a * b</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">divide</span>(a: <span class="type">i32</span>, b: <span class="type">i32</span>) <span class="punctuation">-&gt;</span> <span class="type">Result</span>&lt;<span class="type">i32</span>, &amp;<span class="symbol">&#x27;static</span> <span class="type">str</span>&gt; &#123;</span><br><span class="line">        <span class="keyword">if</span> b == <span class="number">0</span> &#123;</span><br><span class="line">            <span class="title function_ invoke__">Err</span>(<span class="string">&quot;Division by zero&quot;</span>)</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="title function_ invoke__">Ok</span>(a / b)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">#[cfg(test)]</span></span><br><span class="line"><span class="keyword">mod</span> tests &#123;</span><br><span class="line">    <span class="keyword">use</span> super::math;</span><br><span class="line"></span><br><span class="line">    <span class="meta">#[test]</span></span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">test_add</span>() &#123;</span><br><span class="line">        <span class="built_in">assert_eq!</span>(math::<span class="title function_ invoke__">add</span>(<span class="number">2</span>, <span class="number">3</span>), <span class="number">5</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">#[test]</span></span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">test_subtract</span>() &#123;</span><br><span class="line">        <span class="built_in">assert_eq!</span>(math::<span class="title function_ invoke__">subtract</span>(<span class="number">5</span>, <span class="number">3</span>), <span class="number">2</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">#[test]</span></span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">test_multiply</span>() &#123;</span><br><span class="line">        <span class="built_in">assert_eq!</span>(math::<span class="title function_ invoke__">multiply</span>(<span class="number">4</span>, <span class="number">5</span>), <span class="number">20</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">#[test]</span></span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">test_divide</span>() &#123;</span><br><span class="line">        <span class="built_in">assert_eq!</span>(math::<span class="title function_ invoke__">divide</span>(<span class="number">10</span>, <span class="number">2</span>).<span class="title function_ invoke__">unwrap</span>(), <span class="number">5</span>);</span><br><span class="line">        <span class="built_in">assert!</span>(math::<span class="title function_ invoke__">divide</span>(<span class="number">10</span>, <span class="number">0</span>).<span class="title function_ invoke__">is_err</span>());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>**<code>pub mod math</code>**：<ul>
+<li>定义了一个 <code>math</code> 模块，包含一些数学函数。</li>
+</ul>
+</li>
+<li>**<code>#[cfg(test)] mod tests</code>**：<ul>
+<li>定义了一个测试模块，只在测试配置中编译。</li>
+</ul>
+</li>
+<li>**<code>#[test]</code>**：<ul>
+<li>标记测试函数，这些函数将在运行测试时自动执行。</li>
+</ul>
+</li>
+<li>**<code>assert_eq!</code> 和 <code>assert!</code>**：<ul>
+<li><code>assert_eq!</code> 用于检查两个值是否相等。</li>
+<li><code>assert!</code> 用于检查一个条件是否为真。</li>
+</ul>
+</li>
+</ol>
+<h3 id="运行单元测试："><a href="#运行单元测试：" class="headerlink" title="运行单元测试："></a>运行单元测试：</h3><ol>
+<li><p>运行 cargo test</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cargo <span class="built_in">test</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>输出：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">running 4 tests</span><br><span class="line">test tests::test_add ... ok</span><br><span class="line">test tests::test_subtract ... ok</span><br><span class="line">test tests::test_multiply ... ok</span><br><span class="line">test tests::test_divide ... ok</span><br><span class="line"></span><br><span class="line">test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h1 id="集成测试（Integration-Test"><a href="#集成测试（Integration-Test" class="headerlink" title="集成测试（Integration Test)"></a>集成测试（Integration Test)</h1><p>集成测试（integration testing）用于验证多个模块或组件之间的交互是否按预期工作。</p>
+<h2 id="集成测试的基本概念"><a href="#集成测试的基本概念" class="headerlink" title="集成测试的基本概念"></a>集成测试的基本概念</h2><ol>
+<li><p><strong>测试文件</strong>：</p>
+<ul>
+<li>集成测试文件通常放在 <code>tests</code> 目录下。</li>
+<li>每个测试文件都是一个单独的 crate，可以独立编译和运行。</li>
+</ul>
+</li>
+<li><p><strong>测试函数</strong>：</p>
+<ul>
+<li>测试函数使用 <code>#[test]</code> 属性标记。</li>
+<li>测试函数必须没有参数且返回类型为 <code>()</code>。</li>
+</ul>
+</li>
+<li><p><strong>断言</strong>：</p>
+<ul>
+<li>使用 <code>assert!</code> 宏来检查条件是否为真。</li>
+<li>使用 <code>assert_eq!</code> 和 <code>assert_ne!</code> 宏来比较值是否相等或不相等。</li>
+</ul>
+</li>
+</ol>
+<p>继续沿用上面单元测试的目录结构</p>
+<h3 id="创建集成测试文件："><a href="#创建集成测试文件：" class="headerlink" title="创建集成测试文件："></a>创建集成测试文件：</h3><p>在 tests 目录下创建一个新的文件，例如 integration_test.rs。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// tests/integration_test.rs</span></span><br><span class="line"><span class="keyword">use</span> my_project::math;</span><br><span class="line"></span><br><span class="line"><span class="meta">#[test]</span></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">test_integration</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">sum</span> = math::<span class="title function_ invoke__">add</span>(<span class="number">2</span>, <span class="number">3</span>);</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">product</span> = math::<span class="title function_ invoke__">multiply</span>(sum, <span class="number">4</span>);</span><br><span class="line">    <span class="built_in">assert_eq!</span>(product, <span class="number">20</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="运行集成测试："><a href="#运行集成测试：" class="headerlink" title="运行集成测试："></a>运行集成测试：</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cargo <span class="built_in">test</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="忽略某些测试"><a href="#忽略某些测试" class="headerlink" title="忽略某些测试"></a>忽略某些测试</h3><p>如果你有一些测试需要在特定条件下运行，可以使用 <code>#[ignore]</code> 属性来忽略这些测试。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#[cfg(test)]</span></span><br><span class="line"><span class="keyword">mod</span> tests &#123;</span><br><span class="line">    <span class="keyword">use</span> super::math;</span><br><span class="line"></span><br><span class="line">    <span class="meta">#[test]</span></span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">test_add</span>() &#123;</span><br><span class="line">        <span class="built_in">assert_eq!</span>(math::<span class="title function_ invoke__">add</span>(<span class="number">2</span>, <span class="number">3</span>), <span class="number">5</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">#[test]</span></span><br><span class="line">    <span class="meta">#[ignore]</span></span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">test_long_running</span>() &#123;</span><br><span class="line">        <span class="comment">// 这个测试会被忽略</span></span><br><span class="line">        <span class="built_in">assert_eq!</span>(math::<span class="title function_ invoke__">add</span>(<span class="number">1000</span>, <span class="number">2000</span>), <span class="number">3000</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="运行特定测试"><a href="#运行特定测试" class="headerlink" title="运行特定测试"></a>运行特定测试</h3><p>可以使用 <code>cargo test</code> 命令加上测试名称来运行特定的测试。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cargo test test_add</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2024/10/26/Rust-lesson-14/" rel="next" title="Rust lesson 14 - 返回值和错误处理">
+                <i class="fa fa-chevron-left"></i> Rust lesson 14 - 返回值和错误处理
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%20%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">15</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8C%85%EF%BC%88package%EF%BC%89"><span class="nav-number">1.</span> <span class="nav-text">包（package）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8C%85%E7%9A%84%E7%BB%93%E6%9E%84%EF%BC%9A"><span class="nav-number">1.1.</span> <span class="nav-text">包的结构：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8C%85%E7%9A%84%E7%BB%84%E6%88%90%EF%BC%9A"><span class="nav-number">1.2.</span> <span class="nav-text">包的组成：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8C%85%E7%9A%84%E7%B1%BB%E5%9E%8B%EF%BC%9A"><span class="nav-number">1.3.</span> <span class="nav-text">包的类型：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BE%9D%E8%B5%96%E7%AE%A1%E7%90%86%EF%BC%9A"><span class="nav-number">1.4.</span> <span class="nav-text">依赖管理：</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0%E4%BE%9D%E8%B5%96%EF%BC%9A"><span class="nav-number">1.4.1.</span> <span class="nav-text">添加依赖：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%AC%E5%9C%B0%E8%B7%AF%E5%BE%84%E4%BE%9D%E8%B5%96"><span class="nav-number">1.4.2.</span> <span class="nav-text">本地路径依赖:</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BA%93%EF%BC%88crates%EF%BC%89"><span class="nav-number">2.</span> <span class="nav-text">库（crates）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E5%BA%93%EF%BC%9F"><span class="nav-number">2.1.</span> <span class="nav-text">什么是库？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#crate%E7%BB%93%E6%9E%84%EF%BC%9A"><span class="nav-number">2.2.</span> <span class="nav-text">crate结构：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#crate%E7%9A%84%E7%B1%BB%E5%9E%8B%EF%BC%9A"><span class="nav-number">2.3.</span> <span class="nav-text">crate的类型：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BE%9D%E8%B5%96%E7%AE%A1%E7%90%86%EF%BC%9A-1"><span class="nav-number">2.4.</span> <span class="nav-text">依赖管理：</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0%E4%BE%9D%E8%B5%96%EF%BC%9A-1"><span class="nav-number">2.4.1.</span> <span class="nav-text">添加依赖：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%AC%E5%9C%B0%E8%B7%AF%E5%BE%84%E4%BE%9D%E8%B5%96%EF%BC%9A"><span class="nav-number">2.4.2.</span> <span class="nav-text">本地路径依赖：</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8C%85%E5%92%8C%E5%BA%93%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9A"><span class="nav-number">3.</span> <span class="nav-text">包和库的区别：</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A8%A1%E5%9D%97%EF%BC%88mod"><span class="nav-number">4.</span> <span class="nav-text">模块（mod)</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A8%A1%E5%9D%97%E7%B3%BB%E7%BB%9F%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="nav-number">4.1.</span> <span class="nav-text">模块系统的基本概念</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9A%E4%B9%89%E6%A8%A1%E5%9D%97"><span class="nav-number">4.1.1.</span> <span class="nav-text">定义模块</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E6%A8%A1%E5%9D%97"><span class="nav-number">4.1.2.</span> <span class="nav-text">使用模块</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B7%A5%E4%BD%9C%E5%8C%BA%EF%BC%88workspace%EF%BC%89"><span class="nav-number">5.</span> <span class="nav-text">工作区（workspace）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B7%A5%E4%BD%9C%E5%8C%BA%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="nav-number">5.1.</span> <span class="nav-text">工作区的基本概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B7%A5%E4%BD%9C%E5%8C%BA%E7%9A%84%E7%BB%93%E6%9E%84"><span class="nav-number">5.2.</span> <span class="nav-text">工作区的结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E5%B7%A5%E4%BD%9C%E5%8C%BA%EF%BC%9A"><span class="nav-number">5.3.</span> <span class="nav-text">创建工作区：</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%AF%E8%A7%81%E6%80%A7-visibility"><span class="nav-number">6.</span> <span class="nav-text">可见性(visibility)</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%AF%E8%A7%81%E6%80%A7%E5%85%B3%E9%94%AE%E5%AD%97"><span class="nav-number">6.1.</span> <span class="nav-text">可见性关键字</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B%EF%BC%9A"><span class="nav-number">6.1.1.</span> <span class="nav-text">示例：</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%B7%AF%E5%BE%84%EF%BC%88Path%EF%BC%89"><span class="nav-number">7.</span> <span class="nav-text">路径（Path）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B7%AF%E5%BE%84%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="nav-number">7.1.</span> <span class="nav-text">路径的基本概念</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B7%AF%E5%BE%84%E7%9A%84%E8%AF%AD%E6%B3%95"><span class="nav-number">7.1.1.</span> <span class="nav-text">路径的语法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%9D%E5%AF%B9%E8%B7%AF%E5%BE%84%E7%A4%BA%E4%BE%8B"><span class="nav-number">7.1.2.</span> <span class="nav-text">绝对路径示例</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%B8%E5%AF%B9%E8%B7%AF%E5%BE%84%E7%A4%BA%E4%BE%8B"><span class="nav-number">7.1.3.</span> <span class="nav-text">相对路径示例</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95%EF%BC%88unit-test"><span class="nav-number">8.</span> <span class="nav-text">单元测试（unit test)</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="nav-number">8.1.</span> <span class="nav-text">单元测试的基本概念</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E7%A4%BA%E4%BE%8B%EF%BC%9A"><span class="nav-number">8.1.1.</span> <span class="nav-text">代码示例：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%90%E8%A1%8C%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95%EF%BC%9A"><span class="nav-number">8.1.2.</span> <span class="nav-text">运行单元测试：</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%9B%86%E6%88%90%E6%B5%8B%E8%AF%95%EF%BC%88Integration-Test"><span class="nav-number">9.</span> <span class="nav-text">集成测试（Integration Test)</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9B%86%E6%88%90%E6%B5%8B%E8%AF%95%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="nav-number">9.1.</span> <span class="nav-text">集成测试的基本概念</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E9%9B%86%E6%88%90%E6%B5%8B%E8%AF%95%E6%96%87%E4%BB%B6%EF%BC%9A"><span class="nav-number">9.1.1.</span> <span class="nav-text">创建集成测试文件：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%90%E8%A1%8C%E9%9B%86%E6%88%90%E6%B5%8B%E8%AF%95%EF%BC%9A"><span class="nav-number">9.1.2.</span> <span class="nav-text">运行集成测试：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BF%BD%E7%95%A5%E6%9F%90%E4%BA%9B%E6%B5%8B%E8%AF%95"><span class="nav-number">9.1.3.</span> <span class="nav-text">忽略某些测试</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%90%E8%A1%8C%E7%89%B9%E5%AE%9A%E6%B5%8B%E8%AF%95"><span class="nav-number">9.1.4.</span> <span class="nav-text">运行特定测试</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">QsunOu</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
