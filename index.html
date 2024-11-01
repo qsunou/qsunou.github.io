@@ -232,6 +232,343 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/10/31/Rust-lesson-17/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2024/10/31/Rust-lesson-17/" itemprop="url">Rust lesson 17 - 泛型</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-10-31T21:04:04+08:00">
+                2024-10-31
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="What-is-泛型："><a href="#What-is-泛型：" class="headerlink" title="What is 泛型："></a>What is 泛型：</h1><p>泛型（Generics）是编程语言中的一种特性，允许你在编写代码时使用占位符（类型参数）来代替具体的类型。通过以下使用场景，你就能理解是干什么的了。</p>
+<h1 id="泛型使用场景："><a href="#泛型使用场景：" class="headerlink" title="泛型使用场景："></a>泛型使用场景：</h1><h2 id="泛型函数减少了代码重复，一个顶三个，简单示例："><a href="#泛型函数减少了代码重复，一个顶三个，简单示例：" class="headerlink" title="泛型函数减少了代码重复，一个顶三个，简单示例："></a>泛型函数减少了代码重复，一个顶三个，简单示例：</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">add_i8</span>(a:<span class="type">i8</span>, b:<span class="type">i8</span>) <span class="punctuation">-&gt;</span> <span class="type">i8</span> &#123;</span><br><span class="line">    a + b</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">add_i32</span>(a:<span class="type">i32</span>, b:<span class="type">i32</span>) <span class="punctuation">-&gt;</span> <span class="type">i32</span> &#123;</span><br><span class="line">    a + b</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">add_f64</span>(a:<span class="type">f64</span>, b:<span class="type">f64</span>) <span class="punctuation">-&gt;</span> <span class="type">f64</span> &#123;</span><br><span class="line">    a + b</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//T 是一个泛型参数，表示任意类型,没啥特殊含义，你用ABCDEFG都行。</span></span><br><span class="line"><span class="comment">//std::ops::Add&lt;Output = T&gt; 是一个 trait 约束，表示类型 T 必须实现了 Add trait，并且加法操作的结果类型也是 T。</span></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">add</span>&lt;T : std::ops::Add&lt;Output = T&gt;&gt;(a:T, b:T) <span class="punctuation">-&gt;</span> T &#123;</span><br><span class="line">    a + b</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">	<span class="comment">//2i8,就是2（i8类型）</span></span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;add i8: &#123;&#125;&quot;</span>,<span class="title function_ invoke__">add_i8</span>(<span class="number">2i8</span>, <span class="number">3i8</span>));</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;add i32: &#123;&#125;&quot;</span>,<span class="title function_ invoke__">add_i32</span>(<span class="number">20</span>, <span class="number">30</span>));</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;add f64: &#123;&#125;&quot;</span>,<span class="title function_ invoke__">add_f64</span>(<span class="number">1.23</span>, <span class="number">1.23</span>));</span><br><span class="line">    <span class="title function_ invoke__">add</span>(<span class="number">2i8</span>, <span class="number">3i8</span>);</span><br><span class="line">    <span class="title function_ invoke__">add</span>(<span class="number">20</span>, <span class="number">30</span>);</span><br><span class="line">    <span class="title function_ invoke__">add</span>(<span class="number">1.23</span>, <span class="number">1.23</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="复杂一点的例子-比较大小-："><a href="#复杂一点的例子-比较大小-：" class="headerlink" title="复杂一点的例子(比较大小)："></a>复杂一点的例子(比较大小)：</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//list: &amp;[T] 表示 list 是一个切片，切片是一个指向数组的引用，可以是任何长度的数组的一部分。</span></span><br><span class="line"><span class="comment">//-&gt; &amp;T 表示返回一个指向切片中元素的引用。</span></span><br><span class="line"><span class="comment">//通过实现 std::cmp::PartialOrd，可以在泛型函数或泛型结构中允许使用比较操作。</span></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">larget</span>&lt;T: std::cmp::<span class="built_in">PartialOrd</span>&gt;(list: &amp;[T])<span class="punctuation">-&gt;</span> &amp;T &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">largest</span> = &amp;list[<span class="number">0</span>];</span><br><span class="line">    <span class="keyword">for</span> <span class="variable">item</span> <span class="keyword">in</span> list &#123;</span><br><span class="line">        <span class="keyword">if</span> item &gt; largest &#123;</span><br><span class="line">            largest = item;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span>  largest;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">let</span> <span class="variable">number_list</span> = <span class="built_in">vec!</span>[<span class="number">34</span>, <span class="number">50</span>, <span class="number">25</span>, <span class="number">100</span>, <span class="number">65</span>];</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">result</span> = <span class="title function_ invoke__">larget</span>(&amp;number_list);</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;The largest number is &#123;&#125;&quot;</span>, result);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">char_list</span> = <span class="built_in">vec!</span>[<span class="string">&#x27;y&#x27;</span>,<span class="string">&#x27;m&#x27;</span>,<span class="string">&#x27;a&#x27;</span>,<span class="string">&#x27;q&#x27;</span>];</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">result</span> = <span class="title function_ invoke__">larget</span>(&amp;char_list);</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;The largest char is &#123;&#125;&quot;</span>,result);</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="结构体中使用泛型："><a href="#结构体中使用泛型：" class="headerlink" title="结构体中使用泛型："></a>结构体中使用泛型：</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//T 和 U区分两个类型</span></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">Point</span>&lt;T,U&gt; &#123;</span><br><span class="line">    x: T,</span><br><span class="line">    y: U,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">let</span> <span class="variable">p1</span> = Point&#123;x:<span class="number">5</span> , y:<span class="number">10</span> &#125;;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">p2</span> = Point&#123;x:<span class="number">1.0</span> , y:<span class="number">1.0</span>&#125;;</span><br><span class="line">    <span class="comment">//如果上面是struct是&lt;T&gt;,会报错，因为x和y是不同类型。</span></span><br><span class="line">    <span class="comment">//但写成&lt;T ,U&gt;,区分开不同类型，就不会报错。</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">p3</span> = Point&#123;x: <span class="number">5</span>, y: <span class="number">4.0</span>&#125;;</span><br></pre></td></tr></table></figure>
+
+<h2 id="枚举中用泛型："><a href="#枚举中用泛型：" class="headerlink" title="枚举中用泛型："></a>枚举中用泛型：</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">enum</span> <span class="title class_">Option</span>&lt;T&gt; &#123;</span><br><span class="line">	<span class="title function_ invoke__">Some</span>(T),</span><br><span class="line">	<span class="literal">None</span>,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">enum</span> <span class="title class_">Result</span>&lt;T, E&gt; &#123;</span><br><span class="line">	<span class="title function_ invoke__">Ok</span>(T),</span><br><span class="line">	<span class="title function_ invoke__">Err</span>(E),</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="实现方法使用泛型："><a href="#实现方法使用泛型：" class="headerlink" title="实现方法使用泛型："></a>实现方法使用泛型：</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">Point</span>&lt;T,U&gt; &#123;</span><br><span class="line">    x: T,</span><br><span class="line">    y: U,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//为结构体实现方法，使用泛型要在impl后面加&lt;T, U&gt;</span></span><br><span class="line"><span class="keyword">impl</span>&lt;T, U&gt; Point&lt;T,U&gt;&#123;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">x</span>(&amp;<span class="keyword">self</span>) <span class="punctuation">-&gt;</span> &amp;T&#123;</span><br><span class="line">        &amp;<span class="keyword">self</span>.x</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//接受另一个 Point 实例 other，返回一个新的 Point 实例，其 x 字段来自 self，y 字段来自 other。</span></span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">mixup</span>&lt;T2, U2&gt;(<span class="keyword">self</span>, other: Point&lt;T2, U2&gt;) <span class="punctuation">-&gt;</span> Point&lt;T, U2&gt; &#123;</span><br><span class="line">        Point &#123;</span><br><span class="line">            x: <span class="keyword">self</span>.x,</span><br><span class="line">            y: other.y,</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">	<span class="keyword">let</span> <span class="variable">p4</span> = Point &#123; x:<span class="number">5</span> , y:<span class="number">10.4</span>&#125;;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">p5</span> = Point &#123; x: <span class="string">&quot;Hello&quot;</span>, y: <span class="string">&#x27;c&#x27;</span>&#125;;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//p4的 x 和 p5的 y 混合</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">p6</span> = p4.<span class="title function_ invoke__">mixup</span>(p5);</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;p6.x is &#123;&#125;,p6.y is &#123;&#125;&quot;</span>,p6.x,p6.y);</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* let p1 = Point&#123;x:5 , y:10 &#125;;</span></span><br><span class="line"><span class="comment">    let p2 = Point&#123;x:1.0 , y:1.0&#125;;</span></span><br><span class="line"><span class="comment">    let p3 = Point&#123;x: 5, y: 4.0&#125;; */</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="const使用泛型："><a href="#const使用泛型：" class="headerlink" title="const使用泛型："></a>const使用泛型：</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">display_array</span>(arr: [<span class="type">i32</span>; <span class="number">3</span>]) &#123;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;:?&#125;&quot;</span>, arr);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//接受一个切片arr（slice）,元素类型为 T 作为参数，并使用 std::fmt::Debug trait 将切片的内容打印出来</span></span><br><span class="line"><span class="comment">//切片是一个指向数组的引用，可以是任何长度的数组的一部分</span></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">display_array1</span>&lt;T: std::fmt::<span class="built_in">Debug</span>&gt;(arr: &amp;[T]) &#123;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;:?&#125;&quot;</span>, arr);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//const N: usize：这是一个常量泛型参数，表示数组的大小 N 是一个常量, 大小事 usize</span></span><br><span class="line"><span class="comment">//arr: [T; N]：函数接受一个固定大小的数组 arr，数组中的元素类型为 T，大小为 N</span></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">display_array2</span>&lt;T: std::fmt::<span class="built_in">Debug</span>, <span class="keyword">const</span> N: <span class="type">usize</span> &gt;(arr: [T; N]) &#123;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;:?&#125;&quot;</span>, arr);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line"><span class="keyword">let</span> <span class="variable">arr</span>: [<span class="type">i32</span>; <span class="number">3</span>] = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>];</span><br><span class="line">    <span class="title function_ invoke__">display_array</span>(arr); </span><br><span class="line"></span><br><span class="line">    <span class="comment">/* //这样不行，因为display_array(arr: [i32; 3])</span></span><br><span class="line"><span class="comment">    let arr2: [i32; 2] = [1, 2];</span></span><br><span class="line"><span class="comment">    display_array(arr2); */</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">arr</span>: [<span class="type">i32</span>; <span class="number">3</span>] = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>];</span><br><span class="line">    <span class="title function_ invoke__">display_array1</span>(&amp;arr);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">arr</span>: [<span class="type">i32</span>; <span class="number">2</span>] = [<span class="number">1</span>, <span class="number">2</span>];</span><br><span class="line">    <span class="title function_ invoke__">display_array1</span>(&amp;arr);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">arr</span>: [<span class="type">i32</span>; <span class="number">3</span>] = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>];</span><br><span class="line">    <span class="title function_ invoke__">display_array2</span>(arr);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">arr</span>: [<span class="type">i32</span>; <span class="number">2</span>] = [<span class="number">1</span>, <span class="number">2</span>];</span><br><span class="line">    <span class="title function_ invoke__">display_array2</span>(arr);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/10/31/Rust-lesson-16/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2024/10/31/Rust-lesson-16/" itemprop="url">Rust lesson 16 - 智能指针 Box</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-10-31T14:43:37+08:00">
+                2024-10-31
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="What-is-智能指针："><a href="#What-is-智能指针：" class="headerlink" title="What is 智能指针："></a>What is 智能指针：</h1><p>智能指针（Smart Pointer）是一种数据结构，它不仅包含一个指针，还附加了一些额外的信息和功能。智能指针的主要目的是管理指针的生命周期，自动处理内存的分配和释放，从而避免内存泄漏和其他常见的内存管理错误。</p>
+<h1 id="智能指针特点："><a href="#智能指针特点：" class="headerlink" title="智能指针特点："></a>智能指针特点：</h1><ol>
+<li>自动管理内存：<br>智能指针在不需要时会自动释放其所管理的资源，避免内存泄漏。</li>
+<li>所有权和借用规则：<br>智能指针遵循 Rust 的所有权和借用规则，确保数据的安全性和一致性。</li>
+<li>附加功能：<br>智能指针通常附带额外的功能，如引用计数、内部可变性、互斥锁等，以满足不同的需求。</li>
+</ol>
+<h1 id="基本概念之一："><a href="#基本概念之一：" class="headerlink" title="基本概念之一："></a>基本概念之一：</h1><p><code>Box&lt;T&gt;</code>智能指针：<br>    用途：用于在堆上分配内存。<br>    特点：当 Box 被丢弃时，它所指向的堆上的内存会被自动释放。</p>
+<h1 id="Box-使用场景："><a href="#Box-使用场景：" class="headerlink" title="Box 使用场景："></a>Box 使用场景：</h1><h2 id="堆分配："><a href="#堆分配：" class="headerlink" title="堆分配："></a>堆分配：</h2><p><code>Box</code> 是一个智能指针，用于在堆上分配内存。当你使用 <code>Box::new</code> 创建一个 <code>Box</code> 时，它会在堆上分配内存，并返回一个指向该内存的指针</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">b</span> = <span class="type">Box</span>::<span class="title function_ invoke__">new</span>(<span class="number">5</span>);</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;:?&#125;&quot;</span>,b); </span><br><span class="line">    <span class="comment">//或者println!(&quot;&#123;&#125;&quot;, *b);  *解引用 Box，获取内部的值</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="动态大小类型："><a href="#动态大小类型：" class="headerlink" title="动态大小类型："></a>动态大小类型：</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">	<span class="comment">//into 方法在这里将字符串字面量转换为 Box&lt;str&gt;。</span></span><br><span class="line">	<span class="keyword">let</span> <span class="variable">s</span> : <span class="type">Box</span>&lt;<span class="type">str</span>&gt; = <span class="string">&quot;Hello&quot;</span>.<span class="title function_ invoke__">into</span>();</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>, s);</span><br><span class="line"></span><br><span class="line">	<span class="comment">//将 Vec&lt;i32&gt; 转换为 Box&lt;[i32]&gt;。into_boxed_slice 方法将 Vec 转换为一个指向固定大小数组的 Box。</span></span><br><span class="line">	<span class="keyword">let</span> <span class="variable">arr</span> : <span class="type">Box</span>&lt;[<span class="type">i32</span>]&gt; = <span class="built_in">vec!</span>[<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>].<span class="title function_ invoke__">into_boxed_slice</span>();</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;:?&#125;&quot;</span>, arr);</span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure>
+
+<h2 id="递归数据结构："><a href="#递归数据结构：" class="headerlink" title="递归数据结构："></a>递归数据结构：</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">enum</span> <span class="title class_">List</span> &#123;</span><br><span class="line">	<span class="comment">//Cons(i32, Box&lt;List&gt;)：表示一个包含整数和指向下一个 List 元素的智能指针的节点,像链表</span></span><br><span class="line">	<span class="title function_ invoke__">Cons</span>(<span class="type">i32</span>, <span class="type">Box</span>&lt;List&gt;),</span><br><span class="line">    Nil,</span><br><span class="line">&#125; </span><br><span class="line"><span class="comment">//use List::&#123;Cons, Nil&#125;;：引入 Cons 和 Nil 变体，以便在 main 函数中直接使用</span></span><br><span class="line"><span class="keyword">use</span> List::&#123;Cons, Nil&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">	<span class="comment">//创建一个包含两个元素的列表 [1, 2]。</span></span><br><span class="line">	<span class="keyword">let</span> <span class="variable">list</span> = List::<span class="title function_ invoke__">Cons</span>(<span class="number">1</span>, <span class="type">Box</span>::<span class="title function_ invoke__">new</span>(List::<span class="title function_ invoke__">Cons</span>(<span class="number">2</span>, <span class="type">Box</span>::<span class="title function_ invoke__">new</span>(List::Nil))));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="类型擦除（Type-Erasure）："><a href="#类型擦除（Type-Erasure）：" class="headerlink" title="类型擦除（Type Erasure）："></a>类型擦除（Type Erasure）：</h2><p>类型擦除是指在编译时将具体类型信息“擦除”，只保留一个通用的接口或 trait。这样，不同类型的对象可以通过相同的接口进行操作，而不需要知道它们的具体类型。</p>
+<h3 id="动态调度（Dynamic-Dispatch）："><a href="#动态调度（Dynamic-Dispatch）：" class="headerlink" title="动态调度（Dynamic Dispatch）："></a>动态调度（Dynamic Dispatch）：</h3><p>动态调度是指在运行时确定调用哪个具体方法的过程。与之相对的是静态调度（也称为单态化），在编译时就确定了调用的具体方法。</p>
+<h3 id="dyn关键字："><a href="#dyn关键字：" class="headerlink" title="dyn关键字："></a>dyn关键字：</h3><p><code>dyn</code>用于指定动态分发的类型，它允许在运行时决定具体类型（而不是像平时那样在编译的时候决定），用于实现动态分发的trait对象。</p>
+<h3 id="问题背景："><a href="#问题背景：" class="headerlink" title="问题背景："></a>问题背景：</h3><p>由于静态类型系统和所有权模型，直接将不同类型的对象放入同一个集合（如 <code>Vec</code>）中是不允许的。这是因为 <code>Vec</code> 需要知道它存储的元素的具体类型和大小。为了解决这个问题，我们可以使用动态类型（如 <code>Box&lt;dyn Trait&gt;</code>）来存储实现了特定 trait 的不同类型的对象。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//定义了一个 speak 方法，所有实现了 Animal trait 的类型都必须实现这个方法。</span></span><br><span class="line"><span class="comment">//如果再加一个方法，下面的impl也一定要加</span></span><br><span class="line"><span class="keyword">trait</span>  <span class="title class_">Animal</span> &#123;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">speak</span>(&amp;<span class="keyword">self</span>);  </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">Dog</span>;</span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">Cat</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//由于impl Animal，所以一定要实现speak</span></span><br><span class="line"><span class="keyword">impl</span> <span class="title class_">Animal</span> <span class="keyword">for</span> <span class="title class_">Dog</span> &#123;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">speak</span>(&amp;<span class="keyword">self</span>) &#123;</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;haba dog&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">impl</span> <span class="title class_">Animal</span> <span class="keyword">for</span> <span class="title class_">Cat</span> &#123;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">speak</span>(&amp;<span class="keyword">self</span>) &#123;</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;dudu cat&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">box_study</span>() &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//这样会报错</span></span><br><span class="line">    <span class="comment">//因为Dog 和 Cat 不是同一类型，所以报错</span></span><br><span class="line">    <span class="comment">//let animals = vec![Dog,Cat];     </span></span><br><span class="line"></span><br><span class="line">    <span class="comment">//dyn Animal表示实现了 Animal trait 的动态类型。</span></span><br><span class="line">    <span class="comment">//Box::new：将具体类型的对象转换为 Box&lt;dyn Animal&gt; 类型。</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">animals</span> : <span class="type">Vec</span>&lt;<span class="type">Box</span>&lt;<span class="keyword">dyn</span> Animal&gt;&gt; = <span class="built_in">vec!</span>[<span class="type">Box</span>::<span class="title function_ invoke__">new</span>(Dog),<span class="type">Box</span>::<span class="title function_ invoke__">new</span>(Cat)];</span><br><span class="line">    <span class="comment">//iter（）方法遍历 Vec</span></span><br><span class="line">    <span class="keyword">for</span> <span class="variable">animal</span> <span class="keyword">in</span> animals.<span class="title function_ invoke__">iter</span>() &#123;</span><br><span class="line">        animal.<span class="title function_ invoke__">speak</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="具体解释"><a href="#具体解释" class="headerlink" title="具体解释"></a>具体解释</h4><ol>
+<li><p><strong>静态类型和大小</strong>：</p>
+<ul>
+<li>在 Rust 中，<code>Vec&lt;T&gt;</code> 需要知道它存储的元素的具体类型 <code>T</code> 和大小。这是为了确保内存布局和性能优化。</li>
+<li>例如，<code>Vec&lt;Dog&gt;</code> 和 <code>Vec&lt;Cat&gt;</code> 是两个不同的类型，它们的元素大小和布局是固定的。</li>
+</ul>
+</li>
+<li><p>**动态类型 <code>Box&lt;dyn Animal&gt;</code>**：</p>
+<ul>
+<li><code>Box&lt;dyn Animal&gt;</code> 是一个智能指针，指向实现了 <code>Animal</code> trait 的对象。<code>dyn Animal</code> 表示一个动态类型，它只知道对象实现了 <code>Animal</code> trait，但不知道具体类型。</li>
+<li><code>Box&lt;dyn Animal&gt;</code> 的大小是固定的，因为它只是一个指针（通常是 8 字节或 16 字节，取决于平台）。</li>
+</ul>
+</li>
+<li><p><strong>类型擦除</strong>：</p>
+<ul>
+<li>当你将 <code>Dog</code> 和 <code>Cat</code> 转换为 <code>Box&lt;dyn Animal&gt;</code> 时，具体类型信息被“擦除”，只剩下 <code>Animal</code> trait 的接口。</li>
+<li>这意味着 <code>Box&lt;dyn Animal&gt;</code> 可以指向任何实现了 <code>Animal</code> trait 的对象，无论其具体类型是什么。</li>
+</ul>
+</li>
+<li><p><strong>动态调度</strong>：</p>
+<ul>
+<li>当你调用 <code>animal.speak()</code> 时，Rust 运行时会根据 <code>Box&lt;dyn Animal&gt;</code> 指向的具体对象来确定调用哪个实现的 <code>speak</code> 方法。</li>
+<li>这种动态调度是在运行时进行的，而不是在编译时确定的。</li>
+</ul>
+</li>
+</ol>
+<h2 id="内存管理和性能优化："><a href="#内存管理和性能优化：" class="headerlink" title="内存管理和性能优化："></a>内存管理和性能优化：</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">	<span class="comment">//Box::new([0u8; 1_000_000])：在堆上分配内存，适合处理大型数据结构，避免栈溢出。</span></span><br><span class="line">	<span class="comment">//Box::new([0u8; 1_000_000])：涉及堆分配和指针管理，可能会有轻微的性能开销。</span></span><br><span class="line">	<span class="keyword">let</span> <span class="variable">large_arr</span> = <span class="type">Box</span>::<span class="title function_ invoke__">new</span>([<span class="number">0u8</span>;<span class="number">1_000_000</span>]);</span><br><span class="line"></span><br><span class="line">	<span class="comment">//[0u8; 1_000_000]：在栈上分配内存，适合处理较小的数据结构。</span></span><br><span class="line">	<span class="comment">//[0u8; 1_000_000]：直接在栈上分配内存，访问速度快，但栈空间有限。</span></span><br><span class="line">	<span class="keyword">let</span> <span class="variable">array</span> = [<span class="number">0u8</span>;<span class="number">1_000_000</span>];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="Box-的优缺点："><a href="#Box-的优缺点：" class="headerlink" title="Box 的优缺点："></a>Box 的优缺点：</h1><h2 id="优点："><a href="#优点：" class="headerlink" title="优点："></a>优点：</h2><ol>
+<li>提供堆内存分配，支持复杂数据结构。</li>
+<li>与Rust的所有权系统完美继承，确保内存安全</li>
+<li>动态分配对象，实现类型擦除。</li>
+</ol>
+<h2 id="缺点："><a href="#缺点：" class="headerlink" title="缺点："></a>缺点：</h2><ol>
+<li>需要堆内存分配和释放，可能带来性能开销。</li>
+<li>不适合需要频繁分配和释放的场景。</li>
+</ol>
+<h1 id="Drop、Deref、DerefMut"><a href="#Drop、Deref、DerefMut" class="headerlink" title="Drop、Deref、DerefMut:"></a>Drop、Deref、DerefMut:</h1><h2 id="Drop"><a href="#Drop" class="headerlink" title="Drop:"></a>Drop:</h2><p><code>Drop</code> trait 用于定义当一个值离开作用域时（即被丢弃时）应该执行的清理操作。这对于资源管理非常有用，特别是对于那些需要显式释放资源的情况。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">Resource</span> &#123;</span><br><span class="line">    name: <span class="type">String</span>,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">impl</span> <span class="title class_">Drop</span> <span class="keyword">for</span> <span class="title class_">Resource</span> &#123;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">drop</span>(&amp;<span class="keyword">mut</span> <span class="keyword">self</span>) &#123;</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;Dropping &#123;&#125;&quot;</span>,<span class="keyword">self</span>.name);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">	<span class="keyword">let</span> <span class="variable">_rest1</span> = Resource&#123; name: <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;Resource 1&quot;</span>)&#125;;</span><br><span class="line"></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">let</span> <span class="variable">_rest2</span> = Resource&#123; name: <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;Resource 2&quot;</span>)&#125;;</span><br><span class="line">        <span class="comment">// rest 2 的 drop在离开作用域时隐式调用</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// rest 1 的 drop在离开作用域时隐式调用</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="Deref"><a href="#Deref" class="headerlink" title="Deref:"></a>Deref:</h2><p><code>Deref</code> trait 用于实现解引用操作，即 <code>*</code> 操作符。通过实现 <code>Deref</code>，可以将自定义类型转换为不可变引用（<code>&amp;T</code>）。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> std::ops::Deref;</span><br><span class="line"></span><br><span class="line"><span class="comment">//定义一个泛型结构体 MyBox，包含一个泛型字段 T。</span></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">MyBox</span>&lt;T&gt;(T);</span><br><span class="line"></span><br><span class="line"><span class="keyword">impl</span>&lt;T&gt;MyBox&lt;T&gt; &#123;</span><br><span class="line">	<span class="comment">//为 MyBox 实现一个构造函数 new，接受一个泛型参数 x，返回一个 MyBox&lt;T&gt; 实例。</span></span><br><span class="line">	<span class="keyword">fn</span> <span class="title function_">new</span>(x: T) <span class="punctuation">-&gt;</span> MyBox&lt;T&gt;&#123;</span><br><span class="line">        <span class="title function_ invoke__">MyBox</span>(x)</span><br><span class="line">    &#125;</span><br><span class="line">        </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">impl</span>&lt;T&gt; Deref <span class="keyword">for</span> <span class="title class_">MyBox</span>&lt;T&gt; &#123;</span><br><span class="line">	<span class="comment">//指定Deref trait 的目标类型为 T</span></span><br><span class="line">	<span class="keyword">type</span> <span class="title class_">Target</span> = T;</span><br><span class="line">	<span class="comment">// 回 `MyBox` 内部存储的 `T` 类型的引用。</span></span><br><span class="line">	<span class="keyword">fn</span> <span class="title function_">deref</span>(&amp;<span class="keyword">self</span>) <span class="punctuation">-&gt;</span> &amp;T &#123;</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;deref called&quot;</span>);</span><br><span class="line">        &amp;<span class="keyword">self</span>.<span class="number">0</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">x</span> = <span class="number">5</span>;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">y</span> = MyBox::<span class="title function_ invoke__">new</span>(x);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;x= &#123;&#125;&quot;</span>, x);</span><br><span class="line">    <span class="comment">//*y 解引用 y，获取y的值</span></span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;y= &#123;&#125;&quot;</span>, *y);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="DerefMut："><a href="#DerefMut：" class="headerlink" title="DerefMut："></a>DerefMut：</h2><p><code>DerefMut</code> trait 用于实现可变解引用操作，即 <code>*</code> 操作符应用于可变引用。通过实现 <code>DerefMut</code>，可以将自定义类型转换为可变引用（<code>&amp;mut T</code>）。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> std::ops::Deref;</span><br><span class="line"><span class="keyword">use</span> std::ops::DerefMut;</span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">MyBox</span>&lt;T&gt;(T);</span><br><span class="line"></span><br><span class="line"><span class="keyword">impl</span>&lt;T&gt;MyBox&lt;T&gt; &#123;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">new</span>(x: T) <span class="punctuation">-&gt;</span> MyBox&lt;T&gt;&#123;</span><br><span class="line">        <span class="title function_ invoke__">MyBox</span>(x)</span><br><span class="line">    &#125;</span><br><span class="line">        </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">impl</span>&lt;T&gt; Deref <span class="keyword">for</span> <span class="title class_">MyBox</span>&lt;T&gt; &#123;</span><br><span class="line">    <span class="keyword">type</span> <span class="title class_">Target</span> = T;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">deref</span>(&amp;<span class="keyword">self</span>) <span class="punctuation">-&gt;</span> &amp;T &#123;</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;deref called&quot;</span>);</span><br><span class="line">        &amp;<span class="keyword">self</span>.<span class="number">0</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">impl</span>&lt;T&gt; DerefMut <span class="keyword">for</span> <span class="title class_">MyBox</span>&lt;T&gt; &#123;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">deref_mut</span>(&amp;<span class="keyword">mut</span> <span class="keyword">self</span>) <span class="punctuation">-&gt;</span> &amp;<span class="keyword">mut</span> T &#123;</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;deref_mut called&quot;</span>);</span><br><span class="line">        &amp;<span class="keyword">mut</span> <span class="keyword">self</span>.<span class="number">0</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">	<span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">x</span> = MyBox::<span class="title function_ invoke__">new</span>(<span class="number">5</span>);</span><br><span class="line">	<span class="comment">//使用 *x 解引用 MyBox，实际调用 deref_mut 方法获取 x 内部的可变引用，然后赋值为 10。</span></span><br><span class="line">	*x = <span class="number">10</span>;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;x = &#123;&#125;&quot;</span>,*x);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//输出结果：</span></span><br><span class="line"><span class="comment">//deref_mut called (在 *x = 10; 时，调用了 deref_mut 方法，输出 deref_mut called。</span></span><br><span class="line"><span class="comment">//deref called (在 println!(&quot;x = &#123;&#125;&quot;, *x); 时，调用了 deref 方法，输出 deref called。</span></span><br><span class="line"><span class="comment">//x = 10 (通过解引用 x，获取 x 内部的 i32 值，输出 10。</span></span><br></pre></td></tr></table></figure>
+
+<p>解引用操作（Deref）和可变解引用（DerefMut）区别：</p>
+<h3 id="主要区别"><a href="#主要区别" class="headerlink" title="主要区别"></a>主要区别</h3><ol>
+<li><p><strong>引用类型</strong>：</p>
+<ul>
+<li><strong>解引用操作</strong>：返回不可变引用（<code>&amp;T</code>）。</li>
+<li><strong>可变解引用操作</strong>：返回可变引用（<code>&amp;mut T</code>）。</li>
+</ul>
+</li>
+<li><p><strong>数据访问权限</strong>：</p>
+<ul>
+<li><strong>解引用操作</strong>：只能读取数据，不能修改数据。</li>
+<li><strong>可变解引用操作</strong>：可以读取和修改数据。</li>
+</ul>
+</li>
+<li><p><strong>使用场景</strong>：</p>
+<ul>
+<li><strong>解引用操作</strong>：适用于需要读取数据的场景，如打印、计算等。</li>
+<li><strong>可变解引用操作</strong>：适用于需要修改数据的场景，如更新、重置等。</li>
+</ul>
+</li>
+</ol>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://example.com/2024/10/28/Rust-lesson-15/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1853,320 +2190,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2024/10/21/Rust-lesson-7/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2024/10/21/Rust-lesson-7/" itemprop="url">Rust lesson 7 - 引用</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-10-21T19:06:20+08:00">
-                2024-10-21
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="不可变引用（Immutable-Reference）："><a href="#不可变引用（Immutable-Reference）：" class="headerlink" title="不可变引用（Immutable Reference）："></a>不可变引用（Immutable Reference）：</h2><ol>
-<li>通过不可变引用，可读但不能改数据。</li>
-<li>一个变量可以有多个不可变引用，但不可变引用不能与可变引用共存。</li>
-</ol>
-<h2 id="可变引用："><a href="#可变引用：" class="headerlink" title="可变引用："></a>可变引用：</h2><ol>
-<li>通过可变引用，可读并修改数据。</li>
-<li>一个变量某一时刻只能有一个可变引用，且不能与不可变引用共存</li>
-</ol>
-<h2 id="引用规则："><a href="#引用规则：" class="headerlink" title="引用规则："></a>引用规则：</h2><ol>
-<li>同一时间内，一个变量只能有一个可变引用 或 多个不可变引用。</li>
-<li>引用必须是有效的。</li>
-</ol>
-<p>代码示例：</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">//变量前面加&quot;&amp;&quot;符号表示引用，可简单理解为指针指向变量</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">cite</span>() &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//情况1：s1 可以有多个不可变引用</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">s1</span> = <span class="string">&quot;hello&quot;</span>.<span class="title function_ invoke__">to_string</span>(); <span class="comment">// 作用与String::from(&quot;&quot;) 一样</span></span><br><span class="line">    <span class="comment">//let s2 = &amp;s1;</span></span><br><span class="line">    <span class="comment">//let s3 = &amp;s1;</span></span><br><span class="line">    <span class="comment">//let s4 = &amp;s1;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">//情况2：s5不变，s6可变报错，cannot mutate immutable variable `s1`</span></span><br><span class="line">    <span class="comment">//let s5 = &amp;s1;</span></span><br><span class="line">    <span class="comment">//let s6 = &amp;mut s1;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">//情况3：报错，超过一个可变引用,s7和s8为两个</span></span><br><span class="line">    <span class="comment">//let s7 = &amp;mut s1;</span></span><br><span class="line">    <span class="comment">//let s8 = &amp;mut s1;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure>
-
-
-<p>接下来要了解两个关于引用，很重要的概念：</p>
-<h1 id="悬垂指针（dangling-pointers"><a href="#悬垂指针（dangling-pointers" class="headerlink" title="悬垂指针（dangling pointers):"></a>悬垂指针（dangling pointers):</h1><p>是指一个指针或引用指向的内存已经被释放或不再有效的情况，是个严重错误。</p>
-<p>代码示例：</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">//示例一：释放内存后继续使用指针</span></span><br><span class="line"><span class="comment">//返回一个i32类型的指针，这个指针指向 值为5的对象</span></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">create_box</span>() <span class="punctuation">-&gt;</span> <span class="type">Box</span>&lt;<span class="type">i32</span>&gt; &#123;</span><br><span class="line">    <span class="comment">//创建一个对象值为5</span></span><br><span class="line">    <span class="type">Box</span>::<span class="title function_ invoke__">new</span>(<span class="number">5</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="comment">//指针赋值给boxed</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">boxed_value</span> = <span class="title function_ invoke__">create_box</span>();</span><br><span class="line">    <span class="comment">//释放boxed内存</span></span><br><span class="line">    <span class="title function_ invoke__">drop</span>(boxed_value); </span><br><span class="line"></span><br><span class="line">    <span class="comment">// 下面这行会产生悬垂指针,boxed都已经被释放了，还怎么去取值</span></span><br><span class="line">    <span class="comment">// let value = *boxed_value; </span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//示例二：引用超出生命周期</span></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">create_string</span>() <span class="punctuation">-&gt;</span> <span class="type">String</span> &#123;</span><br><span class="line">    <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;hello&quot;</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">s</span> = <span class="title function_ invoke__">create_string</span>();</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">r</span> = &amp;s;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 下面这行会导致悬垂引用</span></span><br><span class="line">    <span class="comment">// println!(&quot;&#123;&#125;&quot;, r); // 编译错误，因为 `s` 已经超出作用域</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<h1 id="生命周期（life-time-："><a href="#生命周期（life-time-：" class="headerlink" title="生命周期（life time)："></a>生命周期（life time)：</h1><p>“生命周期”是指引用（包括不可变引用和可变引用）的有效期,即从引用被创建开始，直到引用不再被使用为止的时间段。帮助编译器确保引用总是有效的，并且不会导致悬垂指针（dangling pointers）或数据竞争等问题。</p>
-<h2 id="生命周期注解："><a href="#生命周期注解：" class="headerlink" title="生命周期注解："></a>生命周期注解：</h2><p>可以通过生命周期注解（lifetime annotations）来显式地指定引用的有效时间范围。生命周期注解通常用 <code>&#39;a</code> 形式的符号表示，其中 <code>&#39;a</code> 是一个生命周期参数。</p>
-<h2 id="为什么要关心生命周期？"><a href="#为什么要关心生命周期？" class="headerlink" title="为什么要关心生命周期？"></a>为什么要关心生命周期？</h2><ol>
-<li>防止悬垂指针：确保引用在其生命周期内始终有效，不会指向已被释放的内存。</li>
-<li>避免数据竞争：确保在多线程或多引用情况下，数据不会被同时修改而导致竞争条件。</li>
-<li>确保内存安全：通过严格的生命周期管理，Rust 编译器可以静态地验证代码的内存安全性。</li>
-</ol>
-<h2 id="生命周期规则："><a href="#生命周期规则：" class="headerlink" title="生命周期规则："></a>生命周期规则：</h2><ol>
-<li>每个引用都有一个生命周期：引用的生命周期至少覆盖了它的作用域。</li>
-<li>引用的生命周期不能超过被引用的数据的生命周期：如果一个引用指向的数据被释放，则该引用无效。</li>
-<li>可变引用必须是唯一的：在一个作用域内，只能有一个可变引用，不能同时存在多个可变引用。</li>
-</ol>
-<h2 id="如何指定生命周期："><a href="#如何指定生命周期：" class="headerlink" title="如何指定生命周期："></a>如何指定生命周期：</h2><ol>
-<li>隐式生命周期：如果编译器能够推断出生命周期，可以省略生命周期注解。</li>
-<li>显式生命周期注解：在函数签名中显式指定生命周期参数，如 <code>fn longest&lt;&#39;a&gt;(x: &amp;&#39;a str, y: &amp;&#39;a str) -&gt; &amp;&#39;a str</code>。</li>
-</ol>
-<p>一般来讲，Rust 编译器通常能够自动推断出生命周期，但在某些情况下，需要显式地指定生命周期注解来帮助编译器理解代码意图。</p>
-<p>结合代码示例理解：</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">//简单示例：</span></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">simple_lifetimes</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">s</span> = <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;hello&quot;</span>);</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">r1</span> = &amp;s; <span class="comment">// 不可变引用</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">r2</span> = &amp;s; <span class="comment">// 不可变引用</span></span><br><span class="line">    <span class="comment">//在这里，r1和r2被println所使用，并且后面没有再被使用，所以Rust编译器会把r1和r2的生命周期给结束。</span></span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125; and &#123;&#125;&quot;</span>, r1, r2);</span><br><span class="line">    <span class="comment">//因为r1 和r2 引用已经被释放，所以才能创建r3这个可变引用并不报错。</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">r3</span> = &amp;<span class="keyword">mut</span> s; <span class="comment">// 可变引用</span></span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>, r3);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//显式注解示例：</span></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">test_lifetime</span>() &#123;</span><br><span class="line">    <span class="comment">//longstStr接收两个引用，分别是&amp;a、&amp;b，类型是String</span></span><br><span class="line">    <span class="comment">//&#x27;a是生命周期函数，接收和返回都有&#x27;a，说明生命周期一样</span></span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">longstStr</span>&lt;<span class="symbol">&#x27;a</span>&gt;(a: &amp;<span class="symbol">&#x27;a</span> <span class="type">String</span>,b: &amp;<span class="symbol">&#x27;a</span> <span class="type">String</span>) <span class="punctuation">-&gt;</span> &amp;<span class="symbol">&#x27;a</span> <span class="type">String</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> a.<span class="title function_ invoke__">len</span>() &gt; b.<span class="title function_ invoke__">len</span>() &#123;</span><br><span class="line">            a</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            b</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">a</span> = <span class="string">&quot;a&quot;</span>.<span class="title function_ invoke__">to_owned</span>();</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">b</span> = <span class="string">&quot;b&quot;</span>.<span class="title function_ invoke__">to_owned</span>();</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">c</span> = <span class="title function_ invoke__">longstStr</span>(&amp;a, &amp;b);</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;a is &#123;a&#125;&quot;</span>);</span><br><span class="line">&#125; </span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2024/10/20/Rust-lesson-6/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2024/10/20/Rust-lesson-6/" itemprop="url">Rust lesson 6 - 所有权</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-10-20T13:32:34+08:00">
-                2024-10-20
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>所有权零开销内存回收的一种高效实现方式</p>
-<p>Rust是一种系统变成语言，其设计目的是确保内存安全并防止数据竞争，而不是依赖垃圾回收器。这种内存安全性主要通过所有权系统来实现</p>
-<h1 id="内存回收"><a href="#内存回收" class="headerlink" title="内存回收"></a>内存回收</h1><h2 id="为什么要内存回收？"><a href="#为什么要内存回收？" class="headerlink" title="为什么要内存回收？"></a>为什么要内存回收？</h2><p>因为硬件内存大小受限（就只有这么多)，数据泄露，隐私安全（回收以避免其他软件读取数据）</p>
-<h2 id="主流编程语言内存回收机制对比："><a href="#主流编程语言内存回收机制对比：" class="headerlink" title="主流编程语言内存回收机制对比："></a>主流编程语言内存回收机制对比：</h2><h3 id="静态语言："><a href="#静态语言：" class="headerlink" title="静态语言："></a>静态语言：</h3><ol>
-<li>在编译时对变量进行检查和确定的语言。</li>
-<li>例如：c 、c++ 、 rust</li>
-</ol>
-<h3 id="动态语言："><a href="#动态语言：" class="headerlink" title="动态语言："></a>动态语言：</h3><ol>
-<li>在运行时进行类型检查和确定的语言。</li>
-<li>例如：js 、python</li>
-</ol>
-<h3 id="差异对比："><a href="#差异对比：" class="headerlink" title="差异对比："></a>差异对比：</h3><p><img src="/images/d_j_difference.png" alt="Pasted image 20241020134551.png"></p>
-<p>各种编程语言都有属于自己内存回收机制，有些是手动的，有些是自动的，这里只介绍Rust 的，其它语言暂不赘述，请自行查找学习。</p>
-<h1 id="Rust-内存回收："><a href="#Rust-内存回收：" class="headerlink" title="Rust 内存回收："></a>Rust 内存回收：</h1><h2 id="内存管理方式：所有权系统（Ownership-System"><a href="#内存管理方式：所有权系统（Ownership-System" class="headerlink" title="内存管理方式：所有权系统（Ownership System)"></a>内存管理方式：所有权系统（Ownership System)</h2><h3 id="特点："><a href="#特点：" class="headerlink" title="特点："></a>特点：</h3><ol>
-<li>Rust使用所有权系统进行内存管理，编译期在编译时通过静态分析来确保内存安全。</li>
-<li>每个值都有一个所有者，在任何时候都只能有一个有效所有者</li>
-<li>通过借用（引用）机制来共享数据，同时保证数据竞争和悬垂指针安全。</li>
-</ol>
-<h3 id="优点："><a href="#优点：" class="headerlink" title="优点："></a>优点：</h3><ol>
-<li>在编译时保证内存安全，没有运行时开销。</li>
-<li>避免了数据竞争和悬垂指针。</li>
-</ol>
-<h3 id="缺点："><a href="#缺点：" class="headerlink" title="缺点："></a>缺点：</h3><ol>
-<li>需要使用人员理解和遵循所有权和借用规则，学习曲线较陡。</li>
-</ol>
-<h2 id="所有权规则："><a href="#所有权规则：" class="headerlink" title="所有权规则："></a>所有权规则：</h2><p>Rust为了确保内存安全并防止数据竞争，使用所有权系统来实现，而不依赖垃圾回收器。</p>
-<h3 id="规则："><a href="#规则：" class="headerlink" title="规则："></a>规则：</h3><ol>
-<li>每一个值都有一个所有者(owner)。</li>
-<li>在任一时刻，值只能有一个所有者。</li>
-<li>当所有者离开作用域（scope)，值会被丢弃（drop)。</li>
-</ol>
-<h3 id="代码示例："><a href="#代码示例：" class="headerlink" title="代码示例："></a>代码示例：</h3><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line"></span><br><span class="line">    <span class="title function_ invoke__">feature</span>();</span><br><span class="line">    <span class="title function_ invoke__">block_scope</span>();</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">feature</span>() &#123;</span><br><span class="line">	<span class="comment">// 这里的 y=x ,是y的地址空间里面存了个值为5</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">x</span> = <span class="number">5</span>;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">y</span> = x;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">//这里栈上创建s1, 堆上创建了个String对象，并存储了hello这个字符串，然后s1 指向了这个String对象</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">s1</span> = <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;hello&quot;</span>);</span><br><span class="line">    <span class="comment">//hello的所有权会从s1 转移到（叫做 Move）s2 ,s2 是hello 的唯一拥有者，相当于s1不指向这个String对象了，换成s2 指向String对象</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">s2</span> = s1;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//直接打印s1会报错，因为s1 没有所有权，borrow of moved value: `s1`</span></span><br><span class="line">    <span class="comment">//println!(&quot;s1: &#123;&#125;&quot;,s1);</span></span><br><span class="line"></span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;s2: &#123;&#125;&quot;</span>,s2);</span><br><span class="line">    </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">block_scope</span>()&#123;</span><br><span class="line"></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">let</span> <span class="variable">s1</span> = <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;hello&quot;</span>);</span><br><span class="line">        <span class="comment">//编译完成后，Rust会自动添加 drop(s1)这个操作，相当于这个作用域结束后释放s1内存</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//离开作用域(Scope)&#123;&#125;后s1 已经被释放</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">//s1和println不在一个作用域（Scope)，所以打印s1报错，cannot find value `s1` in this scope</span></span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;s1 is &#123;&#125;&quot;</span>,s1)</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2217,7 +2240,7 @@
               
                 <a href="/archives/%20%7C%7C%20archive">
               
-                  <span class="site-state-item-count">15</span>
+                  <span class="site-state-item-count">17</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
