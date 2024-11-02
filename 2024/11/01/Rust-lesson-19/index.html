@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Rc&lt;T&gt;：What is Rc&lt;T&gt;:Rc&lt;T&gt; 是 Rust 标准库中提供的一个智能指针类型，代表“引用计数”（Reference Counted）。它允许多个所有者共享同一数据，而无需使用互斥锁或其他同步机制。 特点： 共享所有权：  Rc&lt;T&gt; 允许多个所有者共享同一数据。 每个 Rc&lt;T&gt; 实例都增加数据的引用计数。   引用计">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Rust lesson 19 - 智能指针 &#96;Rc&lt;T&gt;&#96;、&#96;RefCell&lt;T&gt;&#96;、&#96;Weak&lt;T&gt;&#96;">
+<meta property="og:url" content="http://example.com/2024/11/01/Rust-lesson-19/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="Rc&lt;T&gt;：What is Rc&lt;T&gt;:Rc&lt;T&gt; 是 Rust 标准库中提供的一个智能指针类型，代表“引用计数”（Reference Counted）。它允许多个所有者共享同一数据，而无需使用互斥锁或其他同步机制。 特点： 共享所有权：  Rc&lt;T&gt; 允许多个所有者共享同一数据。 每个 Rc&lt;T&gt; 实例都增加数据的引用计数。   引用计">
+<meta property="og:locale">
+<meta property="article:published_time" content="2024-11-01T12:14:36.143Z">
+<meta property="article:modified_time" content="2024-11-02T12:04:47.581Z">
+<meta property="article:author" content="QsunOu">
+<meta property="article:tag" content="rust">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://example.com/2024/11/01/Rust-lesson-19/"/>
+
+
+
+
+
+  <title>Rust lesson 19 - 智能指针 `Rc<T>`、`RefCell<T>`、`Weak<T>` | Hexo</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hexo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/11/01/Rust-lesson-19/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Rust lesson 19 - 智能指针 `Rc<T>`、`RefCell<T>`、`Weak<T>`</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-11-01T20:14:36+08:00">
+                2024-11-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="Rc："><a href="#Rc：" class="headerlink" title="Rc&lt;T&gt;："></a><code>Rc&lt;T&gt;</code>：</h1><h2 id="What-is-Rc"><a href="#What-is-Rc" class="headerlink" title="What is Rc&lt;T&gt;:"></a>What is <code>Rc&lt;T&gt;</code>:</h2><p><code>Rc&lt;T&gt;</code> 是 Rust 标准库中提供的一个智能指针类型，代表“引用计数”（Reference Counted）。它允许多个所有者共享同一数据，而无需使用互斥锁或其他同步机制。</p>
+<h2 id="特点："><a href="#特点：" class="headerlink" title="特点："></a>特点：</h2><ol>
+<li><p><strong>共享所有权</strong>：</p>
+<ul>
+<li><code>Rc&lt;T&gt;</code> 允许多个所有者共享同一数据。</li>
+<li>每个 <code>Rc&lt;T&gt;</code> 实例都增加数据的引用计数。</li>
+</ul>
+</li>
+<li><p><strong>引用计数</strong>：</p>
+<ul>
+<li><code>Rc&lt;T&gt;</code> 维护一个引用计数器，记录有多少个 <code>Rc&lt;T&gt;</code> 实例指向同一数据。</li>
+<li>当引用计数为零时，数据会被自动释放。</li>
+</ul>
+</li>
+<li><p><strong>不可变性</strong>：</p>
+<ul>
+<li>默认情况下，<code>Rc&lt;T&gt;</code> 提供的数据是不可变的。</li>
+<li>如果需要内部可变性，可以结合 <code>RefCell&lt;T&gt;</code> 使用。</li>
+</ul>
+</li>
+</ol>
+<h2 id="代码示例："><a href="#代码示例：" class="headerlink" title="代码示例："></a>代码示例：</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">use</span> std::rc::Rc;</span><br><span class="line"><span class="keyword">use</span> crate::List::*;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">#[derive(Debug)]</span></span><br><span class="line"><span class="keyword">enum</span> <span class="title class_">List</span> &#123;</span><br><span class="line">    <span class="comment">//包含整数和指向下一个列表节点的 Rc 引用的节点。</span></span><br><span class="line">    <span class="title function_ invoke__">Cons</span>(<span class="type">i32</span>, Rc&lt;List&gt;),</span><br><span class="line">    Nil,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">study</span>() &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//创建一个包含两个节点的链表 a，节点值分别为 5 和 10</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">a</span> = Rc::<span class="title function_ invoke__">new</span>(<span class="title function_ invoke__">Cons</span>(<span class="number">5</span>,Rc::<span class="title function_ invoke__">new</span>(<span class="title function_ invoke__">Cons</span>(<span class="number">10</span>, Rc::<span class="title function_ invoke__">new</span>(Nil)))));</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;a: &#123;&#125;&quot;</span>,Rc::<span class="title function_ invoke__">strong_count</span>(&amp;a));</span><br><span class="line"></span><br><span class="line">    <span class="comment">//创建一个新的节点 b，其值为 3，并指向 a，并共享所有权，a的引用计数加一</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">b</span> = <span class="title function_ invoke__">Cons</span>(<span class="number">3</span>, Rc::<span class="title function_ invoke__">clone</span>(&amp;a));</span><br><span class="line">    <span class="comment">//Rc::strong_count 方法来获取关于a的 Rc 引用的强引用计数。强引用计数表示当前有多少个 Rc 引用指向同一个数据。</span></span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;b: &#123;&#125;&quot;</span>,Rc::<span class="title function_ invoke__">strong_count</span>(&amp;a));</span><br><span class="line"></span><br><span class="line">    <span class="comment">//创建一个新的节点 c，其值为 4，并指向 a</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">c</span> = <span class="title function_ invoke__">Cons</span>(<span class="number">4</span>, Rc::<span class="title function_ invoke__">clone</span>(&amp;a));</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;c: &#123;&#125;&quot;</span>,Rc::<span class="title function_ invoke__">strong_count</span>(&amp;a));</span><br><span class="line"></span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;:?&#125;&quot;</span>,a);</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;:?&#125;&quot;</span>,b);</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;:?&#125;&quot;</span>,c);</span><br><span class="line"></span><br><span class="line">   </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="title function_ invoke__">study</span>();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//输出结果</span></span><br><span class="line">a: <span class="number">1</span>   <span class="comment">//a的引用计数是1</span></span><br><span class="line">b: <span class="number">2</span>   <span class="comment">//a的引用计数是2</span></span><br><span class="line">c: <span class="number">3</span>   <span class="comment">//a的引用计数是3</span></span><br><span class="line"><span class="title function_ invoke__">Cons</span>(<span class="number">5</span>, <span class="title function_ invoke__">Cons</span>(<span class="number">10</span>, Nil))</span><br><span class="line"><span class="title function_ invoke__">Cons</span>(<span class="number">3</span>, <span class="title function_ invoke__">Cons</span>(<span class="number">5</span>, <span class="title function_ invoke__">Cons</span>(<span class="number">10</span>, Nil)))</span><br><span class="line"><span class="title function_ invoke__">Cons</span>(<span class="number">4</span>, <span class="title function_ invoke__">Cons</span>(<span class="number">5</span>, <span class="title function_ invoke__">Cons</span>(<span class="number">10</span>, Nil)))</span><br></pre></td></tr></table></figure>
+
+<h2 id="Rc-和-Box-指针的区别："><a href="#Rc-和-Box-指针的区别：" class="headerlink" title="Rc 和 Box 指针的区别："></a>Rc 和 Box 指针的区别：</h2><ol>
+<li><p><strong>所有权</strong>：</p>
+<ul>
+<li><code>Box&lt;T&gt;</code> 是独占的，只能有一个所有者。</li>
+<li><code>Rc&lt;T&gt;</code> 允许多个所有者共享同一数据。</li>
+</ul>
+</li>
+<li><p><strong>内存管理</strong>：</p>
+<ul>
+<li><code>Box&lt;T&gt;</code> 在堆上分配内存，当 <code>Box&lt;T&gt;</code> 被丢弃时，其内部的数据也会被自动释放。</li>
+<li><code>Rc&lt;T&gt;</code> 维护一个引用计数器，当引用计数为零时，数据会被自动释放。</li>
+</ul>
+</li>
+<li><p><strong>使用场景</strong>：</p>
+<ul>
+<li><code>Box&lt;T&gt;</code> 适用于需要在堆上分配数据的情况，特别是大型数据结构。</li>
+<li><code>Rc&lt;T&gt;</code> 适用于需要在多个所有者之间共享数据的情况，避免不必要的数据拷贝。</li>
+</ul>
+</li>
+<li><p><strong>内部可变性</strong>：</p>
+<ul>
+<li>如果需要内部可变性，两者都可以结合 <code>RefCell&lt;T&gt;</code> 使用。</li>
+</ul>
+</li>
+</ol>
+<h1 id="RefCell"><a href="#RefCell" class="headerlink" title="RefCell&lt;T&gt;"></a><code>RefCell&lt;T&gt;</code></h1><h2 id="What-is-RefCell"><a href="#What-is-RefCell" class="headerlink" title="What is RefCell&lt;T&gt;:"></a>What is <code>RefCell&lt;T&gt;</code>:</h2><p><code>RefCell&lt;T&gt;</code> 是 Rust 标准库中提供的一个智能指针类型，用于实现内部可变性（Interior Mutability）。它允许你在编译时不可变的情况下，在运行时进行可变性检查</p>
+<h2 id="特点：-1"><a href="#特点：-1" class="headerlink" title="特点："></a>特点：</h2><ol>
+<li><p><strong>内部可变性</strong>：</p>
+<ul>
+<li><code>RefCell&lt;T&gt;</code> 允许你在不可变引用的情况下修改数据。</li>
+<li>这种特性在某些情况下非常有用，例如在 <code>Rc&lt;T&gt;</code> 中存储可变数据。</li>
+</ul>
+</li>
+<li><p><strong>运行时借用检查</strong>：</p>
+<ul>
+<li><code>RefCell&lt;T&gt;</code> 在运行时（不是编译时）检查借用（引用）规则，确保在同一时间只有一个可变引用或多个不可变引用。</li>
+<li>如果违反了这些规则，程序会在运行时 panic。</li>
+</ul>
+</li>
+<li><p><strong>不可变引用</strong>：</p>
+<ul>
+<li>使用 <code>borrow</code> 方法获取不可变引用。</li>
+<li>多个不可变引用可以同时存在。</li>
+</ul>
+</li>
+<li><p><strong>可变引用</strong>：</p>
+<ul>
+<li>使用 <code>borrow_mut</code> 方法获取可变引用。</li>
+</ul>
+</li>
+</ol>
+<h2 id="代码示例：-1"><a href="#代码示例：-1" class="headerlink" title="代码示例："></a>代码示例：</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> std::cell::RefCell;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">study</span>() &#123;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> <span class="variable">data</span> = RefCell::<span class="title function_ invoke__">new</span>(<span class="number">5</span>);</span><br><span class="line">    <span class="comment">//获取不可变引用</span></span><br><span class="line">    &#123;   </span><br><span class="line">        <span class="comment">//data.borrow() 获取一个不可变引用 Ref</span></span><br><span class="line">        <span class="keyword">let</span> <span class="variable">value</span> = data.<span class="title function_ invoke__">borrow</span>();</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>, value);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//可变引用</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">//data.borrow_mut() 获取一个可变引用 RefMut。value可以做运算。</span></span><br><span class="line">        <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">value</span> = data.<span class="title function_ invoke__">borrow_mut</span>();</span><br><span class="line">        *value += <span class="number">1</span>;</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>, value);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//再次获取不可变引用</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">let</span> <span class="variable">value</span> = data.<span class="title function_ invoke__">borrow</span>();</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>, value);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="注意事项："><a href="#注意事项：" class="headerlink" title="注意事项："></a>注意事项：</h2><ol>
+<li><p><strong>运行时检查</strong>：</p>
+<ul>
+<li><code>RefCell&lt;T&gt;</code> 在运行时检查借用规则，确保在同一时间只有一个可变引用或多个不可变引用。</li>
+<li>如果违反了这些规则，程序会在运行时 panic。</li>
+</ul>
+</li>
+<li><p><strong>性能开销</strong>：</p>
+<ul>
+<li><code>RefCell&lt;T&gt;</code> 在运行时进行借用检查，可能会带来一些性能开销。</li>
+<li>在性能敏感的应用中，应谨慎使用 <code>RefCell&lt;T&gt;</code>。</li>
+</ul>
+</li>
+<li><p><strong>线程安全</strong>：</p>
+<ul>
+<li><code>RefCell&lt;T&gt;</code> 不是线程安全的，只能在单线程环境中使用。</li>
+<li>如果需要在多线程环境中实现内部可变性，应使用 <code>Mutex&lt;T&gt;</code> 或 <code>RwLock&lt;T&gt;</code>。</li>
+</ul>
+</li>
+</ol>
+<h1 id="引用循环和内存泄露："><a href="#引用循环和内存泄露：" class="headerlink" title="引用循环和内存泄露："></a>引用循环和内存泄露：</h1><h2 id="代码示例：-2"><a href="#代码示例：-2" class="headerlink" title="代码示例："></a>代码示例：</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#[derive(Debug)]</span></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">Node</span> &#123;</span><br><span class="line">    value: <span class="type">i32</span>,</span><br><span class="line">    next: <span class="type">Option</span>&lt;Rc&lt;RefCell&lt;Node&gt;&gt;&gt;,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">study</span>() &#123;</span><br><span class="line">	<span class="keyword">let</span> <span class="variable">first</span> = Rc::<span class="title function_ invoke__">new</span>(RefCell::<span class="title function_ invoke__">new</span>(Node&#123;value:<span class="number">1</span>, next: <span class="literal">None</span>&#125;));</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">second</span> = Rc::<span class="title function_ invoke__">new</span>(RefCell::<span class="title function_ invoke__">new</span>(Node&#123;value:<span class="number">2</span>, next: <span class="literal">None</span>&#125;));</span><br><span class="line"></span><br><span class="line">    <span class="comment">//创建引用循环，first指second,second指first</span></span><br><span class="line">    first.<span class="title function_ invoke__">borrow_mut</span>().next = <span class="title function_ invoke__">Some</span>(Rc::<span class="title function_ invoke__">clone</span>(&amp;second));</span><br><span class="line">    second.<span class="title function_ invoke__">borrow_mut</span>().next = <span class="title function_ invoke__">Some</span>(Rc::<span class="title function_ invoke__">clone</span>(&amp;first));</span><br><span class="line"></span><br><span class="line">    <span class="comment">//打印引用计数，然后发现很正常，查不出来</span></span><br><span class="line">    <span class="comment">//因为 Rc 的强引用计数只统计强引用的数量，而弱引用计数则统计弱引用的数量。</span></span><br><span class="line">    <span class="comment">//Rc::strong_count(&amp;first) 和 Rc::strong_count(&amp;second) 分别返回 first 和 second 的强引用计数。</span></span><br><span class="line">    <span class="comment">//Rc::weak_count(&amp;first) 和 Rc::weak_count(&amp;second) 分别返回 first 和 second 的弱引用计数。    </span></span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;first strong: &#123;:?&#125;,first weak: &#123;:?&#125;&quot;</span>,Rc::<span class="title function_ invoke__">strong_count</span>(&amp;first), Rc::<span class="title function_ invoke__">weak_count</span>(&amp;first));</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;second strong: &#123;:?&#125;,second weak: &#123;:?&#125;&quot;</span>,Rc::<span class="title function_ invoke__">strong_count</span>(&amp;second), Rc::<span class="title function_ invoke__">weak_count</span>(&amp;second));</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//再直接打印，发现一直循环，fatal runtime error: stack overflow</span></span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;:?&#125;&quot;</span>, first);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//输出结果</span></span><br><span class="line"><span class="comment">//first 的强引用计数是 2，因为 first 自身是一个引用，另一个引用来自 second 的 next 字段。</span></span><br><span class="line"><span class="comment">//first 没有弱引用.second 同理。</span></span><br><span class="line"><span class="comment">//first strong: 2, first weak: 0 </span></span><br><span class="line"><span class="comment">//second strong: 2, second weak: 0</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="Weak："><a href="#Weak：" class="headerlink" title="Weak&lt;T&gt;："></a><code>Weak&lt;T&gt;</code>：</h1><h2 id="What-is-Weak："><a href="#What-is-Weak：" class="headerlink" title="What is Weak："></a>What is Weak：</h2><p><code>Weak&lt;T&gt;</code> 是一种智能指针类型，用于打破由 <code>Rc&lt;T&gt;</code> 或 <code>Arc&lt;T&gt;</code> 创建的引用循环。<code>Weak&lt;T&gt;</code> 不增加强引用计数，因此不会阻止对象被释放。</p>
+<h2 id="特点：-2"><a href="#特点：-2" class="headerlink" title="特点："></a>特点：</h2><ol>
+<li><p><strong>不增加强引用计数</strong>：</p>
+<ul>
+<li><code>Weak&lt;T&gt;</code> 不增加被引用对象的强引用计数。</li>
+<li>因此，<code>Weak&lt;T&gt;</code> 不会阻止对象被释放。</li>
+</ul>
+</li>
+<li><p><strong>可升级</strong>：</p>
+<ul>
+<li><code>Weak&lt;T&gt;</code> 可以通过 <code>upgrade</code> 方法转换为 <code>Rc&lt;T&gt;</code> 或 <code>Arc&lt;T&gt;</code>。</li>
+<li>如果对象已经被释放，<code>upgrade</code> 方法会返回 <code>None</code>。</li>
+</ul>
+</li>
+<li><p><strong>打破引用循环</strong>：</p>
+<ul>
+<li><code>Weak&lt;T&gt;</code> 常用于打破由 <code>Rc&lt;T&gt;</code> 或 <code>Arc&lt;T&gt;</code> 创建的引用循环，避免内存泄漏。</li>
+</ul>
+</li>
+</ol>
+<h2 id="解决循环引用代码示例"><a href="#解决循环引用代码示例" class="headerlink" title="解决循环引用代码示例:"></a>解决循环引用代码示例:</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> std::rc::&#123;Rc,Weak&#125;;</span><br><span class="line"><span class="keyword">use</span> std::cell::RefCell;</span><br><span class="line"></span><br><span class="line"><span class="meta">#[derive(Debug)]</span></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">Node</span> &#123;</span><br><span class="line">    value: <span class="type">i32</span>,</span><br><span class="line">    <span class="comment">//next：指向下一个节点的强引用。</span></span><br><span class="line">    next: <span class="type">Option</span>&lt;Rc&lt;RefCell&lt;Node&gt;&gt;&gt;,</span><br><span class="line">    <span class="comment">//prev：指向前一个节点的弱引用</span></span><br><span class="line">    prev: <span class="type">Option</span>&lt;Weak&lt;RefCell&lt;Node&gt;&gt;&gt;,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">study</span>() &#123;</span><br><span class="line">	<span class="keyword">let</span> <span class="variable">first</span> = Rc::<span class="title function_ invoke__">new</span>(RefCell::<span class="title function_ invoke__">new</span>(Node&#123;value:<span class="number">1</span>, next: <span class="literal">None</span>, prev: <span class="literal">None</span>&#125;));</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">second</span> = Rc::<span class="title function_ invoke__">new</span>(RefCell::<span class="title function_ invoke__">new</span>(Node&#123;value:<span class="number">2</span>, next: <span class="literal">None</span>, prev: <span class="literal">None</span>&#125;));</span><br><span class="line"></span><br><span class="line">    <span class="comment">//创建引用循环</span></span><br><span class="line">    first.<span class="title function_ invoke__">borrow_mut</span>().next = <span class="title function_ invoke__">Some</span>(Rc::<span class="title function_ invoke__">clone</span>(&amp;second));</span><br><span class="line">    <span class="comment">//`second` 的 `prev` 字段指向 `first`，使用 `Weak` 引用来打破循环。</span></span><br><span class="line">    <span class="comment">//Rc::downgrade 创建一个 Weak&lt;T&gt; 实例</span></span><br><span class="line">    <span class="comment">//使用weak后，first 的强引用计数器是1（自身），而不是2</span></span><br><span class="line">    second.<span class="title function_ invoke__">borrow_mut</span>().prev = <span class="title function_ invoke__">Some</span>(Rc::<span class="title function_ invoke__">downgrade</span>(&amp;first));</span><br><span class="line"></span><br><span class="line">    <span class="comment">//打印引用计数，然后发现很正常，查不出来</span></span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;first strong: &#123;:?&#125;,first weak: &#123;:?&#125;&quot;</span>,Rc::<span class="title function_ invoke__">strong_count</span>(&amp;first), Rc::<span class="title function_ invoke__">weak_count</span>(&amp;first));</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;second strong: &#123;:?&#125;,second weak: &#123;:?&#125;&quot;</span>,Rc::<span class="title function_ invoke__">strong_count</span>(&amp;second), Rc::<span class="title function_ invoke__">weak_count</span>(&amp;second));</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//这回就正常多了</span></span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;:?&#125;&quot;</span>, first);</span><br><span class="line"></span><br><span class="line"><span class="comment">//输出结果：</span></span><br><span class="line">first strong: <span class="number">1</span>,first weak: <span class="number">1</span></span><br><span class="line">second strong: <span class="number">2</span>,second weak: <span class="number">0</span></span><br><span class="line">RefCell &#123; value: Node &#123; value: <span class="number">1</span>, next: <span class="title function_ invoke__">Some</span>(RefCell &#123; value: Node &#123; value: <span class="number">2</span>, next: <span class="literal">None</span>, prev: <span class="title function_ invoke__">Some</span>((Weak)) &#125; &#125;), prev: <span class="literal">None</span> &#125; &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// drop(first) 以后会释放强引用，first强引用为0，节点被释放。</span></span><br><span class="line"><span class="comment">//second不会被释放，因为它的强引用从 2-&gt;1,不为0.</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2024/11/01/Rust-lesson-18/" rel="next" title="Rust lesson 18 - 生命周期">
+                <i class="fa fa-chevron-left"></i> Rust lesson 18 - 生命周期
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%20%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">19</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Rc%EF%BC%9A"><span class="nav-number">1.</span> <span class="nav-text">Rc&lt;T&gt;：</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#What-is-Rc"><span class="nav-number">1.1.</span> <span class="nav-text">What is Rc&lt;T&gt;:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%89%B9%E7%82%B9%EF%BC%9A"><span class="nav-number">1.2.</span> <span class="nav-text">特点：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E7%A4%BA%E4%BE%8B%EF%BC%9A"><span class="nav-number">1.3.</span> <span class="nav-text">代码示例：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Rc-%E5%92%8C-Box-%E6%8C%87%E9%92%88%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9A"><span class="nav-number">1.4.</span> <span class="nav-text">Rc 和 Box 指针的区别：</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#RefCell"><span class="nav-number">2.</span> <span class="nav-text">RefCell&lt;T&gt;</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#What-is-RefCell"><span class="nav-number">2.1.</span> <span class="nav-text">What is RefCell&lt;T&gt;:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%89%B9%E7%82%B9%EF%BC%9A-1"><span class="nav-number">2.2.</span> <span class="nav-text">特点：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E7%A4%BA%E4%BE%8B%EF%BC%9A-1"><span class="nav-number">2.3.</span> <span class="nav-text">代码示例：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9%EF%BC%9A"><span class="nav-number">2.4.</span> <span class="nav-text">注意事项：</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BC%95%E7%94%A8%E5%BE%AA%E7%8E%AF%E5%92%8C%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2%EF%BC%9A"><span class="nav-number">3.</span> <span class="nav-text">引用循环和内存泄露：</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E7%A4%BA%E4%BE%8B%EF%BC%9A-2"><span class="nav-number">3.1.</span> <span class="nav-text">代码示例：</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Weak%EF%BC%9A"><span class="nav-number">4.</span> <span class="nav-text">Weak&lt;T&gt;：</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#What-is-Weak%EF%BC%9A"><span class="nav-number">4.1.</span> <span class="nav-text">What is Weak：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%89%B9%E7%82%B9%EF%BC%9A-2"><span class="nav-number">4.2.</span> <span class="nav-text">特点：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3%E5%BE%AA%E7%8E%AF%E5%BC%95%E7%94%A8%E4%BB%A3%E7%A0%81%E7%A4%BA%E4%BE%8B"><span class="nav-number">4.3.</span> <span class="nav-text">解决循环引用代码示例:</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">QsunOu</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
