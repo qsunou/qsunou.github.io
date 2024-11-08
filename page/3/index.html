@@ -1,0 +1,1290 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Learning about Rust">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Hexo">
+<meta property="og:url" content="http://example.com/page/3/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="Learning about Rust">
+<meta property="og:locale">
+<meta property="article:author" content="QsunOu">
+<meta property="article:tag" content="rust">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://example.com/page/3/"/>
+
+
+
+
+
+  <title>Hexo</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left 
+  page-home">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hexo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+  <section id="posts" class="posts-expand">
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/10/19/Rust-lesson-5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2024/10/19/Rust-lesson-5/" itemprop="url">Rust lesson 5 - 数据类型</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-10-19T18:44:43+08:00">
+                2024-10-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>第一次看随便看看得了，暂时有不懂的也不用那么较劲</p>
+<h1 id="概览："><a href="#概览：" class="headerlink" title="概览："></a>概览：</h1><p><img src="/images/data_type_1.png" alt="Pasted image 20241021184212.png"><br><img src="/images/data_type_2.png" alt="Pasted image 20241021184300.png"><br><img src="/images/data_type_3.png" alt="Pasted image 20241021184409.png"><br><img src="/images/data_type_4.png" alt="Pasted image 20241021184428.png"></p>
+<h1 id="整形："><a href="#整形：" class="headerlink" title="整形："></a>整形：</h1><p>整形可以根据 数据大小 和 有无符号 进行分类：<br><img src="/images/int_1.png" alt="Pasted image 20241021184711.png"></p>
+<p>整形字面书写方式可以按照下表书写：</p>
+<p><img src="/images/int_2.png" alt="Pasted image 20241021184827.png"><br>注：这里98_222的下划线其实没啥用，就是为了视觉上好看点，例如10_000</p>
+<h1 id="浮点型："><a href="#浮点型：" class="headerlink" title="浮点型："></a>浮点型：</h1><p>浮点型数字是带有小数点的数字，两种基本类型：f32 和 f64 ,默认是f64 </p>
+<h1 id="NaN类型（Not-a-Number）："><a href="#NaN类型（Not-a-Number）：" class="headerlink" title="NaN类型（Not a Number）："></a>NaN类型（Not a Number）：</h1><p>通常用于表示那些在数学运算中无法定义或没有意义的数值结果，如 <code>0.0/0.0</code>，任何与NaN交互都会返回NaN。</p>
+<h1 id="布尔类型："><a href="#布尔类型：" class="headerlink" title="布尔类型："></a>布尔类型：</h1><p>跟其他语言一样，true or false。</p>
+<h1 id="字符："><a href="#字符：" class="headerlink" title="字符："></a>字符：</h1><p>所有ASCII和Unicode值都可以作为Rust字符，中日英韩emoji都行，占用4个字节。</p>
+<h1 id="序列："><a href="#序列：" class="headerlink" title="序列："></a>序列：</h1><p>前面也有遇到过，就是（1..5），1-4不包含5。（1..&#x3D;5)就包含5,常用于循环</p>
+<h1 id="强制类型转换："><a href="#强制类型转换：" class="headerlink" title="强制类型转换："></a>强制类型转换：</h1><p><code>as</code> 关键字用于在不同类型之间进行类型转换，这种转换称为 <strong>类型铸造</strong>（type casting）。<code>as</code> 关键字主要用于原始类型的转换，如从一种数字类型转换为另一种数字类型。</p>
+<p>代码示例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">let original_value: OriginalType = ...;</span><br><span class="line">let new_value: NewType = original_value as NewType;</span><br><span class="line"></span><br><span class="line">//i32 转 f64</span><br><span class="line">let int_value: i32 = 10;</span><br><span class="line">let float_value: f64 = int_value as f64;</span><br></pre></td></tr></table></figure>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/10/18/Rust-lesson-4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2024/10/18/Rust-lesson-4/" itemprop="url">Rust lesson 4 - 流程控制</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-10-18T18:39:30+08:00">
+                2024-10-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="1-条件控制-if-语句"><a href="#1-条件控制-if-语句" class="headerlink" title="1.条件控制  if 语句"></a>1.条件控制  if 语句</h1><h2 id="1-1使用-if-语句进行判断，与其他语言类似："><a href="#1-1使用-if-语句进行判断，与其他语言类似：" class="headerlink" title="1.1使用 if 语句进行判断，与其他语言类似："></a>1.1使用 if 语句进行判断，与其他语言类似：</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">	</span><br><span class="line">    <span class="comment">//注意：这里 6 被 3整除后，就不会继续执行，也就是不会执行被2整除那行代码</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">number</span> = <span class="number">6</span>;  </span><br><span class="line">    <span class="keyword">if</span> number % <span class="number">4</span> == <span class="number">0</span> &#123;</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;number is divisible by 4&quot;</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> number % <span class="number">3</span> ==<span class="number">0</span> &#123;</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;number is divisible by 3&quot;</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> number % <span class="number">2</span> ==<span class="number">0</span> &#123;</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;number is divisible by 2&quot;</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;number is not divisible by 4,3 or 2&quot;</span>);</span><br><span class="line">    &#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="1-2-在-let-语句中使用-if"><a href="#1-2-在-let-语句中使用-if" class="headerlink" title="1.2 在 let 语句中使用 if"></a>1.2 在 let 语句中使用 if</h2><ol>
+<li>number 变量将会绑定到表示if表达式结果的值上。</li>
+<li>if的每个分支的可能得返回值都必须是相同类型</li>
+<li>if里面不需要有分号,但外面要有分号结束</li>
+</ol>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">condition</span> = <span class="literal">true</span>;</span><br><span class="line">    <span class="comment">//由于condition 为 true,所以number 赋值为5</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">number</span> = <span class="keyword">if</span> condition &#123;</span><br><span class="line">        <span class="number">5</span></span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="number">6</span></span><br><span class="line">    &#125;;</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;The value of number is: &#123;&#125;&quot;</span>,number);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="2-循环控制"><a href="#2-循环控制" class="headerlink" title="2.循环控制"></a>2.循环控制</h1><h2 id="2-1-loop-循环"><a href="#2-1-loop-循环" class="headerlink" title="2.1 loop 循环"></a>2.1 loop 循环</h2><p>无限循环,直到手动停止程序</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">	<span class="keyword">loop</span> &#123;</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;haha&quot;</span>);</span><br><span class="line">    &#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-2-停止循环or继续循环"><a href="#2-2-停止循环or继续循环" class="headerlink" title="2.2 停止循环or继续循环"></a>2.2 停止循环or继续循环</h2><ol>
+<li>使用break 关键词来停止循环</li>
+<li>使用 continue  关键词跳过本次循环，继续下次循环</li>
+</ol>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>()&#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">counter</span> = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">loop</span> &#123;</span><br><span class="line">        counter += <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> counter == <span class="number">5</span>&#123;</span><br><span class="line">            <span class="keyword">continue</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> counter == <span class="number">10</span> &#123;</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>,counter)</span><br><span class="line">    &#125; </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">输出结果：</span><br><span class="line"><span class="number">1</span></span><br><span class="line"><span class="number">2</span></span><br><span class="line"><span class="number">3</span></span><br><span class="line"><span class="number">4</span></span><br><span class="line"><span class="number">6</span></span><br><span class="line"><span class="number">7</span></span><br><span class="line"><span class="number">8</span></span><br><span class="line"><span class="number">9</span></span><br></pre></td></tr></table></figure>
+
+
+<h2 id="2-3-从循环返回值"><a href="#2-3-从循环返回值" class="headerlink" title="2.3 从循环返回值"></a>2.3 从循环返回值</h2><p>和 if 语句类似，loop 也能赋值，注意分号结束</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>()&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">counter</span> = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">result</span> = <span class="keyword">loop</span> &#123;</span><br><span class="line">        counter += <span class="number">1</span>;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">if</span> counter == <span class="number">10</span> &#123;</span><br><span class="line">            <span class="keyword">break</span> counter * <span class="number">2</span>; </span><br><span class="line">        &#125;</span><br><span class="line">    &#125;;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;The result is &#123;&#125;&quot;</span>, result);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">输出结果：</span><br><span class="line">The result is <span class="number">20</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="2-4-循环标签：在多个循环之间消除歧义"><a href="#2-4-循环标签：在多个循环之间消除歧义" class="headerlink" title="2.4 循环标签：在多个循环之间消除歧义"></a>2.4 循环标签：在多个循环之间消除歧义</h2><p>break只退出内层循环，break ‘counting_up;语句将退出外循环</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">count</span> = <span class="number">0</span>;</span><br><span class="line">    <span class="comment">// 这个loop 的标签为 &#x27;counting_up</span></span><br><span class="line">    <span class="symbol">&#x27;counting_up</span>: <span class="keyword">loop</span> &#123;</span><br><span class="line">        <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">remaining</span> = <span class="number">10</span>;</span><br><span class="line">        <span class="keyword">loop</span> &#123;</span><br><span class="line">            <span class="built_in">println!</span>(<span class="string">&quot;remaining: &#123;&#125;&quot;</span>, remaining);</span><br><span class="line">            <span class="keyword">if</span> remaining == <span class="number">9</span> &#123;</span><br><span class="line">	            <span class="comment">// 只跳出本 内层循环</span></span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> count == <span class="number">2</span> &#123;</span><br><span class="line">	            <span class="comment">//跳出 外层 &#x27;counting_up 循环     </span></span><br><span class="line">	            <span class="keyword">break</span> <span class="symbol">&#x27;counting_up</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            remaining -= <span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        count += <span class="number">1</span>;</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;count: &#123;&#125;&quot;</span>, count);</span><br><span class="line">    &#125; </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+<h2 id="2-5-while-条件循环"><a href="#2-5-while-条件循环" class="headerlink" title="2.5 while 条件循环"></a>2.5 while 条件循环</h2><p>当while 后面的条件为true, 执行循环；当条件不再为true, 调用停止循环</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">number</span> = <span class="number">3</span>;</span><br><span class="line">    <span class="keyword">while</span>  number !=<span class="number">0</span> &#123;</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>, number);</span><br><span class="line">        number -= <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;LIFTOFF!&quot;</span>); </span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="2-6-使用for遍历集合"><a href="#2-6-使用for遍历集合" class="headerlink" title="2.6 使用for遍历集合"></a>2.6 使用for遍历集合</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">a</span> = [<span class="number">10</span>, <span class="number">20</span>, <span class="number">30</span>, <span class="number">40</span>];</span><br><span class="line">    <span class="keyword">for</span> <span class="variable">e</span> <span class="keyword">in</span> a &#123;</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>, e);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//下面写法输出不包含第4位，要包含就（1..=4)</span></span><br><span class="line">    <span class="keyword">for</span> <span class="variable">e</span> <span class="keyword">in</span> (<span class="number">1</span>..<span class="number">4</span>) &#123;</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>, e);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//反序遍历 rev</span></span><br><span class="line">    <span class="keyword">for</span> <span class="variable">e</span> <span class="keyword">in</span> (<span class="number">1</span>..<span class="number">4</span>).<span class="title function_ invoke__">rev</span>() &#123;</span><br><span class="line">		<span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>, e);</span><br><span class="line">    &#125; </span><br><span class="line">    <span class="comment">//通过索引和值的方式迭代数组&#x27;a&#x27;</span></span><br><span class="line">    <span class="keyword">for</span> (i,v) <span class="keyword">in</span> a.<span class="title function_ invoke__">iter</span>().<span class="title function_ invoke__">enumerate</span>() &#123;</span><br><span class="line">		<span class="built_in">println!</span>(<span class="string">&quot;第&#123;&#125;个元素是&#123;&#125;&quot;</span>,i+<span class="number">1</span>,v);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/10/18/Rust-lesson-3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2024/10/18/Rust-lesson-3/" itemprop="url">Rust lesson 3 - 函数</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-10-18T14:12:29+08:00">
+                2024-10-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="1-声明函数的关键字-fn"><a href="#1-声明函数的关键字-fn" class="headerlink" title="1.声明函数的关键字 fn"></a>1.声明函数的关键字 fn</h2><p>fn位置随便放，调用前后都行</p>
+<h4 id="代码示例："><a href="#代码示例：" class="headerlink" title="代码示例："></a>代码示例：</h4><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">add</span>(i: <span class="type">i32</span>, j: <span class="type">i32</span>) <span class="punctuation">-&gt;</span> <span class="type">i32</span> &#123;</span><br><span class="line">	i + j</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-函数名"><a href="#2-函数名" class="headerlink" title="2.函数名"></a>2.函数名</h2><h5 id="规则："><a href="#规则：" class="headerlink" title="规则："></a>规则：</h5><ol>
+<li>开头是字符，后面是数字，下划线，字母</li>
+<li>开头是下划线，后面是数字，下划线，字母，不能仅有下划线</li>
+<li>函数名和变量名使用蛇形命名法(snake case)，例如 fn add_two() -&gt; ()</li>
+</ol>
+<h2 id="3-函数参数"><a href="#3-函数参数" class="headerlink" title="3.函数参数"></a>3.函数参数</h2><p>Rust是强类型语言，每一个函数参数要标出具体类型</p>
+<h4 id="代码示例"><a href="#代码示例" class="headerlink" title="代码示例"></a>代码示例</h4><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//参数 i 和 j 的参数类型都是i32,必须每个都要写</span></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">add</span>(i: <span class="type">i32</span>, j: <span class="type">i32</span>) <span class="punctuation">-&gt;</span> <span class="type">i32</span> &#123;</span><br><span class="line">	i + j</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="4-函数返回"><a href="#4-函数返回" class="headerlink" title="4.函数返回"></a>4.函数返回</h2><p>函数的返回值就是函数体最后一条表达式的返回值，也可以使用return提前返回。<br>其实简单分类就两种写法：</p>
+<ol>
+<li>return+分号</li>
+<li>没有return，也没有分号</li>
+</ol>
+<h4 id="代码示例-1"><a href="#代码示例-1" class="headerlink" title="代码示例"></a>代码示例</h4><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 这里返回值的类型是 i32 ,也就是 -&gt; i32 的i32</span></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">add</span>(i: <span class="type">i32</span>, j: <span class="type">i32</span>) <span class="punctuation">-&gt;</span> <span class="type">i32</span> &#123;</span><br><span class="line">    <span class="comment">//第一种写法，没return，也没分号</span></span><br><span class="line">    <span class="comment">//i + j</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">//第二种写法，return加分号</span></span><br><span class="line">    <span class="keyword">return</span>  i+j; </span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="特殊返回："><a href="#特殊返回：" class="headerlink" title="特殊返回："></a>特殊返回：</h4><ol>
+<li><p>没返回值，就简单打印，两种写法：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//第一种写法，这里没有 -&gt; i32 这个东西</span></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">print</span>(i: <span class="type">i32</span>, j: <span class="type">i32</span>) &#123;</span><br><span class="line">	<span class="built_in">println!</span>(<span class="string">&quot;HaHaHa&quot;</span>)</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//第二种写法，返回一个空值 -&gt;() </span></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">print</span>(i: <span class="type">i32</span>, j: <span class="type">i32</span>) <span class="punctuation">-&gt;</span> () &#123;</span><br><span class="line">	<span class="built_in">println!</span>(<span class="string">&quot;HaHaHa&quot;</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>函数永远不返回，要用 ！作为函数返回值：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//第一种情况是panic,程序崩溃直接退出</span></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">dead_end</span> <span class="punctuation">-&gt;</span> ! &#123;</span><br><span class="line">    <span class="built_in">panic!</span>(<span class="string">&quot;程序已经崩溃凉了，洗洗睡吧&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//第二种情况是有死循环，永远跳不出来</span></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">forever</span>() <span class="punctuation">-&gt;</span> ! &#123; </span><br><span class="line">  <span class="keyword">loop</span> &#123;</span><br><span class="line">    <span class="comment">//...</span></span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h2 id="5-函数体"><a href="#5-函数体" class="headerlink" title="5.函数体"></a>5.函数体</h2><p>也就是函数fn代码块里面，具体执行的内容</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/10/17/Rust-lesson-2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2024/10/17/Rust-lesson-2/" itemprop="url">Rust lesson 2 - 变量与常量</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-10-17T20:13:44+08:00">
+                2024-10-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="1-变量"><a href="#1-变量" class="headerlink" title="1.变量"></a>1.变量</h2><p>变量分为 可变变量（mutable）和 不可变变量（immutable)<br>Rust的变量默认是不可改变的，如果想改变变量值，就要声明可变变量（加 mut ）</p>
+<h4 id="1-1-声明不可变变量"><a href="#1-1-声明不可变变量" class="headerlink" title="1.1 声明不可变变量"></a>1.1 声明不可变变量</h4><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">immutable</span>() &#123;</span><br><span class="line">	<span class="comment">//这里i32的 i 表示整形，以后会详细说明，这里知道即可</span></span><br><span class="line">	<span class="keyword">let</span> <span class="variable">x</span>: <span class="type">i32</span> = <span class="number">5</span>;</span><br><span class="line">	<span class="built_in">println!</span>(<span class="string">&quot;The value of x is : &#123;&#125;&quot;</span>, x);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h4 id="1-2-声明可变变量"><a href="#1-2-声明可变变量" class="headerlink" title="1.2 声明可变变量"></a>1.2 声明可变变量</h4><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">mutable</span>() &#123;</span><br><span class="line">	<span class="comment">//注意这个 mut ,就是这个mut让变量成为可变变量</span></span><br><span class="line">	<span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">x</span> = <span class="number">5</span>;</span><br><span class="line">	<span class="built_in">println!</span>(<span class="string">&quot;The value of x is: &#123;&#125;&quot;</span>, x);</span><br><span class="line"></span><br><span class="line">	x = <span class="number">6</span>;</span><br><span class="line">	<span class="built_in">println!</span>(<span class="string">&quot;The value of x is: &#123;&#125;&quot;</span>, x);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="2-常量："><a href="#2-常量：" class="headerlink" title="2.常量："></a>2.常量：</h2><p>使用const来定义一个常量，定义常量需要明确指定数据类型</p>
+<p>注意：</p>
+<ol>
+<li>必须显示指定数据类型</li>
+<li>常量名使用大写字母</li>
+<li>必须使用常量表达式进行赋值，即必须是编译期能计算出的值。</li>
+<li>不支持重定义（遮蔽）</li>
+</ol>
+<h4 id="2-1-代码示例："><a href="#2-1-代码示例：" class="headerlink" title="2.1 代码示例："></a>2.1 代码示例：</h4><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">	<span class="title function_ invoke__">fmt_const</span>();</span><br><span class="line">	<span class="title function_ invoke__">foo</span>(<span class="number">5</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">fmt_const</span>() &#123;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//const 定义一个常量名为大写字母的常量NUM，数据类型为i32</span></span><br><span class="line">	<span class="keyword">const</span> NUM: <span class="type">i32</span> = <span class="number">7</span>;</span><br><span class="line">	<span class="comment">//计算3小时等于多少秒，在编译期就能计算完成</span></span><br><span class="line">	<span class="keyword">const</span> THREE_HOURS_EQ_SECONDS: <span class="type">i32</span> = <span class="number">60</span> * <span class="number">60</span> * <span class="number">3</span>;</span><br><span class="line"></span><br><span class="line">	<span class="built_in">println!</span>(<span class="string">&quot;The const value of NUM is : &#123;&#125;&quot;</span>, NUM);</span><br><span class="line">	<span class="built_in">println!</span>(<span class="string">&quot;The const value of THREE_HOURS_EQ_SECONDS is : &#123;&#125;&quot;</span>, THREE_HOURS_EQ_SECONDS)</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">foo</span>(x: <span class="type">i32</span>) &#123;</span><br><span class="line">	<span class="comment">//z是x+10在运行期运算后才得到值，才能最终确定	</span></span><br><span class="line">	<span class="keyword">let</span> <span class="variable">z</span>: <span class="type">i32</span> = x + <span class="number">10</span>; </span><br><span class="line">	<span class="built_in">println!</span>(<span class="string">&quot;The value of z is: &#123;&#125;&quot;</span>, z)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h4 id="2-2-不可变量与常量的区别："><a href="#2-2-不可变量与常量的区别：" class="headerlink" title="2.2 不可变量与常量的区别："></a>2.2 不可变量与常量的区别：</h4><ol>
+<li>常量使用const声明，不可变变量使用let来声明</li>
+<li>常量在编译期就确定值，运行时不改变。不可变变量要到运行期才能确定。</li>
+<li>常量不可以修改，不可变变量可以通过shadowing来修改。</li>
+<li>常量必须声明类型，不可变变量不需要声明类型。</li>
+<li>常量必须使用大写字母，不可变变量不需要。</li>
+</ol>
+<h2 id="3-静态变量："><a href="#3-静态变量：" class="headerlink" title="3.静态变量："></a>3.静态变量：</h2><h4 id="3-1-说明："><a href="#3-1-说明：" class="headerlink" title="3.1 说明："></a>3.1 说明：</h4><ol>
+<li>静态变量使用static进行声明，并在编译时分配内存，在程序运行期间一直存在。</li>
+<li>静态变量可以在整个程序中共享，并且在多个线程之间共享。</li>
+<li>静态变量的值在程序运行期间不会改变，因此它它们通常用于存储程序全局状态。</li>
+</ol>
+<h4 id="3-2-代码示例"><a href="#3-2-代码示例" class="headerlink" title="3.2 代码示例"></a>3.2 代码示例</h4><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//定义一个静态变量</span></span><br><span class="line"><span class="comment">//static NUM: i32 = 5;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//将 NUM 定义为一个可变静态变量,但改变 NUM的值需搭配unsafe方法，不然会报错</span></span><br><span class="line"><span class="comment">//error[E0133]: use of mutable static is unsafe and requires unsafe function</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">mut</span> NUM: <span class="type">i32</span> = <span class="number">5</span>; </span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">static_num</span>() &#123;</span><br><span class="line">	<span class="comment">//println!(&quot;The static of NUM is &#123;&#125;&quot;, NUM);</span></span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 使用mut后要在unsafe方法里才能做运算改变值,不然会报错</span></span><br><span class="line">	<span class="keyword">unsafe</span> &#123;</span><br><span class="line">		NUM += <span class="number">1</span>;</span><br><span class="line">		<span class="built_in">println!</span>(<span class="string">&quot;The static of NUM is &#123;&#125;&quot;</span>, NUM);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h4 id="3-3-静态变量与常量的相似之处："><a href="#3-3-静态变量与常量的相似之处：" class="headerlink" title="3.3 静态变量与常量的相似之处："></a>3.3 静态变量与常量的相似之处：</h4><ol>
+<li>定义方式： 静态变量使用 static,常量使用 const</li>
+<li>名称都要求使用大写</li>
+<li>都必须明确指定类型</li>
+<li>两者都要求必须使用常量表达式进行赋值，即必须是编译期能计算出的值</li>
+<li>两者都不支持重定义（遮蔽），这点和变量不同</li>
+</ol>
+<h4 id="3-4-静态变量与常量的区别："><a href="#3-4-静态变量与常量的区别：" class="headerlink" title="3.4 静态变量与常量的区别："></a>3.4 静态变量与常量的区别：</h4><ol>
+<li>常量在编译时被内联，但静态变量不会。在整个程序中静态变量只有一个实例，也就是说所有引用都指向同一个地址。<br>const A : i32 &#x3D; 1；就是地址A（0x456）的空间里面装了 1 这个值.<br>static A : i32 &#x3D; 1;   就是地址A（0x789）的空间里装了0x123这个地址，指向了0x123这个地址，0x123里面刚好装了 1 这个值，然后读A就读到0x123里面那个1，也就是指针指向值所在的内存地址。</li>
+<li>常量不可变，而静态变量和普通变量一样，默认不可变，但可以通过 mut 关键字定义为可变。</li>
+</ol>
+<h2 id="4-作用域和遮蔽（variable-shadowing"><a href="#4-作用域和遮蔽（variable-shadowing" class="headerlink" title="4.作用域和遮蔽（variable shadowing)"></a>4.作用域和遮蔽（variable shadowing)</h2><p>变量绑定有一个作用域(scope)，它被限定只在一个代码块(block)中生存（live)。代码块是一个被   “{ }”包围的语句集合。另外也允许变量遮蔽（variable shadowing)。</p>
+<h4 id="4-1-代码示例"><a href="#4-1-代码示例" class="headerlink" title="4.1 代码示例"></a>4.1 代码示例</h4><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">binding</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">long_lived_binding</span>: <span class="type">i32</span> = <span class="number">1</span>;</span><br><span class="line">    <span class="comment">//long1 输出 1</span></span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;outer long1 : &#123;&#125;&quot;</span>, long_lived_binding);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//&#123;&#125;为代码块，比main小的作用域</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">let</span> <span class="variable">short_lived_binding</span>: <span class="type">i32</span> = <span class="number">2</span>;</span><br><span class="line">        <span class="comment">//short1 输出2</span></span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;inner short1: &#123;&#125;&quot;</span>, short_lived_binding);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//遮蔽,i改为f类型，short2 输出 5</span></span><br><span class="line">        <span class="keyword">let</span> <span class="variable">short_lived_binding</span>: <span class="type">f32</span> = <span class="number">5_f32</span>;</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;inner short2 : &#123;&#125;&quot;</span>, short_lived_binding);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//这里long1 可以正常输出 1</span></span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;inner long1 : &#123;&#125;&quot;</span>, long_lived_binding);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//long2 在作用域内遮蔽,i改为f类型，输出 6</span></span><br><span class="line">        <span class="keyword">let</span> <span class="variable">long_lived_binding</span>: <span class="type">f32</span> = <span class="number">6_f32</span>;</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;inner long2: &#123;&#125;&quot;</span>, long_lived_binding);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// long2 输出 1，因为代码块外的long_lived_binding并未被遮蔽，上面代码块内才遮蔽</span></span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;outer long2 : &#123;&#125;&quot;</span>, long_lived_binding);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//此时代码块外的long_lived_binding被遮蔽,long3 输出7</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">long_lived_binding</span>: <span class="type">f32</span> = <span class="number">7_f32</span>;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;outer long3: &#123;&#125;&quot;</span>, long_lived_binding);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//这里会报错，因为short_lived_binding作用域在&#123;&#125;代码块内，在代码块外输出不了</span></span><br><span class="line">    <span class="comment">//println!(&quot;outer short: &#123;&#125;&quot;, short_lived_binding)</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/10/16/Rust-lesson-1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2024/10/16/Rust-lesson-1/" itemprop="url">Rust lesson 1 - 基础安装与"Hello World"</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-10-16T22:48:07+08:00">
+                2024-10-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>这里以 MacOS 环境为例。</p>
+<h3 id="1-Rust-环境安装"><a href="#1-Rust-环境安装" class="headerlink" title="1. Rust 环境安装"></a>1. Rust 环境安装</h3><p>打开终端，输入以下命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl --proto <span class="string">&#x27;=https&#x27;</span> --tlsv1.2 -sSf https://sh.rustup.rs | sh</span><br></pre></td></tr></table></figure>
+
+<p>检查是否安装成功，版本是多少</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rustc --version</span><br></pre></td></tr></table></figure>
+
+
+<h5 id="扩展命令说明"><a href="#扩展命令说明" class="headerlink" title="扩展命令说明"></a>扩展命令说明</h5><p>1.更新 Rust 版本<br><code>rustup update</code></p>
+<p>2.卸载 Rust 环境<br><code>rustup self uninstall</code></p>
+<p>3.离线查看 Rust 文档<br><code>rustup doc</code></p>
+<h3 id="2-IDE-配置-VS-Code"><a href="#2-IDE-配置-VS-Code" class="headerlink" title="2. IDE 配置(VS Code)"></a>2. IDE 配置(VS Code)</h3><p>Vs code 推荐安装插件</p>
+<ol>
+<li>rust-analyzer </li>
+<li>Even Better TOML </li>
+<li>depandi（原 crates 已弃用)</li>
+</ol>
+<h1 id="2-写一个-“Hello-World”"><a href="#2-写一个-“Hello-World”" class="headerlink" title="2. 写一个 “Hello World”"></a>2. 写一个 “Hello World”</h1><p>1.创建一个 Rust 代码目录</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> hello_world</span><br><span class="line"><span class="built_in">cd</span> hello_word</span><br></pre></td></tr></table></figure>
+
+<p>2.创建一个以 .rs 扩展名结尾的文件，自行创建一个 main.rs，并写入以下代码</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">	<span class="built_in">println!</span>(<span class="string">&quot;Hello, world!&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>3.编译 main.rs</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rustc main.rs</span><br></pre></td></tr></table></figure>
+
+
+<p>4.得到一个二进制可执行文件 main</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">ls</span></span><br><span class="line">main main.rs</span><br></pre></td></tr></table></figure>
+
+<p>5.运行二进制文件<br>Rust是预编译静态类型语言，编译后的二进制文件可在任何环境运行，哪怕没安装 Rust 环境</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./main</span><br></pre></td></tr></table></figure>
+
+<h1 id="3-使用Cargo创建一个项目"><a href="#3-使用Cargo创建一个项目" class="headerlink" title="3.使用Cargo创建一个项目"></a>3.使用Cargo创建一个项目</h1><h5 id="1-什么是Cargo"><a href="#1-什么是Cargo" class="headerlink" title="1.什么是Cargo"></a>1.什么是Cargo</h5><p>Cargo 是一个工具,允许 Rust 项目声明其各种依赖项，并确保您始终获得可重复的构建。</p>
+<p>为了实现这一目标,Cargo 做了四件事:</p>
+<ul>
+<li>引入两个，包含各种项目信息的元数据文件。</li>
+<li>获取，并构建项目的依赖项.</li>
+<li>正确使用参数，以调用<code>rustc</code>或其他构建工具，构建你的项目。</li>
+<li>介绍，更容易使用 Rust 项目的约定(规范&#x2F;风格)。</li>
+</ul>
+<h5 id="2-Cargo初始化项目-并-构建运行"><a href="#2-Cargo初始化项目-并-构建运行" class="headerlink" title="2.Cargo初始化项目 并 构建运行"></a>2.Cargo初始化项目 并 构建运行</h5><p>1.创建一个Cargo 项目并进入</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cargo new hello_cargo</span><br><span class="line"><span class="built_in">cd</span> hello_cargo</span><br></pre></td></tr></table></figure>
+
+<p>2.在 hello_cargo&#x2F;src 目录下创建 main.rs文件，并写入 “Hello World”</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;Hello, world!&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-构建并运行构建完成后，在-target-debug-hello-cargo-下会有个可执行文件，然后执行以下命令运行"><a href="#3-构建并运行构建完成后，在-target-debug-hello-cargo-下会有个可执行文件，然后执行以下命令运行" class="headerlink" title="3.构建并运行构建完成后，在 target&#x2F;debug&#x2F;hello_cargo 下会有个可执行文件，然后执行以下命令运行 "></a>3.构建并运行<br><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cargo build</span><br></pre></td></tr></table></figure><br>构建完成后，在 target&#x2F;debug&#x2F;hello_cargo 下会有个可执行文件，然后执行以下命令运行<br> <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./target/debug/hello_cargo</span><br></pre></td></tr></table></figure></h2><p>  其实还有种方法更方便，就是使用 cargo run 直接使用一条命令构建并运行，不用分成两条：<br>  <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cargo run</span><br></pre></td></tr></table></figure></p>
+<h3 id="3-发布构建"><a href="#3-发布构建" class="headerlink" title="3.发布构建"></a>3.发布构建</h3><p>项目准备最终发布时，将代码构建后文件在release目录下，不是debug目录下。debug目录用于开发，release目录·用于最终用户程序：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cargo build --release  </span><br></pre></td></tr></table></figure>
+
+<h3 id="4-Cargo-toml-文件补充说明"><a href="#4-Cargo-toml-文件补充说明" class="headerlink" title="4.Cargo.toml 文件补充说明"></a>4.Cargo.toml 文件补充说明</h3><figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[package]</span></span><br><span class="line"></span><br><span class="line"><span class="attr">name</span> = <span class="string">&quot;hello_cargo&quot;</span></span><br><span class="line"><span class="attr">version</span> = <span class="string">&quot;0.1.0&quot;</span></span><br><span class="line"><span class="attr">edition</span> = <span class="string">&quot;2021&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="section">[dependencies]</span></span><br><span class="line"><span class="attr">rand</span> = <span class="string">&quot;0.8.5&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>[package]</strong></p>
+<ul>
+<li><p>项目的名称</p>
+</li>
+<li><p>项目的版本</p>
+</li>
+<li><p>使用的 Rust 版本</p>
+</li>
+</ul>
+<p><strong>[dependencies]</strong></p>
+<p>罗列项目依赖，在 Rust 中，代码包被称为 <em>crates</em>, 次处添加了一个随机数功能的库(crate)，名为”rand”，会从 Crates.io 拉取依赖包，并将指定的依赖版本写入 Cargo.lock文件中。</p>
+<h3 id="5-配置国内镜像，默认国外的Crates-io，速度很慢，有两种方式"><a href="#5-配置国内镜像，默认国外的Crates-io，速度很慢，有两种方式" class="headerlink" title="5.配置国内镜像，默认国外的Crates.io，速度很慢，有两种方式"></a>5.配置国内镜像，默认国外的Crates.io，速度很慢，有两种方式</h3><p>为了使用 <code>crates.io</code> 之外的注册服务，我们需要对 <code>$HOME/.cargo/config.toml</code>文件进行配置，添加新的服务提供商</p>
+<h2 id="1-添加新的镜像地址"><a href="#1-添加新的镜像地址" class="headerlink" title="1.添加新的镜像地址"></a>1.添加新的镜像地址<br><figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">### https的，两者相同，选择一种方式即可</span></span><br><span class="line"><span class="section">[registries]</span></span><br><span class="line"><span class="attr">ustc</span> = &#123; index = <span class="string">&quot;https://mirrors.ustc.edu.cn/crates.io-index/&quot;</span> &#125;</span><br><span class="line"><span class="section">[registries.ustc]</span></span><br><span class="line"><span class="attr">index</span> = <span class="string">&quot;https://mirrors.ustc.edu.cn/crates.io-index/&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">### git的，两者相同，选择一种方式即可</span></span><br><span class="line"><span class="section">[registries]</span></span><br><span class="line"><span class="attr">ustc</span> = &#123; index = <span class="string">&quot;git://mirrors.ustc.edu.cn/crates.io-index&quot;</span> &#125;</span><br><span class="line"><span class="section">[registries.ustc]</span></span><br><span class="line"><span class="attr">index</span> = <span class="string">&quot;git://mirrors.ustc.edu.cn/crates.io-index&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">## 如果支持稀疏索引的话。两者相同，选择一种方式即可</span></span><br><span class="line"><span class="comment">### https的</span></span><br><span class="line"><span class="section">[registries]</span></span><br><span class="line"><span class="attr">ustc</span> = &#123; index = <span class="string">&quot;sparse+https://mirrors.ustc.edu.cn/crates.io-index/&quot;</span> &#125;</span><br><span class="line"><span class="section">[registries.ustc]</span></span><br><span class="line"><span class="attr">index</span> = <span class="string">&quot;sparse+https://mirrors.ustc.edu.cn/crates.io-index/&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">### git的</span></span><br><span class="line"><span class="section">[registries]</span></span><br><span class="line"><span class="attr">ustc</span> = &#123; index = <span class="string">&quot;sparse+git://mirrors.ustc.edu.cn/crates.io-index&quot;</span> &#125;</span><br><span class="line"><span class="section">[registries.ustc]</span></span><br><span class="line"><span class="attr">index</span> = <span class="string">&quot;sparse+git://mirrors.ustc.edu.cn/crates.io-index&quot;</span></span><br></pre></td></tr></table></figure></h2><p>这种方式只会新增一个新的镜像地址，因此在引入依赖的时候，需要指定该地址，例如在项目中引入 <code>time</code> 包，你需要在 <code>Cargo.toml</code> 中使用以下方式引入</p>
+<figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[dependencies]</span></span><br><span class="line"><span class="attr">rand</span> = &#123;  registry = <span class="string">&quot;ustc&quot;</span> &#125;</span><br></pre></td></tr></table></figure>
+
+<p>2.覆盖默认的镜像地址<br>而第二种方式，则不需要修改 <code>Cargo.toml</code> 文件，**因为它是直接使用新注册服务来替代默认的 <code>crates.io</code>**。</p>
+<p>在 <code>$HOME/.cargo/config.toml</code> 添加以下内容：</p>
+<figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[source.crates-io]</span></span><br><span class="line"><span class="attr">replace-with</span> = <span class="string">&#x27;ustc&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="section">[source.ustc]</span></span><br><span class="line"><span class="attr">registry</span> = <span class="string">&quot;git://mirrors.ustc.edu.cn/crates.io-index&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>首先，创建一个新的镜像源 <code>[source.ustc]</code>，然后将默认的 <code>crates-io</code> 替换成新的镜像源: <code>replace-with = &#39;ustc&#39;</code></p>
+<h5 id="可用的镜像列表"><a href="#可用的镜像列表" class="headerlink" title="可用的镜像列表"></a>可用的镜像列表</h5><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"># 中国科学技术大学</span><br><span class="line">&quot;https://mirrors.ustc.edu.cn/crates.io-index&quot;</span><br><span class="line">&quot;git://mirrors.ustc.edu.cn/crates.io-index&quot;</span><br><span class="line"></span><br><span class="line"># 上海交通大学</span><br><span class="line">&quot;https://mirrors.sjtug.sjtu.edu.cn/git/crates.io-index/&quot;</span><br><span class="line"></span><br><span class="line">#清华大学</span><br><span class="line">&quot;https://mirrors.tuna.tsinghua.edu.cn/git/crates.io-index.git&quot;</span><br><span class="line"></span><br><span class="line">#字节跳动</span><br><span class="line">&quot;https://rsproxy.cn/crates.io-index&quot;</span><br></pre></td></tr></table></figure>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+  </section>
+
+  
+  <nav class="pagination">
+    <a class="extend prev" rel="prev" href="/page/2/">&lt;i class&#x3D;&quot;fa fa-angle-left&quot;&gt;&lt;&#x2F;i&gt;</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span>
+  </nav>
+
+
+
+          </div>
+          
+
+
+          
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%20%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">25</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">QsunOu</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
