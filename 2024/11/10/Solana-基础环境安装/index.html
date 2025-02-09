@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Solana-cli 安装:以 macos 为例 12345678910111213141516&#x2F;&#x2F;检查xcode是否安装(其实一般自带已经安装)xcode-select -p&#x2F;&#x2F;没有安装则xcode-select --install&#x2F;&#x2F;安装Rust，之前已安装暂不赘述&#x2F;&#x2F;安装 solana-cli ，安装特定版本将stable换成 v2.x.xsh -c &quot;$(curl -sSfL h">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Solana 合约开发 - 基础环境安装">
+<meta property="og:url" content="http://example.com/2024/11/10/Solana-%E5%9F%BA%E7%A1%80%E7%8E%AF%E5%A2%83%E5%AE%89%E8%A3%85/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="Solana-cli 安装:以 macos 为例 12345678910111213141516&#x2F;&#x2F;检查xcode是否安装(其实一般自带已经安装)xcode-select -p&#x2F;&#x2F;没有安装则xcode-select --install&#x2F;&#x2F;安装Rust，之前已安装暂不赘述&#x2F;&#x2F;安装 solana-cli ，安装特定版本将stable换成 v2.x.xsh -c &quot;$(curl -sSfL h">
+<meta property="og:locale">
+<meta property="article:published_time" content="2024-11-10T14:14:58.084Z">
+<meta property="article:modified_time" content="2025-02-08T14:13:46.425Z">
+<meta property="article:author" content="QsunOu">
+<meta property="article:tag" content="rust">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://example.com/2024/11/10/Solana-基础环境安装/"/>
+
+
+
+
+
+  <title>Solana 合约开发 - 基础环境安装 | Hexo</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hexo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/11/10/Solana-%E5%9F%BA%E7%A1%80%E7%8E%AF%E5%A2%83%E5%AE%89%E8%A3%85/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Solana 合约开发 - 基础环境安装</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-11-10T22:14:58+08:00">
+                2024-11-10
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="Solana-cli-安装"><a href="#Solana-cli-安装" class="headerlink" title="Solana-cli 安装:"></a><code>Solana-cli</code> 安装:</h1><p>以 macos 为例</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">//检查xcode是否安装(其实一般自带已经安装)</span><br><span class="line">xcode-select -p</span><br><span class="line"></span><br><span class="line">//没有安装则</span><br><span class="line">xcode-select --install</span><br><span class="line"></span><br><span class="line">//安装Rust，之前已安装暂不赘述</span><br><span class="line"></span><br><span class="line">//安装 solana-cli ，安装特定版本将stable换成 v2.x.x</span><br><span class="line">sh -c <span class="string">&quot;<span class="subst">$(curl -sSfL https://release.anza.xyz/stable/install)</span>&quot;</span></span><br><span class="line"></span><br><span class="line">//检查是否安装成功</span><br><span class="line">solana -V</span><br><span class="line"></span><br><span class="line">//如果之前已经安装过，可采用以下方式升级solana</span><br><span class="line">agave-install  update</span><br></pre></td></tr></table></figure>
+
+<h1 id="Anchor开发框架安装"><a href="#Anchor开发框架安装" class="headerlink" title="Anchor开发框架安装:"></a><code>Anchor</code>开发框架安装:</h1><p>Anchor 是 Solana 区块链上的一种开发框架，旨在简化 Solana 程序的开发过程，使得开发者可以更容易地编写、测试和部署智能合约，虽然直接原生写rust也可以，但使用anchor会比较方便。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">##正常安装：</span></span><br><span class="line">cargo install --git https://github.com/coral-xyz/anchor avm --locked --force</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">##如果rust版本大于1.79，上面那条可能会报错，可尝试以下方案：</span></span><br><span class="line">cargo install --git https://github.com/coral-xyz/anchor --tag v0.30.1 anchor-cli --force</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">##如果还不行，就手动安装：</span></span><br><span class="line">git <span class="built_in">clone</span> https://github.com/coral-xyz/anchor.git</span><br><span class="line"><span class="built_in">cd</span> anchor</span><br><span class="line">git checkout avm</span><br><span class="line">cargo build --locked</span><br><span class="line"><span class="built_in">cd</span> avm</span><br><span class="line">cargo install --path .</span><br><span class="line"></span><br><span class="line">vi Cargo.toml</span><br><span class="line"><span class="comment">##添加：</span></span><br><span class="line">[net]</span><br><span class="line">git-fetch-with-cli = <span class="literal">true</span></span><br><span class="line"></span><br><span class="line">-----------------------------------------------</span><br><span class="line"><span class="comment">##上面的安装完以后安装avm:</span></span><br><span class="line"></span><br><span class="line">avm install latest</span><br><span class="line">avm use latest</span><br><span class="line"></span><br><span class="line">anchor -V</span><br><span class="line"><span class="comment">##显示anchor-cli 0.30.1，有显示则成功。</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">注意！！！：</span><br><span class="line">由于rust、cargo、anchor之间的版本依赖非常混乱，简直是各玩各的，版本如果不对很有可能报错，以下是本人测试稳定可用版本：</span><br><span class="line">rustc --version</span><br><span class="line">rustc 1.79.0</span><br><span class="line">cargo --version</span><br><span class="line">cargo 1.79.0</span><br><span class="line">anchor --version</span><br><span class="line">anchor-cli 0.30.1</span><br><span class="line">solana -V</span><br><span class="line">solana-cli 2.1.9</span><br></pre></td></tr></table></figure>
+
+<h1 id="Solana-cli-的使用"><a href="#Solana-cli-的使用" class="headerlink" title="Solana-cli 的使用:"></a><code>Solana-cli</code> 的使用:</h1><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">##创建一个新钱包</span></span><br><span class="line"><span class="comment">##pubkey(钱包地址）默认存储位置 ~/.config/solana/id.json</span></span><br><span class="line">solana-keygen new   <span class="comment"># --force overwrite 可重建钱包</span></span><br><span class="line"><span class="comment">#可建多个不同钱包，solana-keygen new -o /Users/qsun-ou/.config/solana/ad1.json</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">#设置默认钱包为哪个，可切换不同钱包json文件</span></span><br><span class="line">solana config <span class="built_in">set</span> -k  ~/.config/solana/ad1.json</span><br><span class="line"></span><br><span class="line"><span class="comment"># 空投SOL代币（别想多，localnet 或者 devnet 而已，用来做测试,如果是开发网要在后面加devnet的url）</span></span><br><span class="line">solana airdrop 5</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">#还有一些常见用法：</span></span><br><span class="line"><span class="comment">#该命令用于获取当前Solana CLI配置的信息，包括所连接的集群（devnet, testnet, mainnet-beta等）、默认的公钥（如果已设置）等。</span></span><br><span class="line">solana config get</span><br><span class="line"></span><br><span class="line"><span class="comment">#使用此命令可以更改当前Solana CLI配置中的集群URL。这里的 &lt;net&gt; 可以是任何有效的Solana集群URL，例如 https://api.devnet.solana.com 对于Devnet环境。也可以直接使用快捷方式如 devnet, testnet, 或 mainnet-beta 来切换到不同的网络环境。</span></span><br><span class="line">solana config <span class="built_in">set</span> --url &lt;net&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">#此命令用于生成一个新的密钥对。这是创建新钱包的第一步，它会生成一个全新的私钥和相应的公钥。请确保安全地保存好生成的私钥文件。</span></span><br><span class="line">solana-keygen new</span><br><span class="line"></span><br><span class="line"><span class="comment">#该命令会显示与当前活动密钥对（由Solana CLI配置指定）相关联的Solana公共地址。如果您有多个密钥对，可以通过指定密钥对路径来查看特定地址：solana address --keypair &lt;path-to-keypair-file&gt;。</span></span><br><span class="line">solana address</span><br><span class="line"></span><br><span class="line"><span class="comment">#查询指定公共密钥 &lt;pub_key&gt; 的Solana账户余额。如果不提供公共密钥参数，则默认查询当前配置的密钥对对应的账户余额。</span></span><br><span class="line">solana balance &lt;pub_key&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">#执行从发送者账户到接收者账户的转账操作。需要提供接收者的公共密钥 &lt;recipient_public_key&gt; 和要转移的数量 &lt;amount&gt;。--from 参数允许您指定发送者账户的密钥对路径 &lt;sender_keypair_path&gt;，如果不指定，默认使用当前配置的密钥对。</span></span><br><span class="line">solana transfer &lt;recipient_public_key&gt; &lt;amount&gt; --from &lt;sender_keypair_path&gt;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+<h1 id="启动本地Solana环境"><a href="#启动本地Solana环境" class="headerlink" title="启动本地Solana环境"></a>启动本地Solana环境</h1><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">启动本地节点：</span><br><span class="line">solana-test-validator</span><br><span class="line"></span><br><span class="line">配置Solana Cli使用本地节点：</span><br><span class="line">solana config <span class="built_in">set</span> --url http://localhost:8899</span><br><span class="line"></span><br><span class="line">查看配置地址是否正确：</span><br><span class="line">solana config get  </span><br></pre></td></tr></table></figure>
+
+<h1 id="通过区块链浏览器查看账户交易"><a href="#通过区块链浏览器查看账户交易" class="headerlink" title="通过区块链浏览器查看账户交易"></a>通过区块链浏览器查看账户交易</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">例如</span><br><span class="line">https://explorer.solana.com/address/[钱包地址]?cluster=devnet</span><br><span class="line"></span><br><span class="line">也可以在浏览里面切换localnet、testnet等。</span><br></pre></td></tr></table></figure>
+
+<h1 id="其他参考链接："><a href="#其他参考链接：" class="headerlink" title="其他参考链接："></a>其他参考链接：</h1><p><a target="_blank" rel="noopener" href="https://solana.com/zh/docs/intro/installation#install-anchor-cli">https://solana.com/zh/docs/intro/installation#install-anchor-cli</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2024/11/06/Rust-lesson-25/" rel="next" title="Rust lesson 25 - 并发">
+                <i class="fa fa-chevron-left"></i> Rust lesson 25 - 并发
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%20%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">26</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Solana-cli-%E5%AE%89%E8%A3%85"><span class="nav-number">1.</span> <span class="nav-text">Solana-cli 安装:</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Anchor%E5%BC%80%E5%8F%91%E6%A1%86%E6%9E%B6%E5%AE%89%E8%A3%85"><span class="nav-number">2.</span> <span class="nav-text">Anchor开发框架安装:</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Solana-cli-%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="nav-number">3.</span> <span class="nav-text">Solana-cli 的使用:</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%90%AF%E5%8A%A8%E6%9C%AC%E5%9C%B0Solana%E7%8E%AF%E5%A2%83"><span class="nav-number">4.</span> <span class="nav-text">启动本地Solana环境</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%80%9A%E8%BF%87%E5%8C%BA%E5%9D%97%E9%93%BE%E6%B5%8F%E8%A7%88%E5%99%A8%E6%9F%A5%E7%9C%8B%E8%B4%A6%E6%88%B7%E4%BA%A4%E6%98%93"><span class="nav-number">5.</span> <span class="nav-text">通过区块链浏览器查看账户交易</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%B6%E4%BB%96%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5%EF%BC%9A"><span class="nav-number">6.</span> <span class="nav-text">其他参考链接：</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">QsunOu</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

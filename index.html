@@ -232,6 +232,139 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/11/10/Solana-%E5%9F%BA%E7%A1%80%E7%8E%AF%E5%A2%83%E5%AE%89%E8%A3%85/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2024/11/10/Solana-%E5%9F%BA%E7%A1%80%E7%8E%AF%E5%A2%83%E5%AE%89%E8%A3%85/" itemprop="url">Solana 合约开发 - 基础环境安装</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-11-10T22:14:58+08:00">
+                2024-11-10
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="Solana-cli-安装"><a href="#Solana-cli-安装" class="headerlink" title="Solana-cli 安装:"></a><code>Solana-cli</code> 安装:</h1><p>以 macos 为例</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">//检查xcode是否安装(其实一般自带已经安装)</span><br><span class="line">xcode-select -p</span><br><span class="line"></span><br><span class="line">//没有安装则</span><br><span class="line">xcode-select --install</span><br><span class="line"></span><br><span class="line">//安装Rust，之前已安装暂不赘述</span><br><span class="line"></span><br><span class="line">//安装 solana-cli ，安装特定版本将stable换成 v2.x.x</span><br><span class="line">sh -c <span class="string">&quot;<span class="subst">$(curl -sSfL https://release.anza.xyz/stable/install)</span>&quot;</span></span><br><span class="line"></span><br><span class="line">//检查是否安装成功</span><br><span class="line">solana -V</span><br><span class="line"></span><br><span class="line">//如果之前已经安装过，可采用以下方式升级solana</span><br><span class="line">agave-install  update</span><br></pre></td></tr></table></figure>
+
+<h1 id="Anchor开发框架安装"><a href="#Anchor开发框架安装" class="headerlink" title="Anchor开发框架安装:"></a><code>Anchor</code>开发框架安装:</h1><p>Anchor 是 Solana 区块链上的一种开发框架，旨在简化 Solana 程序的开发过程，使得开发者可以更容易地编写、测试和部署智能合约，虽然直接原生写rust也可以，但使用anchor会比较方便。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">##正常安装：</span></span><br><span class="line">cargo install --git https://github.com/coral-xyz/anchor avm --locked --force</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">##如果rust版本大于1.79，上面那条可能会报错，可尝试以下方案：</span></span><br><span class="line">cargo install --git https://github.com/coral-xyz/anchor --tag v0.30.1 anchor-cli --force</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">##如果还不行，就手动安装：</span></span><br><span class="line">git <span class="built_in">clone</span> https://github.com/coral-xyz/anchor.git</span><br><span class="line"><span class="built_in">cd</span> anchor</span><br><span class="line">git checkout avm</span><br><span class="line">cargo build --locked</span><br><span class="line"><span class="built_in">cd</span> avm</span><br><span class="line">cargo install --path .</span><br><span class="line"></span><br><span class="line">vi Cargo.toml</span><br><span class="line"><span class="comment">##添加：</span></span><br><span class="line">[net]</span><br><span class="line">git-fetch-with-cli = <span class="literal">true</span></span><br><span class="line"></span><br><span class="line">-----------------------------------------------</span><br><span class="line"><span class="comment">##上面的安装完以后安装avm:</span></span><br><span class="line"></span><br><span class="line">avm install latest</span><br><span class="line">avm use latest</span><br><span class="line"></span><br><span class="line">anchor -V</span><br><span class="line"><span class="comment">##显示anchor-cli 0.30.1，有显示则成功。</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">注意！！！：</span><br><span class="line">由于rust、cargo、anchor之间的版本依赖非常混乱，简直是各玩各的，版本如果不对很有可能报错，以下是本人测试稳定可用版本：</span><br><span class="line">rustc --version</span><br><span class="line">rustc 1.79.0</span><br><span class="line">cargo --version</span><br><span class="line">cargo 1.79.0</span><br><span class="line">anchor --version</span><br><span class="line">anchor-cli 0.30.1</span><br><span class="line">solana -V</span><br><span class="line">solana-cli 2.1.9</span><br></pre></td></tr></table></figure>
+
+<h1 id="Solana-cli-的使用"><a href="#Solana-cli-的使用" class="headerlink" title="Solana-cli 的使用:"></a><code>Solana-cli</code> 的使用:</h1><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">##创建一个新钱包</span></span><br><span class="line"><span class="comment">##pubkey(钱包地址）默认存储位置 ~/.config/solana/id.json</span></span><br><span class="line">solana-keygen new   <span class="comment"># --force overwrite 可重建钱包</span></span><br><span class="line"><span class="comment">#可建多个不同钱包，solana-keygen new -o /Users/qsun-ou/.config/solana/ad1.json</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">#设置默认钱包为哪个，可切换不同钱包json文件</span></span><br><span class="line">solana config <span class="built_in">set</span> -k  ~/.config/solana/ad1.json</span><br><span class="line"></span><br><span class="line"><span class="comment"># 空投SOL代币（别想多，localnet 或者 devnet 而已，用来做测试,如果是开发网要在后面加devnet的url）</span></span><br><span class="line">solana airdrop 5</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">#还有一些常见用法：</span></span><br><span class="line"><span class="comment">#该命令用于获取当前Solana CLI配置的信息，包括所连接的集群（devnet, testnet, mainnet-beta等）、默认的公钥（如果已设置）等。</span></span><br><span class="line">solana config get</span><br><span class="line"></span><br><span class="line"><span class="comment">#使用此命令可以更改当前Solana CLI配置中的集群URL。这里的 &lt;net&gt; 可以是任何有效的Solana集群URL，例如 https://api.devnet.solana.com 对于Devnet环境。也可以直接使用快捷方式如 devnet, testnet, 或 mainnet-beta 来切换到不同的网络环境。</span></span><br><span class="line">solana config <span class="built_in">set</span> --url &lt;net&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">#此命令用于生成一个新的密钥对。这是创建新钱包的第一步，它会生成一个全新的私钥和相应的公钥。请确保安全地保存好生成的私钥文件。</span></span><br><span class="line">solana-keygen new</span><br><span class="line"></span><br><span class="line"><span class="comment">#该命令会显示与当前活动密钥对（由Solana CLI配置指定）相关联的Solana公共地址。如果您有多个密钥对，可以通过指定密钥对路径来查看特定地址：solana address --keypair &lt;path-to-keypair-file&gt;。</span></span><br><span class="line">solana address</span><br><span class="line"></span><br><span class="line"><span class="comment">#查询指定公共密钥 &lt;pub_key&gt; 的Solana账户余额。如果不提供公共密钥参数，则默认查询当前配置的密钥对对应的账户余额。</span></span><br><span class="line">solana balance &lt;pub_key&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">#执行从发送者账户到接收者账户的转账操作。需要提供接收者的公共密钥 &lt;recipient_public_key&gt; 和要转移的数量 &lt;amount&gt;。--from 参数允许您指定发送者账户的密钥对路径 &lt;sender_keypair_path&gt;，如果不指定，默认使用当前配置的密钥对。</span></span><br><span class="line">solana transfer &lt;recipient_public_key&gt; &lt;amount&gt; --from &lt;sender_keypair_path&gt;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+<h1 id="启动本地Solana环境"><a href="#启动本地Solana环境" class="headerlink" title="启动本地Solana环境"></a>启动本地Solana环境</h1><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">启动本地节点：</span><br><span class="line">solana-test-validator</span><br><span class="line"></span><br><span class="line">配置Solana Cli使用本地节点：</span><br><span class="line">solana config <span class="built_in">set</span> --url http://localhost:8899</span><br><span class="line"></span><br><span class="line">查看配置地址是否正确：</span><br><span class="line">solana config get  </span><br></pre></td></tr></table></figure>
+
+<h1 id="通过区块链浏览器查看账户交易"><a href="#通过区块链浏览器查看账户交易" class="headerlink" title="通过区块链浏览器查看账户交易"></a>通过区块链浏览器查看账户交易</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">例如</span><br><span class="line">https://explorer.solana.com/address/[钱包地址]?cluster=devnet</span><br><span class="line"></span><br><span class="line">也可以在浏览里面切换localnet、testnet等。</span><br></pre></td></tr></table></figure>
+
+<h1 id="其他参考链接："><a href="#其他参考链接：" class="headerlink" title="其他参考链接："></a>其他参考链接：</h1><p><a target="_blank" rel="noopener" href="https://solana.com/zh/docs/intro/installation#install-anchor-cli">https://solana.com/zh/docs/intro/installation#install-anchor-cli</a></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://example.com/2024/11/06/Rust-lesson-25/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1859,212 +1992,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2024/10/31/Rust-lesson-16/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2024/10/31/Rust-lesson-16/" itemprop="url">Rust lesson 16 - 智能指针 Box</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-10-31T14:43:37+08:00">
-                2024-10-31
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="What-is-智能指针："><a href="#What-is-智能指针：" class="headerlink" title="What is 智能指针："></a>What is 智能指针：</h1><p>智能指针（Smart Pointer）是一种数据结构，它不仅包含一个指针，还附加了一些额外的信息和功能。智能指针的主要目的是管理指针的生命周期，自动处理内存的分配和释放，从而避免内存泄漏和其他常见的内存管理错误。</p>
-<h1 id="智能指针特点："><a href="#智能指针特点：" class="headerlink" title="智能指针特点："></a>智能指针特点：</h1><ol>
-<li>自动管理内存：<br>智能指针在不需要时会自动释放其所管理的资源，避免内存泄漏。</li>
-<li>所有权和借用规则：<br>智能指针遵循 Rust 的所有权和借用规则，确保数据的安全性和一致性。</li>
-<li>附加功能：<br>智能指针通常附带额外的功能，如引用计数、内部可变性、互斥锁等，以满足不同的需求。</li>
-</ol>
-<h1 id="基本概念之一："><a href="#基本概念之一：" class="headerlink" title="基本概念之一："></a>基本概念之一：</h1><p><code>Box&lt;T&gt;</code>智能指针：<br>    用途：用于在堆上分配内存。<br>    特点：当 Box 被丢弃时，它所指向的堆上的内存会被自动释放。</p>
-<h1 id="Box-使用场景："><a href="#Box-使用场景：" class="headerlink" title="Box 使用场景："></a>Box 使用场景：</h1><h2 id="堆分配："><a href="#堆分配：" class="headerlink" title="堆分配："></a>堆分配：</h2><p><code>Box</code> 是一个智能指针，用于在堆上分配内存。当你使用 <code>Box::new</code> 创建一个 <code>Box</code> 时，它会在堆上分配内存，并返回一个指向该内存的指针</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">b</span> = <span class="type">Box</span>::<span class="title function_ invoke__">new</span>(<span class="number">5</span>);</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;:?&#125;&quot;</span>,b); </span><br><span class="line">    <span class="comment">//或者println!(&quot;&#123;&#125;&quot;, *b);  *解引用 Box，获取内部的值</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="动态大小类型："><a href="#动态大小类型：" class="headerlink" title="动态大小类型："></a>动态大小类型：</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">	<span class="comment">//into 方法在这里将字符串字面量转换为 Box&lt;str&gt;。</span></span><br><span class="line">	<span class="keyword">let</span> <span class="variable">s</span> : <span class="type">Box</span>&lt;<span class="type">str</span>&gt; = <span class="string">&quot;Hello&quot;</span>.<span class="title function_ invoke__">into</span>();</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>, s);</span><br><span class="line"></span><br><span class="line">	<span class="comment">//将 Vec&lt;i32&gt; 转换为 Box&lt;[i32]&gt;。into_boxed_slice 方法将 Vec 转换为一个指向固定大小数组的 Box。</span></span><br><span class="line">	<span class="keyword">let</span> <span class="variable">arr</span> : <span class="type">Box</span>&lt;[<span class="type">i32</span>]&gt; = <span class="built_in">vec!</span>[<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>].<span class="title function_ invoke__">into_boxed_slice</span>();</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;:?&#125;&quot;</span>, arr);</span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure>
-
-<h2 id="递归数据结构："><a href="#递归数据结构：" class="headerlink" title="递归数据结构："></a>递归数据结构：</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">enum</span> <span class="title class_">List</span> &#123;</span><br><span class="line">	<span class="comment">//Cons(i32, Box&lt;List&gt;)：表示一个包含整数和指向下一个 List 元素的智能指针的节点,像链表</span></span><br><span class="line">	<span class="title function_ invoke__">Cons</span>(<span class="type">i32</span>, <span class="type">Box</span>&lt;List&gt;),</span><br><span class="line">    Nil,</span><br><span class="line">&#125; </span><br><span class="line"><span class="comment">//use List::&#123;Cons, Nil&#125;;：引入 Cons 和 Nil 变体，以便在 main 函数中直接使用</span></span><br><span class="line"><span class="keyword">use</span> List::&#123;Cons, Nil&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">	<span class="comment">//创建一个包含两个元素的列表 [1, 2]。</span></span><br><span class="line">	<span class="keyword">let</span> <span class="variable">list</span> = List::<span class="title function_ invoke__">Cons</span>(<span class="number">1</span>, <span class="type">Box</span>::<span class="title function_ invoke__">new</span>(List::<span class="title function_ invoke__">Cons</span>(<span class="number">2</span>, <span class="type">Box</span>::<span class="title function_ invoke__">new</span>(List::Nil))));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="类型擦除（Type-Erasure）："><a href="#类型擦除（Type-Erasure）：" class="headerlink" title="类型擦除（Type Erasure）："></a>类型擦除（Type Erasure）：</h2><p>类型擦除是指在编译时将具体类型信息“擦除”，只保留一个通用的接口或 trait。这样，不同类型的对象可以通过相同的接口进行操作，而不需要知道它们的具体类型。</p>
-<h3 id="动态调度（Dynamic-Dispatch）："><a href="#动态调度（Dynamic-Dispatch）：" class="headerlink" title="动态调度（Dynamic Dispatch）："></a>动态调度（Dynamic Dispatch）：</h3><p>动态调度是指在运行时确定调用哪个具体方法的过程。与之相对的是静态调度（也称为单态化），在编译时就确定了调用的具体方法。</p>
-<h3 id="dyn关键字："><a href="#dyn关键字：" class="headerlink" title="dyn关键字："></a>dyn关键字：</h3><p><code>dyn</code>用于指定动态分发的类型，它允许在运行时决定具体类型（而不是像平时那样在编译的时候决定），用于实现动态分发的trait对象。</p>
-<h3 id="问题背景："><a href="#问题背景：" class="headerlink" title="问题背景："></a>问题背景：</h3><p>由于静态类型系统和所有权模型，直接将不同类型的对象放入同一个集合（如 <code>Vec</code>）中是不允许的。这是因为 <code>Vec</code> 需要知道它存储的元素的具体类型和大小。为了解决这个问题，我们可以使用动态类型（如 <code>Box&lt;dyn Trait&gt;</code>）来存储实现了特定 trait 的不同类型的对象。</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//定义了一个 speak 方法，所有实现了 Animal trait 的类型都必须实现这个方法。</span></span><br><span class="line"><span class="comment">//如果再加一个方法，下面的impl也一定要加</span></span><br><span class="line"><span class="keyword">trait</span>  <span class="title class_">Animal</span> &#123;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">speak</span>(&amp;<span class="keyword">self</span>);  </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">Dog</span>;</span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">Cat</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//由于impl Animal，所以一定要实现speak</span></span><br><span class="line"><span class="keyword">impl</span> <span class="title class_">Animal</span> <span class="keyword">for</span> <span class="title class_">Dog</span> &#123;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">speak</span>(&amp;<span class="keyword">self</span>) &#123;</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;haba dog&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">impl</span> <span class="title class_">Animal</span> <span class="keyword">for</span> <span class="title class_">Cat</span> &#123;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">speak</span>(&amp;<span class="keyword">self</span>) &#123;</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;dudu cat&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">box_study</span>() &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//这样会报错</span></span><br><span class="line">    <span class="comment">//因为Dog 和 Cat 不是同一类型，所以报错</span></span><br><span class="line">    <span class="comment">//let animals = vec![Dog,Cat];     </span></span><br><span class="line"></span><br><span class="line">    <span class="comment">//dyn Animal表示实现了 Animal trait 的动态类型。</span></span><br><span class="line">    <span class="comment">//Box::new：将具体类型的对象转换为 Box&lt;dyn Animal&gt; 类型。</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">animals</span> : <span class="type">Vec</span>&lt;<span class="type">Box</span>&lt;<span class="keyword">dyn</span> Animal&gt;&gt; = <span class="built_in">vec!</span>[<span class="type">Box</span>::<span class="title function_ invoke__">new</span>(Dog),<span class="type">Box</span>::<span class="title function_ invoke__">new</span>(Cat)];</span><br><span class="line">    <span class="comment">//iter（）方法遍历 Vec</span></span><br><span class="line">    <span class="keyword">for</span> <span class="variable">animal</span> <span class="keyword">in</span> animals.<span class="title function_ invoke__">iter</span>() &#123;</span><br><span class="line">        animal.<span class="title function_ invoke__">speak</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="具体解释"><a href="#具体解释" class="headerlink" title="具体解释"></a>具体解释</h4><ol>
-<li><p><strong>静态类型和大小</strong>：</p>
-<ul>
-<li>在 Rust 中，<code>Vec&lt;T&gt;</code> 需要知道它存储的元素的具体类型 <code>T</code> 和大小。这是为了确保内存布局和性能优化。</li>
-<li>例如，<code>Vec&lt;Dog&gt;</code> 和 <code>Vec&lt;Cat&gt;</code> 是两个不同的类型，它们的元素大小和布局是固定的。</li>
-</ul>
-</li>
-<li><p>**动态类型 <code>Box&lt;dyn Animal&gt;</code>**：</p>
-<ul>
-<li><code>Box&lt;dyn Animal&gt;</code> 是一个智能指针，指向实现了 <code>Animal</code> trait 的对象。<code>dyn Animal</code> 表示一个动态类型，它只知道对象实现了 <code>Animal</code> trait，但不知道具体类型。</li>
-<li><code>Box&lt;dyn Animal&gt;</code> 的大小是固定的，因为它只是一个指针（通常是 8 字节或 16 字节，取决于平台）。</li>
-</ul>
-</li>
-<li><p><strong>类型擦除</strong>：</p>
-<ul>
-<li>当你将 <code>Dog</code> 和 <code>Cat</code> 转换为 <code>Box&lt;dyn Animal&gt;</code> 时，具体类型信息被“擦除”，只剩下 <code>Animal</code> trait 的接口。</li>
-<li>这意味着 <code>Box&lt;dyn Animal&gt;</code> 可以指向任何实现了 <code>Animal</code> trait 的对象，无论其具体类型是什么。</li>
-</ul>
-</li>
-<li><p><strong>动态调度</strong>：</p>
-<ul>
-<li>当你调用 <code>animal.speak()</code> 时，Rust 运行时会根据 <code>Box&lt;dyn Animal&gt;</code> 指向的具体对象来确定调用哪个实现的 <code>speak</code> 方法。</li>
-<li>这种动态调度是在运行时进行的，而不是在编译时确定的。</li>
-</ul>
-</li>
-</ol>
-<h2 id="内存管理和性能优化："><a href="#内存管理和性能优化：" class="headerlink" title="内存管理和性能优化："></a>内存管理和性能优化：</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">	<span class="comment">//Box::new([0u8; 1_000_000])：在堆上分配内存，适合处理大型数据结构，避免栈溢出。</span></span><br><span class="line">	<span class="comment">//Box::new([0u8; 1_000_000])：涉及堆分配和指针管理，可能会有轻微的性能开销。</span></span><br><span class="line">	<span class="keyword">let</span> <span class="variable">large_arr</span> = <span class="type">Box</span>::<span class="title function_ invoke__">new</span>([<span class="number">0u8</span>;<span class="number">1_000_000</span>]);</span><br><span class="line"></span><br><span class="line">	<span class="comment">//[0u8; 1_000_000]：在栈上分配内存，适合处理较小的数据结构。</span></span><br><span class="line">	<span class="comment">//[0u8; 1_000_000]：直接在栈上分配内存，访问速度快，但栈空间有限。</span></span><br><span class="line">	<span class="keyword">let</span> <span class="variable">array</span> = [<span class="number">0u8</span>;<span class="number">1_000_000</span>];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h1 id="Box-的优缺点："><a href="#Box-的优缺点：" class="headerlink" title="Box 的优缺点："></a>Box 的优缺点：</h1><h2 id="优点："><a href="#优点：" class="headerlink" title="优点："></a>优点：</h2><ol>
-<li>提供堆内存分配，支持复杂数据结构。</li>
-<li>与Rust的所有权系统完美继承，确保内存安全</li>
-<li>动态分配对象，实现类型擦除。</li>
-</ol>
-<h2 id="缺点："><a href="#缺点：" class="headerlink" title="缺点："></a>缺点：</h2><ol>
-<li>需要堆内存分配和释放，可能带来性能开销。</li>
-<li>不适合需要频繁分配和释放的场景。</li>
-</ol>
-<h1 id="Drop、Deref、DerefMut"><a href="#Drop、Deref、DerefMut" class="headerlink" title="Drop、Deref、DerefMut:"></a>Drop、Deref、DerefMut:</h1><h2 id="Drop"><a href="#Drop" class="headerlink" title="Drop:"></a>Drop:</h2><p><code>Drop</code> trait 用于定义当一个值离开作用域时（即被丢弃时）应该执行的清理操作。这对于资源管理非常有用，特别是对于那些需要显式释放资源的情况。</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">Resource</span> &#123;</span><br><span class="line">    name: <span class="type">String</span>,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">impl</span> <span class="title class_">Drop</span> <span class="keyword">for</span> <span class="title class_">Resource</span> &#123;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">drop</span>(&amp;<span class="keyword">mut</span> <span class="keyword">self</span>) &#123;</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;Dropping &#123;&#125;&quot;</span>,<span class="keyword">self</span>.name);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">	<span class="keyword">let</span> <span class="variable">_rest1</span> = Resource&#123; name: <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;Resource 1&quot;</span>)&#125;;</span><br><span class="line"></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">let</span> <span class="variable">_rest2</span> = Resource&#123; name: <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;Resource 2&quot;</span>)&#125;;</span><br><span class="line">        <span class="comment">// rest 2 的 drop在离开作用域时隐式调用</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// rest 1 的 drop在离开作用域时隐式调用</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-<h2 id="Deref"><a href="#Deref" class="headerlink" title="Deref:"></a>Deref:</h2><p><code>Deref</code> trait 用于实现解引用操作，即 <code>*</code> 操作符。通过实现 <code>Deref</code>，可以将自定义类型转换为不可变引用（<code>&amp;T</code>）。</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> std::ops::Deref;</span><br><span class="line"></span><br><span class="line"><span class="comment">//定义一个泛型结构体 MyBox，包含一个泛型字段 T。</span></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">MyBox</span>&lt;T&gt;(T);</span><br><span class="line"></span><br><span class="line"><span class="keyword">impl</span>&lt;T&gt;MyBox&lt;T&gt; &#123;</span><br><span class="line">	<span class="comment">//为 MyBox 实现一个构造函数 new，接受一个泛型参数 x，返回一个 MyBox&lt;T&gt; 实例。</span></span><br><span class="line">	<span class="keyword">fn</span> <span class="title function_">new</span>(x: T) <span class="punctuation">-&gt;</span> MyBox&lt;T&gt;&#123;</span><br><span class="line">        <span class="title function_ invoke__">MyBox</span>(x)</span><br><span class="line">    &#125;</span><br><span class="line">        </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">impl</span>&lt;T&gt; Deref <span class="keyword">for</span> <span class="title class_">MyBox</span>&lt;T&gt; &#123;</span><br><span class="line">	<span class="comment">//指定Deref trait 的目标类型为 T</span></span><br><span class="line">	<span class="keyword">type</span> <span class="title class_">Target</span> = T;</span><br><span class="line">	<span class="comment">// 回 `MyBox` 内部存储的 `T` 类型的引用。</span></span><br><span class="line">	<span class="keyword">fn</span> <span class="title function_">deref</span>(&amp;<span class="keyword">self</span>) <span class="punctuation">-&gt;</span> &amp;T &#123;</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;deref called&quot;</span>);</span><br><span class="line">        &amp;<span class="keyword">self</span>.<span class="number">0</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">x</span> = <span class="number">5</span>;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">y</span> = MyBox::<span class="title function_ invoke__">new</span>(x);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;x= &#123;&#125;&quot;</span>, x);</span><br><span class="line">    <span class="comment">//*y 解引用 y，获取y的值</span></span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;y= &#123;&#125;&quot;</span>, *y);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="DerefMut："><a href="#DerefMut：" class="headerlink" title="DerefMut："></a>DerefMut：</h2><p><code>DerefMut</code> trait 用于实现可变解引用操作，即 <code>*</code> 操作符应用于可变引用。通过实现 <code>DerefMut</code>，可以将自定义类型转换为可变引用（<code>&amp;mut T</code>）。</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> std::ops::Deref;</span><br><span class="line"><span class="keyword">use</span> std::ops::DerefMut;</span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">MyBox</span>&lt;T&gt;(T);</span><br><span class="line"></span><br><span class="line"><span class="keyword">impl</span>&lt;T&gt;MyBox&lt;T&gt; &#123;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">new</span>(x: T) <span class="punctuation">-&gt;</span> MyBox&lt;T&gt;&#123;</span><br><span class="line">        <span class="title function_ invoke__">MyBox</span>(x)</span><br><span class="line">    &#125;</span><br><span class="line">        </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">impl</span>&lt;T&gt; Deref <span class="keyword">for</span> <span class="title class_">MyBox</span>&lt;T&gt; &#123;</span><br><span class="line">    <span class="keyword">type</span> <span class="title class_">Target</span> = T;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">deref</span>(&amp;<span class="keyword">self</span>) <span class="punctuation">-&gt;</span> &amp;T &#123;</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;deref called&quot;</span>);</span><br><span class="line">        &amp;<span class="keyword">self</span>.<span class="number">0</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">impl</span>&lt;T&gt; DerefMut <span class="keyword">for</span> <span class="title class_">MyBox</span>&lt;T&gt; &#123;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">deref_mut</span>(&amp;<span class="keyword">mut</span> <span class="keyword">self</span>) <span class="punctuation">-&gt;</span> &amp;<span class="keyword">mut</span> T &#123;</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;deref_mut called&quot;</span>);</span><br><span class="line">        &amp;<span class="keyword">mut</span> <span class="keyword">self</span>.<span class="number">0</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">	<span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">x</span> = MyBox::<span class="title function_ invoke__">new</span>(<span class="number">5</span>);</span><br><span class="line">	<span class="comment">//使用 *x 解引用 MyBox，实际调用 deref_mut 方法获取 x 内部的可变引用，然后赋值为 10。</span></span><br><span class="line">	*x = <span class="number">10</span>;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;x = &#123;&#125;&quot;</span>,*x);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//输出结果：</span></span><br><span class="line"><span class="comment">//deref_mut called (在 *x = 10; 时，调用了 deref_mut 方法，输出 deref_mut called。</span></span><br><span class="line"><span class="comment">//deref called (在 println!(&quot;x = &#123;&#125;&quot;, *x); 时，调用了 deref 方法，输出 deref called。</span></span><br><span class="line"><span class="comment">//x = 10 (通过解引用 x，获取 x 内部的 i32 值，输出 10。</span></span><br></pre></td></tr></table></figure>
-
-<p>解引用操作（Deref）和可变解引用（DerefMut）区别：</p>
-<h3 id="主要区别"><a href="#主要区别" class="headerlink" title="主要区别"></a>主要区别</h3><ol>
-<li><p><strong>引用类型</strong>：</p>
-<ul>
-<li><strong>解引用操作</strong>：返回不可变引用（<code>&amp;T</code>）。</li>
-<li><strong>可变解引用操作</strong>：返回可变引用（<code>&amp;mut T</code>）。</li>
-</ul>
-</li>
-<li><p><strong>数据访问权限</strong>：</p>
-<ul>
-<li><strong>解引用操作</strong>：只能读取数据，不能修改数据。</li>
-<li><strong>可变解引用操作</strong>：可以读取和修改数据。</li>
-</ul>
-</li>
-<li><p><strong>使用场景</strong>：</p>
-<ul>
-<li><strong>解引用操作</strong>：适用于需要读取数据的场景，如打印、计算等。</li>
-<li><strong>可变解引用操作</strong>：适用于需要修改数据的场景，如更新、重置等。</li>
-</ul>
-</li>
-</ol>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2115,7 +2042,7 @@
               
                 <a href="/archives/%20%7C%7C%20archive">
               
-                  <span class="site-state-item-count">25</span>
+                  <span class="site-state-item-count">26</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2156,7 +2083,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2024</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2025</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>
