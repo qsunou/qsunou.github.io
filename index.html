@@ -232,6 +232,134 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/11/14/Solana-%E8%B4%A6%E6%88%B7%E6%A6%82%E5%BF%B5&%E7%AE%80%E5%8D%95%E4%BA%A4%E4%BA%92/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2024/11/14/Solana-%E8%B4%A6%E6%88%B7%E6%A6%82%E5%BF%B5&%E7%AE%80%E5%8D%95%E4%BA%A4%E4%BA%92/" itemprop="url">Solana 合约开发 - 账户&简单交互</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-11-14T16:26:35+08:00">
+                2024-11-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="账户相关基础概念："><a href="#账户相关基础概念：" class="headerlink" title="账户相关基础概念："></a>账户相关基础概念：</h1><ol>
+<li>数据账户，</li>
+<li>系统所有账户 </li>
+<li>程序派生账户（PDA)</li>
+<li>程序账户</li>
+<li>原生账户<br>等账户相关概念，可阅读官方链接： <a target="_blank" rel="noopener" href="https://solana.com/zh/docs/core/accounts">https://solana.com/zh/docs/core/accounts</a></li>
+</ol>
+<p>里面写得非常详细，现在不懂不要紧，后面代码还会再讲。</p>
+<h1 id="简单交互（使用Rust-SDK-："><a href="#简单交互（使用Rust-SDK-：" class="headerlink" title="简单交互（使用Rust SDK)："></a>简单交互（使用Rust SDK)：</h1><p>关于查询账户、获取空投、进行转账等操作，直接通过使用SDK，进行代码学习，其实平时也很少这样用，当加强理解：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> std::<span class="type">str</span>::FromStr;</span><br><span class="line"><span class="keyword">use</span> solana_sdk::pubkey::Pubkey;</span><br><span class="line"><span class="keyword">use</span> solana_client::rpc_client::RpcClient;</span><br><span class="line"><span class="keyword">use</span> solana_sdk::signature::&#123;<span class="keyword">self</span>, read_keypair_file&#125;;</span><br><span class="line"><span class="keyword">use</span> solana_sdk::signer::Signer;</span><br><span class="line"><span class="keyword">use</span> solana_sdk::&#123;recent_blockhashes_account, system_instruction, transaction&#125;;</span><br><span class="line"><span class="keyword">use</span> solana_sdk::transaction::Transaction;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="comment">//创建solana 链接,url可以用Playground创建的，也可以用本地创建的</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">rpc_url</span> = <span class="string">&quot;https://api.devnet.solana.com&quot;</span>;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">client</span> = RpcClient::<span class="title function_ invoke__">new</span>(rpc_url);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* //指定你要查询的余额账户公钥Pubkey</span></span><br><span class="line"><span class="comment">    let account_pubkey = Pubkey::from_str(&quot;3Mxb3vnmPRcf8UCYSVaUrc5VKV1P33EjMGuaJMuah4q&quot;).unwrap();</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">    let amount = 1 * 1_000_000_000; //1 SOL，Solana以 lamports 为单位，lamports 是 SOL 的最小单位（1 SOL = 10亿 lamports）</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">    //请求Airdrop空投到account_pubkey里面</span></span><br><span class="line"><span class="comment">    //后面获取余额可能会产生延迟，过一会儿才会有变化</span></span><br><span class="line"><span class="comment">    match client.request_airdrop(&amp;account_pubkey, amount)&#123;</span></span><br><span class="line"><span class="comment">        Ok(signature) =&gt; println!(&quot;Airdrop successful! Signature: &#123;&#125;&quot;, signature),</span></span><br><span class="line"><span class="comment">        Err(err) =&gt; eprintln!(&quot;Airdrop failed: &#123;&#125;&quot;, err),</span></span><br><span class="line"><span class="comment">    &#125; </span></span><br><span class="line"><span class="comment">    </span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">     //获取账户余额</span></span><br><span class="line"><span class="comment">    match client.get_balance(&amp;account_pubkey) &#123;</span></span><br><span class="line"><span class="comment">        Ok(balance) =&gt; println!(&quot;账户余额:&#123;&#125; lamports&quot;, balance),</span></span><br><span class="line"><span class="comment">        Err(err) =&gt; eprintln!(&quot;获取余额失败&#123;&#125;&quot;,err),</span></span><br><span class="line"><span class="comment">    &#125;  */</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">//---------------------------------------------------------------</span></span><br><span class="line">    <span class="comment">//账号转移SOL到另一个账户</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">//发送方</span></span><br><span class="line">    <span class="comment">//file路径就是创建solana钱包的那个路径</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">sender</span> = <span class="title function_ invoke__">read_keypair_file</span>(<span class="string">&quot;/Users/xxx/wallet-keypair.json&quot;</span>).<span class="title function_ invoke__">expect</span>(<span class="string">&quot;fail&quot;</span>);</span><br><span class="line">    <span class="comment">//接收方</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">receive_pubkey</span> = Pubkey::<span class="title function_ invoke__">from_str</span>(<span class="string">&quot;CuiwHFr9gP4o2qTGYfPzqoxH7aihCHE7uYjjUTADXtU&quot;</span>).<span class="title function_ invoke__">unwrap</span>();</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">amount</span> = <span class="number">1</span> * <span class="number">1_000_000_000</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//创建转账指令</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">transfer_instruction</span> = system_instruction::<span class="title function_ invoke__">transfer</span>(&amp;sender.<span class="title function_ invoke__">pubkey</span>(), &amp;receive_pubkey, amount);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//创建交易</span></span><br><span class="line">    <span class="comment">//获取链上最后一个hash值</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">recent_blockhashes_account</span> = client.<span class="title function_ invoke__">get_latest_blockhash</span>().<span class="title function_ invoke__">unwrap</span>();</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">transaction</span> = Transaction::<span class="title function_ invoke__">new_signed_with_payer</span>(</span><br><span class="line">        &amp;[transfer_instruction],</span><br><span class="line">        <span class="title function_ invoke__">Some</span>(&amp;sender.<span class="title function_ invoke__">pubkey</span>()),</span><br><span class="line">        &amp;[&amp;sender],</span><br><span class="line">        recent_blockhashes_account,</span><br><span class="line">    );</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">result</span> = client.<span class="title function_ invoke__">send_and_confirm_transaction</span>(&amp;transaction);</span><br><span class="line">    <span class="keyword">match</span> result &#123;</span><br><span class="line">        <span class="title function_ invoke__">Ok</span>(signature) =&gt; <span class="built_in">println!</span>(<span class="string">&quot;success,交易签名:&#123;&#125;&quot;</span>,signature),</span><br><span class="line">        <span class="title function_ invoke__">Err</span>(err) =&gt; <span class="built_in">eprintln!</span>(<span class="string">&quot;fail,&#123;&#125;&quot;</span>,err),</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://example.com/2024/11/10/Solana-%E5%9F%BA%E7%A1%80%E7%8E%AF%E5%A2%83%E5%AE%89%E8%A3%85/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1861,137 +1989,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2024/10/31/Rust-lesson-17/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2024/10/31/Rust-lesson-17/" itemprop="url">Rust lesson 17 - 泛型</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-10-31T21:04:04+08:00">
-                2024-10-31
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="What-is-泛型："><a href="#What-is-泛型：" class="headerlink" title="What is 泛型："></a>What is 泛型：</h1><p>泛型（Generics）是编程语言中的一种特性，允许你在编写代码时使用占位符（类型参数）来代替具体的类型。通过以下使用场景，你就能理解是干什么的了。</p>
-<h1 id="泛型使用场景："><a href="#泛型使用场景：" class="headerlink" title="泛型使用场景："></a>泛型使用场景：</h1><h2 id="泛型函数减少了代码重复，一个顶三个，简单示例："><a href="#泛型函数减少了代码重复，一个顶三个，简单示例：" class="headerlink" title="泛型函数减少了代码重复，一个顶三个，简单示例："></a>泛型函数减少了代码重复，一个顶三个，简单示例：</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">add_i8</span>(a:<span class="type">i8</span>, b:<span class="type">i8</span>) <span class="punctuation">-&gt;</span> <span class="type">i8</span> &#123;</span><br><span class="line">    a + b</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">add_i32</span>(a:<span class="type">i32</span>, b:<span class="type">i32</span>) <span class="punctuation">-&gt;</span> <span class="type">i32</span> &#123;</span><br><span class="line">    a + b</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">add_f64</span>(a:<span class="type">f64</span>, b:<span class="type">f64</span>) <span class="punctuation">-&gt;</span> <span class="type">f64</span> &#123;</span><br><span class="line">    a + b</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//T 是一个泛型参数，表示任意类型,没啥特殊含义，你用ABCDEFG都行。</span></span><br><span class="line"><span class="comment">//std::ops::Add&lt;Output = T&gt; 是一个 trait 约束，表示类型 T 必须实现了 Add trait，并且加法操作的结果类型也是 T。</span></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">add</span>&lt;T : std::ops::Add&lt;Output = T&gt;&gt;(a:T, b:T) <span class="punctuation">-&gt;</span> T &#123;</span><br><span class="line">    a + b</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">	<span class="comment">//2i8,就是2（i8类型）</span></span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;add i8: &#123;&#125;&quot;</span>,<span class="title function_ invoke__">add_i8</span>(<span class="number">2i8</span>, <span class="number">3i8</span>));</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;add i32: &#123;&#125;&quot;</span>,<span class="title function_ invoke__">add_i32</span>(<span class="number">20</span>, <span class="number">30</span>));</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;add f64: &#123;&#125;&quot;</span>,<span class="title function_ invoke__">add_f64</span>(<span class="number">1.23</span>, <span class="number">1.23</span>));</span><br><span class="line">    <span class="title function_ invoke__">add</span>(<span class="number">2i8</span>, <span class="number">3i8</span>);</span><br><span class="line">    <span class="title function_ invoke__">add</span>(<span class="number">20</span>, <span class="number">30</span>);</span><br><span class="line">    <span class="title function_ invoke__">add</span>(<span class="number">1.23</span>, <span class="number">1.23</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="复杂一点的例子-比较大小-："><a href="#复杂一点的例子-比较大小-：" class="headerlink" title="复杂一点的例子(比较大小)："></a>复杂一点的例子(比较大小)：</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//list: &amp;[T] 表示 list 是一个切片，切片是一个指向数组的引用，可以是任何长度的数组的一部分。</span></span><br><span class="line"><span class="comment">//-&gt; &amp;T 表示返回一个指向切片中元素的引用。</span></span><br><span class="line"><span class="comment">//通过实现 std::cmp::PartialOrd，可以在泛型函数或泛型结构中允许使用比较操作。</span></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">larget</span>&lt;T: std::cmp::<span class="built_in">PartialOrd</span>&gt;(list: &amp;[T])<span class="punctuation">-&gt;</span> &amp;T &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">largest</span> = &amp;list[<span class="number">0</span>];</span><br><span class="line">    <span class="keyword">for</span> <span class="variable">item</span> <span class="keyword">in</span> list &#123;</span><br><span class="line">        <span class="keyword">if</span> item &gt; largest &#123;</span><br><span class="line">            largest = item;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span>  largest;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">let</span> <span class="variable">number_list</span> = <span class="built_in">vec!</span>[<span class="number">34</span>, <span class="number">50</span>, <span class="number">25</span>, <span class="number">100</span>, <span class="number">65</span>];</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">result</span> = <span class="title function_ invoke__">larget</span>(&amp;number_list);</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;The largest number is &#123;&#125;&quot;</span>, result);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">char_list</span> = <span class="built_in">vec!</span>[<span class="string">&#x27;y&#x27;</span>,<span class="string">&#x27;m&#x27;</span>,<span class="string">&#x27;a&#x27;</span>,<span class="string">&#x27;q&#x27;</span>];</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">result</span> = <span class="title function_ invoke__">larget</span>(&amp;char_list);</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;The largest char is &#123;&#125;&quot;</span>,result);</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-<h2 id="结构体中使用泛型："><a href="#结构体中使用泛型：" class="headerlink" title="结构体中使用泛型："></a>结构体中使用泛型：</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//T 和 U区分两个类型</span></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">Point</span>&lt;T,U&gt; &#123;</span><br><span class="line">    x: T,</span><br><span class="line">    y: U,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">let</span> <span class="variable">p1</span> = Point&#123;x:<span class="number">5</span> , y:<span class="number">10</span> &#125;;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">p2</span> = Point&#123;x:<span class="number">1.0</span> , y:<span class="number">1.0</span>&#125;;</span><br><span class="line">    <span class="comment">//如果上面是struct是&lt;T&gt;,会报错，因为x和y是不同类型。</span></span><br><span class="line">    <span class="comment">//但写成&lt;T ,U&gt;,区分开不同类型，就不会报错。</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">p3</span> = Point&#123;x: <span class="number">5</span>, y: <span class="number">4.0</span>&#125;;</span><br></pre></td></tr></table></figure>
-
-<h2 id="枚举中用泛型："><a href="#枚举中用泛型：" class="headerlink" title="枚举中用泛型："></a>枚举中用泛型：</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">enum</span> <span class="title class_">Option</span>&lt;T&gt; &#123;</span><br><span class="line">	<span class="title function_ invoke__">Some</span>(T),</span><br><span class="line">	<span class="literal">None</span>,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">enum</span> <span class="title class_">Result</span>&lt;T, E&gt; &#123;</span><br><span class="line">	<span class="title function_ invoke__">Ok</span>(T),</span><br><span class="line">	<span class="title function_ invoke__">Err</span>(E),</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="实现方法使用泛型："><a href="#实现方法使用泛型：" class="headerlink" title="实现方法使用泛型："></a>实现方法使用泛型：</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">Point</span>&lt;T,U&gt; &#123;</span><br><span class="line">    x: T,</span><br><span class="line">    y: U,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//为结构体实现方法，使用泛型要在impl后面加&lt;T, U&gt;</span></span><br><span class="line"><span class="keyword">impl</span>&lt;T, U&gt; Point&lt;T,U&gt;&#123;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">x</span>(&amp;<span class="keyword">self</span>) <span class="punctuation">-&gt;</span> &amp;T&#123;</span><br><span class="line">        &amp;<span class="keyword">self</span>.x</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//接受另一个 Point 实例 other，返回一个新的 Point 实例，其 x 字段来自 self，y 字段来自 other。</span></span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">mixup</span>&lt;T2, U2&gt;(<span class="keyword">self</span>, other: Point&lt;T2, U2&gt;) <span class="punctuation">-&gt;</span> Point&lt;T, U2&gt; &#123;</span><br><span class="line">        Point &#123;</span><br><span class="line">            x: <span class="keyword">self</span>.x,</span><br><span class="line">            y: other.y,</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">	<span class="keyword">let</span> <span class="variable">p4</span> = Point &#123; x:<span class="number">5</span> , y:<span class="number">10.4</span>&#125;;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">p5</span> = Point &#123; x: <span class="string">&quot;Hello&quot;</span>, y: <span class="string">&#x27;c&#x27;</span>&#125;;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//p4的 x 和 p5的 y 混合</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">p6</span> = p4.<span class="title function_ invoke__">mixup</span>(p5);</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;p6.x is &#123;&#125;,p6.y is &#123;&#125;&quot;</span>,p6.x,p6.y);</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* let p1 = Point&#123;x:5 , y:10 &#125;;</span></span><br><span class="line"><span class="comment">    let p2 = Point&#123;x:1.0 , y:1.0&#125;;</span></span><br><span class="line"><span class="comment">    let p3 = Point&#123;x: 5, y: 4.0&#125;; */</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="const使用泛型："><a href="#const使用泛型：" class="headerlink" title="const使用泛型："></a>const使用泛型：</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">display_array</span>(arr: [<span class="type">i32</span>; <span class="number">3</span>]) &#123;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;:?&#125;&quot;</span>, arr);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//接受一个切片arr（slice）,元素类型为 T 作为参数，并使用 std::fmt::Debug trait 将切片的内容打印出来</span></span><br><span class="line"><span class="comment">//切片是一个指向数组的引用，可以是任何长度的数组的一部分</span></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">display_array1</span>&lt;T: std::fmt::<span class="built_in">Debug</span>&gt;(arr: &amp;[T]) &#123;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;:?&#125;&quot;</span>, arr);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//const N: usize：这是一个常量泛型参数，表示数组的大小 N 是一个常量, 大小事 usize</span></span><br><span class="line"><span class="comment">//arr: [T; N]：函数接受一个固定大小的数组 arr，数组中的元素类型为 T，大小为 N</span></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">display_array2</span>&lt;T: std::fmt::<span class="built_in">Debug</span>, <span class="keyword">const</span> N: <span class="type">usize</span> &gt;(arr: [T; N]) &#123;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;:?&#125;&quot;</span>, arr);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line"><span class="keyword">let</span> <span class="variable">arr</span>: [<span class="type">i32</span>; <span class="number">3</span>] = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>];</span><br><span class="line">    <span class="title function_ invoke__">display_array</span>(arr); </span><br><span class="line"></span><br><span class="line">    <span class="comment">/* //这样不行，因为display_array(arr: [i32; 3])</span></span><br><span class="line"><span class="comment">    let arr2: [i32; 2] = [1, 2];</span></span><br><span class="line"><span class="comment">    display_array(arr2); */</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">arr</span>: [<span class="type">i32</span>; <span class="number">3</span>] = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>];</span><br><span class="line">    <span class="title function_ invoke__">display_array1</span>(&amp;arr);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">arr</span>: [<span class="type">i32</span>; <span class="number">2</span>] = [<span class="number">1</span>, <span class="number">2</span>];</span><br><span class="line">    <span class="title function_ invoke__">display_array1</span>(&amp;arr);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">arr</span>: [<span class="type">i32</span>; <span class="number">3</span>] = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>];</span><br><span class="line">    <span class="title function_ invoke__">display_array2</span>(arr);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">arr</span>: [<span class="type">i32</span>; <span class="number">2</span>] = [<span class="number">1</span>, <span class="number">2</span>];</span><br><span class="line">    <span class="title function_ invoke__">display_array2</span>(arr);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2042,7 +2039,7 @@
               
                 <a href="/archives/%20%7C%7C%20archive">
               
-                  <span class="site-state-item-count">26</span>
+                  <span class="site-state-item-count">27</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

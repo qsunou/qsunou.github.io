@@ -232,6 +232,170 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/10/21/Rust-lesson-7/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2024/10/21/Rust-lesson-7/" itemprop="url">Rust lesson 7 - 引用</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-10-21T19:06:20+08:00">
+                2024-10-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="不可变引用（Immutable-Reference）："><a href="#不可变引用（Immutable-Reference）：" class="headerlink" title="不可变引用（Immutable Reference）："></a>不可变引用（Immutable Reference）：</h2><ol>
+<li>通过不可变引用，可读但不能改数据。</li>
+<li>一个变量可以有多个不可变引用，但不可变引用不能与可变引用共存。</li>
+</ol>
+<h2 id="可变引用："><a href="#可变引用：" class="headerlink" title="可变引用："></a>可变引用：</h2><ol>
+<li>通过可变引用，可读并修改数据。</li>
+<li>一个变量某一时刻只能有一个可变引用，且不能与不可变引用共存</li>
+</ol>
+<h2 id="引用规则："><a href="#引用规则：" class="headerlink" title="引用规则："></a>引用规则：</h2><ol>
+<li>同一时间内，一个变量只能有一个可变引用 或 多个不可变引用。</li>
+<li>引用必须是有效的。</li>
+</ol>
+<p>代码示例：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">//变量前面加&quot;&amp;&quot;符号表示引用，可简单理解为指针指向变量</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">cite</span>() &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//情况1：s1 可以有多个不可变引用</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">s1</span> = <span class="string">&quot;hello&quot;</span>.<span class="title function_ invoke__">to_string</span>(); <span class="comment">// 作用与String::from(&quot;&quot;) 一样</span></span><br><span class="line">    <span class="comment">//let s2 = &amp;s1;</span></span><br><span class="line">    <span class="comment">//let s3 = &amp;s1;</span></span><br><span class="line">    <span class="comment">//let s4 = &amp;s1;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">//情况2：s5不变，s6可变报错，cannot mutate immutable variable `s1`</span></span><br><span class="line">    <span class="comment">//let s5 = &amp;s1;</span></span><br><span class="line">    <span class="comment">//let s6 = &amp;mut s1;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">//情况3：报错，超过一个可变引用,s7和s8为两个</span></span><br><span class="line">    <span class="comment">//let s7 = &amp;mut s1;</span></span><br><span class="line">    <span class="comment">//let s8 = &amp;mut s1;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure>
+
+
+<p>接下来要了解两个关于引用，很重要的概念：</p>
+<h1 id="悬垂指针（dangling-pointers"><a href="#悬垂指针（dangling-pointers" class="headerlink" title="悬垂指针（dangling pointers):"></a>悬垂指针（dangling pointers):</h1><p>是指一个指针或引用指向的内存已经被释放或不再有效的情况，是个严重错误。</p>
+<p>代码示例：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">//示例一：释放内存后继续使用指针</span></span><br><span class="line"><span class="comment">//返回一个i32类型的指针，这个指针指向 值为5的对象</span></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">create_box</span>() <span class="punctuation">-&gt;</span> <span class="type">Box</span>&lt;<span class="type">i32</span>&gt; &#123;</span><br><span class="line">    <span class="comment">//创建一个对象值为5</span></span><br><span class="line">    <span class="type">Box</span>::<span class="title function_ invoke__">new</span>(<span class="number">5</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="comment">//指针赋值给boxed</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">boxed_value</span> = <span class="title function_ invoke__">create_box</span>();</span><br><span class="line">    <span class="comment">//释放boxed内存</span></span><br><span class="line">    <span class="title function_ invoke__">drop</span>(boxed_value); </span><br><span class="line"></span><br><span class="line">    <span class="comment">// 下面这行会产生悬垂指针,boxed都已经被释放了，还怎么去取值</span></span><br><span class="line">    <span class="comment">// let value = *boxed_value; </span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//示例二：引用超出生命周期</span></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">create_string</span>() <span class="punctuation">-&gt;</span> <span class="type">String</span> &#123;</span><br><span class="line">    <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;hello&quot;</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">s</span> = <span class="title function_ invoke__">create_string</span>();</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">r</span> = &amp;s;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 下面这行会导致悬垂引用</span></span><br><span class="line">    <span class="comment">// println!(&quot;&#123;&#125;&quot;, r); // 编译错误，因为 `s` 已经超出作用域</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="生命周期（life-time-："><a href="#生命周期（life-time-：" class="headerlink" title="生命周期（life time)："></a>生命周期（life time)：</h1><p>“生命周期”是指引用（包括不可变引用和可变引用）的有效期,即从引用被创建开始，直到引用不再被使用为止的时间段。帮助编译器确保引用总是有效的，并且不会导致悬垂指针（dangling pointers）或数据竞争等问题。</p>
+<h2 id="生命周期注解："><a href="#生命周期注解：" class="headerlink" title="生命周期注解："></a>生命周期注解：</h2><p>可以通过生命周期注解（lifetime annotations）来显式地指定引用的有效时间范围。生命周期注解通常用 <code>&#39;a</code> 形式的符号表示，其中 <code>&#39;a</code> 是一个生命周期参数。</p>
+<h2 id="为什么要关心生命周期？"><a href="#为什么要关心生命周期？" class="headerlink" title="为什么要关心生命周期？"></a>为什么要关心生命周期？</h2><ol>
+<li>防止悬垂指针：确保引用在其生命周期内始终有效，不会指向已被释放的内存。</li>
+<li>避免数据竞争：确保在多线程或多引用情况下，数据不会被同时修改而导致竞争条件。</li>
+<li>确保内存安全：通过严格的生命周期管理，Rust 编译器可以静态地验证代码的内存安全性。</li>
+</ol>
+<h2 id="生命周期规则："><a href="#生命周期规则：" class="headerlink" title="生命周期规则："></a>生命周期规则：</h2><ol>
+<li>每个引用都有一个生命周期：引用的生命周期至少覆盖了它的作用域。</li>
+<li>引用的生命周期不能超过被引用的数据的生命周期：如果一个引用指向的数据被释放，则该引用无效。</li>
+<li>可变引用必须是唯一的：在一个作用域内，只能有一个可变引用，不能同时存在多个可变引用。</li>
+</ol>
+<h2 id="如何指定生命周期："><a href="#如何指定生命周期：" class="headerlink" title="如何指定生命周期："></a>如何指定生命周期：</h2><ol>
+<li>隐式生命周期：如果编译器能够推断出生命周期，可以省略生命周期注解。</li>
+<li>显式生命周期注解：在函数签名中显式指定生命周期参数，如 <code>fn longest&lt;&#39;a&gt;(x: &amp;&#39;a str, y: &amp;&#39;a str) -&gt; &amp;&#39;a str</code>。</li>
+</ol>
+<p>一般来讲，Rust 编译器通常能够自动推断出生命周期，但在某些情况下，需要显式地指定生命周期注解来帮助编译器理解代码意图。</p>
+<p>结合代码示例理解：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">//简单示例：</span></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">simple_lifetimes</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">s</span> = <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;hello&quot;</span>);</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">r1</span> = &amp;s; <span class="comment">// 不可变引用</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">r2</span> = &amp;s; <span class="comment">// 不可变引用</span></span><br><span class="line">    <span class="comment">//在这里，r1和r2被println所使用，并且后面没有再被使用，所以Rust编译器会把r1和r2的生命周期给结束。</span></span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125; and &#123;&#125;&quot;</span>, r1, r2);</span><br><span class="line">    <span class="comment">//因为r1 和r2 引用已经被释放，所以才能创建r3这个可变引用并不报错。</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">r3</span> = &amp;<span class="keyword">mut</span> s; <span class="comment">// 可变引用</span></span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>, r3);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//显式注解示例：</span></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">test_lifetime</span>() &#123;</span><br><span class="line">    <span class="comment">//longstStr接收两个引用，分别是&amp;a、&amp;b，类型是String</span></span><br><span class="line">    <span class="comment">//&#x27;a是生命周期函数，接收和返回都有&#x27;a，说明生命周期一样</span></span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">longstStr</span>&lt;<span class="symbol">&#x27;a</span>&gt;(a: &amp;<span class="symbol">&#x27;a</span> <span class="type">String</span>,b: &amp;<span class="symbol">&#x27;a</span> <span class="type">String</span>) <span class="punctuation">-&gt;</span> &amp;<span class="symbol">&#x27;a</span> <span class="type">String</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> a.<span class="title function_ invoke__">len</span>() &gt; b.<span class="title function_ invoke__">len</span>() &#123;</span><br><span class="line">            a</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            b</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">a</span> = <span class="string">&quot;a&quot;</span>.<span class="title function_ invoke__">to_owned</span>();</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">b</span> = <span class="string">&quot;b&quot;</span>.<span class="title function_ invoke__">to_owned</span>();</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">c</span> = <span class="title function_ invoke__">longstStr</span>(&amp;a, &amp;b);</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;a is &#123;a&#125;&quot;</span>);</span><br><span class="line">&#125; </span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://example.com/2024/10/20/Rust-lesson-6/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1214,7 +1378,7 @@
               
                 <a href="/archives/%20%7C%7C%20archive">
               
-                  <span class="site-state-item-count">26</span>
+                  <span class="site-state-item-count">27</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
