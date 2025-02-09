@@ -232,6 +232,146 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2025/02/09/Solana-Dex-Admin/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2025/02/09/Solana-Dex-Admin/" itemprop="url">Solana 合约开发 - DeFi - Dex 开发二：Admin</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2025-02-09T17:14:12+08:00">
+                2025-02-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>本章节介绍如何创建 <code>Admin</code>,<code>Admin</code>或管理员角色通常是指具有特殊权限的账户，用于执行关键操作和维护系统的正常运行。这些操作可能包括但不限于参数调整、紧急情况处理、安全更新等,接下来通过代码一起学习。</p>
+<h1 id="合约代码："><a href="#合约代码：" class="headerlink" title="合约代码："></a>合约代码：</h1><p>&#96;anchor&#x2F;programs&#x2F;swap&#x2F;src&#x2F;states&#x2F;admin.rs:</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> anchor_lang::prelude::*;</span><br><span class="line"><span class="keyword">use</span> anchor_spl::token::&#123;<span class="keyword">self</span>, Token, TokenAccount&#125;;</span><br><span class="line"></span><br><span class="line"><span class="meta">#[account]</span></span><br><span class="line"><span class="meta">#[derive(InitSpace, Debug)]</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">struct</span> <span class="title class_">Admin</span> &#123;</span><br><span class="line">    <span class="keyword">pub</span> authority: Pubkey,</span><br><span class="line">    <span class="keyword">pub</span> permissions: <span class="type">u8</span>,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">impl</span> <span class="title class_">Admin</span> &#123;</span><br><span class="line">	<span class="comment">//通过设置哪位为1来控制权限</span></span><br><span class="line">    <span class="keyword">pub</span> <span class="keyword">const</span> PERMISSION_UPDATE_PERMISSIONS: <span class="type">u8</span> = <span class="number">1</span> &lt;&lt; <span class="number">0</span>; <span class="comment">// 00000001</span></span><br><span class="line">    <span class="keyword">pub</span> <span class="keyword">const</span> PERMISSION_ADD_POOL: <span class="type">u8</span> = <span class="number">1</span> &lt;&lt; <span class="number">1</span>; <span class="comment">// 00000010</span></span><br><span class="line">    <span class="keyword">pub</span> <span class="keyword">const</span> PERMISSION_REMOVE_POOL: <span class="type">u8</span> = <span class="number">1</span> &lt;&lt; <span class="number">2</span>; <span class="comment">// 00000100</span></span><br><span class="line">    <span class="keyword">pub</span> <span class="keyword">const</span> PERMISSION_UPDATE_Config: <span class="type">u8</span> = <span class="number">1</span> &lt;&lt; <span class="number">3</span>; <span class="comment">// 00001000</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">pub</span> <span class="keyword">const</span> ADMIN_SEED_PREFIX: &amp;<span class="type">str</span> = <span class="string">&quot;admin_v1&quot;</span>;</span><br><span class="line">    </span><br><span class="line"></span><br><span class="line">    <span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">init</span>(&amp;<span class="keyword">mut</span> <span class="keyword">self</span>, authority: Pubkey, permissions: <span class="type">u8</span>) <span class="punctuation">-&gt;</span> <span class="type">Result</span>&lt;()&gt; &#123;</span><br><span class="line">        <span class="keyword">self</span>.authority = authority;</span><br><span class="line">        <span class="keyword">self</span>.permissions = permissions;</span><br><span class="line">        <span class="title function_ invoke__">Ok</span>(())</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">has_permission</span>(&amp;<span class="keyword">self</span>, permission: <span class="type">u8</span>) <span class="punctuation">-&gt;</span> <span class="type">bool</span> &#123;</span><br><span class="line">        <span class="keyword">self</span>.permissions &amp; permission != <span class="number">0</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p>&#96;anchor&#x2F;programs&#x2F;swap&#x2F;src&#x2F;accounts_all&#x2F;admin.rs</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">use</span> anchor_lang::prelude::*;</span><br><span class="line"><span class="keyword">use</span> crate::states::*;</span><br><span class="line"></span><br><span class="line"><span class="meta">#[derive(Accounts)]</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">struct</span> <span class="title class_">InitAdmin</span>&lt;<span class="symbol">&#x27;info</span>&gt; &#123;</span><br><span class="line">    <span class="meta">#[account(</span></span><br><span class="line"><span class="meta">        init_if_needed,</span></span><br><span class="line"><span class="meta">        payer = authority,</span></span><br><span class="line"><span class="meta">        space = 8 + Admin::INIT_SPACE,</span></span><br><span class="line"><span class="meta">        seeds = [</span></span><br><span class="line"><span class="meta">            Admin::ADMIN_SEED_PREFIX.as_bytes(),</span></span><br><span class="line"><span class="meta">            authority.key().as_ref(),</span></span><br><span class="line"><span class="meta">        ]</span>, </span><br><span class="line">        bump,</span><br><span class="line">        </span><br><span class="line">    )]</span><br><span class="line">    <span class="keyword">pub</span> admin: <span class="type">Box</span>&lt;Account&lt;<span class="symbol">&#x27;info</span>, Admin&gt;&gt;,</span><br><span class="line"></span><br><span class="line">    <span class="meta">#[account(mut)]</span></span><br><span class="line">    <span class="keyword">pub</span> authority: Signer&lt;<span class="symbol">&#x27;info</span>&gt;,</span><br><span class="line">    <span class="keyword">pub</span> system_program: Program&lt;<span class="symbol">&#x27;info</span>, System&gt;,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">#[derive(Accounts)]</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">struct</span> <span class="title class_">UpdatePermissions</span>&lt;<span class="symbol">&#x27;info</span>&gt; &#123;</span><br><span class="line">    <span class="meta">#[account(</span></span><br><span class="line"><span class="meta">        mut, </span></span><br><span class="line"><span class="meta">        seeds = [</span></span><br><span class="line"><span class="meta">            Admin::ADMIN_SEED_PREFIX.as_bytes(),</span></span><br><span class="line"><span class="meta">            authority.key().as_ref(),          </span></span><br><span class="line"><span class="meta">        ]</span>, </span><br><span class="line">        bump,</span><br><span class="line">    )]</span><br><span class="line">    <span class="keyword">pub</span> admin: <span class="type">Box</span>&lt;Account&lt;<span class="symbol">&#x27;info</span>, Admin&gt;&gt;,</span><br><span class="line"></span><br><span class="line">    <span class="meta">#[account(mut)]</span></span><br><span class="line">    <span class="keyword">pub</span> authority: Signer&lt;<span class="symbol">&#x27;info</span>&gt;,</span><br><span class="line">    <span class="keyword">pub</span> system_program: Program&lt;<span class="symbol">&#x27;info</span>, System&gt;,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">#[derive(Accounts)]</span></span><br><span class="line"><span class="meta">#[instruction(index: u16)]</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">struct</span> <span class="title class_">UpdateAmmConfig</span>&lt;<span class="symbol">&#x27;info</span>&gt; &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">#[account(mut)]</span></span><br><span class="line">    <span class="keyword">pub</span> owner: Signer&lt;<span class="symbol">&#x27;info</span>&gt;,</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 讲下Box，使用 Box 可以让你在堆上分配这些数据，而不是直接在栈上，从而避免栈溢出等问题，当然不用Box也不是不行。</span></span><br><span class="line">	<span class="meta">#[account(</span></span><br><span class="line"><span class="meta">        mut, </span></span><br><span class="line"><span class="meta">        seeds = [</span></span><br><span class="line"><span class="meta">            Admin::ADMIN_SEED_PREFIX.as_bytes(),</span></span><br><span class="line"><span class="meta">            owner.key().as_ref(),          </span></span><br><span class="line"><span class="meta">        ]</span>, </span><br><span class="line">        bump,</span><br><span class="line">    )]</span><br><span class="line">    <span class="keyword">pub</span> admin: <span class="type">Box</span>&lt;Account&lt;<span class="symbol">&#x27;info</span>, Admin&gt;&gt;,</span><br><span class="line">    </span><br><span class="line">   </span><br><span class="line">    </span><br><span class="line">    <span class="meta">#[account(</span></span><br><span class="line"><span class="meta">        mut,</span></span><br><span class="line"><span class="meta">        seeds = [</span></span><br><span class="line"><span class="meta">            AmmConfig::CONFIG_PREFIX_SEED.as_bytes(),</span></span><br><span class="line"><span class="meta">            &amp;index.to_be_bytes()</span></span><br><span class="line"><span class="meta">        ]</span>,</span><br><span class="line">        bump,</span><br><span class="line">    )]</span><br><span class="line">    <span class="keyword">pub</span> config: AccountLoader&lt;<span class="symbol">&#x27;info</span>, AmmConfig&gt;,</span><br><span class="line"></span><br><span class="line">    <span class="comment">/// CHECK: pool vault and lp mint authority</span></span><br><span class="line">    <span class="meta">#[account(</span></span><br><span class="line"><span class="meta">        init,</span></span><br><span class="line"><span class="meta">        payer = owner,</span></span><br><span class="line"><span class="meta">        space = AUTHORITY_SPACE,</span></span><br><span class="line"><span class="meta">        seeds = [</span></span><br><span class="line"><span class="meta">            crate::AUTH_SEED.as_bytes(),</span></span><br><span class="line"><span class="meta">        ]</span>,</span><br><span class="line">        bump,</span><br><span class="line">    )]</span><br><span class="line">    <span class="keyword">pub</span> authority: UncheckedAccount&lt;<span class="symbol">&#x27;info</span>&gt;,</span><br><span class="line"></span><br><span class="line">    <span class="keyword">pub</span> system_program: Program&lt;<span class="symbol">&#x27;info</span>, System&gt;,</span><br><span class="line"></span><br><span class="line">    </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> std::cell::RefMut;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> crate::accounts_all::*;</span><br><span class="line"><span class="keyword">use</span> crate::calculate::*;</span><br><span class="line"><span class="keyword">use</span> crate::error::ErrorCode;</span><br><span class="line"><span class="keyword">use</span> crate::states::AmmConfig;</span><br><span class="line"><span class="keyword">use</span> crate::states::*;</span><br><span class="line"><span class="keyword">use</span> anchor_lang::prelude::*;</span><br><span class="line"></span><br><span class="line"><span class="meta">#[derive(AnchorSerialize, AnchorDeserialize, Clone, PartialEq, Eq)]</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">enum</span> <span class="title class_">ConfigValue</span> &#123;</span><br><span class="line">    <span class="title function_ invoke__">Bool</span>(<span class="type">bool</span>),</span><br><span class="line">    <span class="title function_ invoke__">U64</span>(<span class="type">u64</span>),</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 初始化管理员</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">init_admin</span>(ctx: Context&lt;InitAdmin&gt;, permissions: <span class="type">u8</span>) <span class="punctuation">-&gt;</span> <span class="type">Result</span>&lt;()&gt; &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">admin</span> = &amp;<span class="keyword">mut</span> ctx.accounts.admin;</span><br><span class="line">    <span class="keyword">if</span> admin.authority != Pubkey::<span class="title function_ invoke__">default</span>() &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="title function_ invoke__">Err</span>(error!(ErrorCode::AlreadyInitialized));</span><br><span class="line">    &#125;</span><br><span class="line">    admin.<span class="title function_ invoke__">init</span>(*ctx.accounts.authority.key, permissions)?;</span><br><span class="line">    <span class="title function_ invoke__">Ok</span>(())</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 更新管理员权限</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">update_admin_permissions</span>(</span><br><span class="line">    ctx: Context&lt;UpdatePermissions&gt;,</span><br><span class="line">    new_permissions: <span class="type">u8</span>,</span><br><span class="line">) <span class="punctuation">-&gt;</span> <span class="type">Result</span>&lt;()&gt; &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">admin</span> = &amp;<span class="keyword">mut</span> ctx.accounts.admin;</span><br><span class="line">    <span class="comment">//判断权限</span></span><br><span class="line">    <span class="keyword">if</span> !admin.<span class="title function_ invoke__">has_permission</span>(<span class="number">1</span> &lt;&lt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="title function_ invoke__">Err</span>(error!(ErrorCode::Unauthorized));</span><br><span class="line">    &#125;</span><br><span class="line">    admin.permissions = new_permissions;</span><br><span class="line">    <span class="title function_ invoke__">Ok</span>(())</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//更新AMM配置</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">update_amm_config</span>(ctx: Context&lt;UpdateAmmConfig&gt;, num: <span class="type">u8</span>, value: <span class="type">u64</span>) <span class="punctuation">-&gt;</span> <span class="type">Result</span>&lt;()&gt; &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">admin</span> = &amp;ctx.accounts.admin;</span><br><span class="line">    <span class="comment">//判断权限</span></span><br><span class="line">    <span class="keyword">if</span> !admin.<span class="title function_ invoke__">has_permission</span>(<span class="number">1</span> &lt;&lt; <span class="number">3</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="title function_ invoke__">Err</span>(error!(ErrorCode::Unauthorized));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">amm_config</span> = ctx.accounts.config.<span class="title function_ invoke__">load_mut</span>()?;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">match_num</span> = <span class="title function_ invoke__">Some</span>(num);</span><br><span class="line">    <span class="keyword">match</span> match_num &#123;</span><br><span class="line">        <span class="title function_ invoke__">Some</span>(<span class="number">0</span>) =&gt; <span class="title function_ invoke__">update_amm_trade_fee_rate</span>(&amp;<span class="keyword">mut</span> amm_config, value),</span><br><span class="line">        <span class="title function_ invoke__">Some</span>(<span class="number">1</span>) =&gt; <span class="title function_ invoke__">update_amm_protocol_fee_rate</span>(&amp;<span class="keyword">mut</span> amm_config, value),</span><br><span class="line">        <span class="title function_ invoke__">Some</span>(<span class="number">2</span>) =&gt; <span class="title function_ invoke__">update_amm_fund_fee_rate</span>(&amp;<span class="keyword">mut</span> amm_config, value),</span><br><span class="line">        <span class="title function_ invoke__">Some</span>(<span class="number">3</span>) =&gt; &#123;</span><br><span class="line">            <span class="keyword">let</span> <span class="variable">new_procotol_owner</span> = *ctx.remaining_accounts.<span class="title function_ invoke__">iter</span>().<span class="title function_ invoke__">next</span>().<span class="title function_ invoke__">unwrap</span>().key;</span><br><span class="line">            <span class="title function_ invoke__">set_amm_new_protocol_owner</span>(&amp;<span class="keyword">mut</span> amm_config, new_procotol_owner)?;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="title function_ invoke__">Some</span>(<span class="number">4</span>) =&gt; &#123;</span><br><span class="line">            <span class="keyword">let</span> <span class="variable">new_fund_owner</span> = *ctx.remaining_accounts.<span class="title function_ invoke__">iter</span>().<span class="title function_ invoke__">next</span>().<span class="title function_ invoke__">unwrap</span>().key;</span><br><span class="line">            <span class="title function_ invoke__">set_amm_new_fund_owner</span>(&amp;<span class="keyword">mut</span> amm_config, new_fund_owner)?;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="title function_ invoke__">Some</span>(<span class="number">5</span>) =&gt; amm_config.create_pool_fee = value,</span><br><span class="line">        _ =&gt; <span class="keyword">return</span> err!(ErrorCode::InvalidInput),</span><br><span class="line">        <span class="comment">//以此类推，以后还能继续扩展下去</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="title function_ invoke__">Ok</span>(())</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">update_amm_protocol_fee_rate</span>(amm_config: &amp;<span class="keyword">mut</span> RefMut&lt;AmmConfig&gt;, protocol_fee_rate: <span class="type">u64</span>) &#123;</span><br><span class="line">    <span class="built_in">assert!</span>(protocol_fee_rate &lt;= FEE_RATE_VALUE);</span><br><span class="line">    <span class="built_in">assert!</span>(protocol_fee_rate + amm_config.fund_fee_rate &lt;= FEE_RATE_VALUE);</span><br><span class="line">    amm_config.protocol_fee_rate = protocol_fee_rate;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">update_amm_trade_fee_rate</span>(amm_config: &amp;<span class="keyword">mut</span> RefMut&lt;AmmConfig&gt;, trade_fee_rate: <span class="type">u64</span>) &#123;</span><br><span class="line">    <span class="built_in">assert!</span>(trade_fee_rate &lt; FEE_RATE_VALUE);</span><br><span class="line">    amm_config.trade_fee_rate = trade_fee_rate;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">update_amm_fund_fee_rate</span>(amm_config: &amp;<span class="keyword">mut</span> RefMut&lt;AmmConfig&gt;, fund_fee_rate: <span class="type">u64</span>) &#123;</span><br><span class="line">    <span class="built_in">assert!</span>(fund_fee_rate &lt;= FEE_RATE_VALUE);</span><br><span class="line">    <span class="built_in">assert!</span>(fund_fee_rate + amm_config.protocol_fee_rate &lt;= FEE_RATE_VALUE);</span><br><span class="line">    amm_config.fund_fee_rate = fund_fee_rate;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">set_amm_new_protocol_owner</span>(amm_config: &amp;<span class="keyword">mut</span> RefMut&lt;AmmConfig&gt;, new_owner: Pubkey) <span class="punctuation">-&gt;</span> <span class="type">Result</span>&lt;()&gt; &#123;</span><br><span class="line">    require_keys_neq!(new_owner, Pubkey::<span class="title function_ invoke__">default</span>());</span><br><span class="line">    amm_config.protocol_owner = new_owner;</span><br><span class="line">    <span class="title function_ invoke__">Ok</span>(())</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">set_amm_new_fund_owner</span>(</span><br><span class="line">    amm_config: &amp;<span class="keyword">mut</span> RefMut&lt;AmmConfig&gt;,</span><br><span class="line">    new_fund_owner: Pubkey,</span><br><span class="line">) <span class="punctuation">-&gt;</span> <span class="type">Result</span>&lt;()&gt; &#123;</span><br><span class="line"></span><br><span class="line">    require_keys_neq!(new_fund_owner, Pubkey::<span class="title function_ invoke__">default</span>());</span><br><span class="line">    amm_config.fund_owner = new_fund_owner;</span><br><span class="line">    <span class="title function_ invoke__">Ok</span>(())</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h1 id="前端TS测试代码："><a href="#前端TS测试代码：" class="headerlink" title="前端TS测试代码："></a>前端TS测试代码：</h1><p>获取本地钱包：<br><code>anchor/example/api/wallet.ts</code>:</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> * <span class="keyword">as</span> anchor <span class="keyword">from</span> <span class="string">&quot;@coral-xyz/anchor&quot;</span></span><br><span class="line"><span class="keyword">import</span> &#123; <span class="title class_">Program</span>&#125; <span class="keyword">from</span> <span class="string">&quot;@coral-xyz/anchor&quot;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; swap &#125; <span class="keyword">from</span> <span class="string">&quot;../../target/types/swap&quot;</span>;</span><br><span class="line">  </span><br><span class="line"><span class="keyword">const</span> provider = anchor.<span class="property">AnchorProvider</span>.<span class="title function_">env</span>();</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;provider:&quot;</span>, provider.<span class="property">wallet</span>.<span class="property">publicKey</span>.<span class="title function_">toBase58</span>());</span><br><span class="line">anchor.<span class="title function_">setProvider</span>(provider);</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> program = anchor.<span class="property">workspace</span>.<span class="property">swap</span> <span class="keyword">as</span> <span class="title class_">Program</span>&lt;swap&gt; ;</span><br><span class="line"><span class="keyword">const</span> wallet = provider.<span class="property">wallet</span> <span class="keyword">as</span> anchor.<span class="property">Wallet</span>;</span><br><span class="line"><span class="keyword">const</span> connection = provider.<span class="property">connection</span>;</span><br><span class="line"><span class="keyword">export</span> &#123; program, provider,connection&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">//定义并导出 useDefaultWallet 函数。</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">function</span> <span class="title function_">useDefaultWallet</span>(<span class="params"></span>) &#123;</span><br><span class="line">	<span class="keyword">return</span> anchor.<span class="property">Wallet</span>.<span class="title function_">local</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>编写测试方法：<br>&#96;anchor&#x2F;example&#x2F;api&#x2F;admin.ts</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> * <span class="keyword">as</span> anchor <span class="keyword">from</span> <span class="string">&#x27;@coral-xyz/anchor&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; program &#125; <span class="keyword">from</span> <span class="string">&#x27;./wallet&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//初始化Admin</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">async</span> <span class="keyword">function</span> <span class="title function_">initAdmin</span>(<span class="params"><span class="attr">wallet</span>: anchor.<span class="title class_">Wallet</span>, <span class="attr">permission</span>: <span class="built_in">number</span></span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> [adminPda] = anchor.<span class="property">web3</span>.<span class="property">PublicKey</span>.<span class="title function_">findProgramAddressSync</span>(</span><br><span class="line">    [<span class="title class_">Buffer</span>.<span class="title function_">from</span>(<span class="string">&#x27;admin_v1&#x27;</span>), wallet.<span class="property">publicKey</span>.<span class="title function_">toBuffer</span>()],</span><br><span class="line">    program.<span class="property">programId</span>,</span><br><span class="line">  );</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;admin Pda is:&#x27;</span>, adminPda.<span class="title function_">toString</span>());</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> [</span><br><span class="line">    adminPda,</span><br><span class="line">    <span class="keyword">await</span> program.<span class="property">methods</span></span><br><span class="line">      .<span class="title function_">initAdmin</span>(permission)</span><br><span class="line">      .<span class="title function_">accounts</span>(&#123;</span><br><span class="line">        <span class="attr">authority</span>: wallet.<span class="property">publicKey</span>,</span><br><span class="line">      &#125;)</span><br><span class="line">      .<span class="title function_">signers</span>([wallet.<span class="property">payer</span>])</span><br><span class="line">      .<span class="title function_">rpc</span>(),</span><br><span class="line">  ];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//获取Admin数据</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">async</span> <span class="keyword">function</span> <span class="title function_">getAdmin</span>(<span class="params"><span class="attr">wallet</span>: anchor.<span class="title class_">Wallet</span></span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> [adminPda] = anchor.<span class="property">web3</span>.<span class="property">PublicKey</span>.<span class="title function_">findProgramAddressSync</span>(</span><br><span class="line">    [<span class="title class_">Buffer</span>.<span class="title function_">from</span>(<span class="string">&#x27;admin_v1&#x27;</span>), wallet.<span class="property">publicKey</span>.<span class="title function_">toBuffer</span>()],</span><br><span class="line">    program.<span class="property">programId</span>,</span><br><span class="line">  );</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">await</span> program.<span class="property">account</span>.<span class="property">admin</span>.<span class="title function_">fetch</span>(adminPda);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//更新Admin权限</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">async</span> <span class="keyword">function</span> <span class="title function_">updateAdmin</span>(<span class="params"><span class="attr">wallet</span>: anchor.<span class="title class_">Wallet</span>, <span class="attr">permission</span>: <span class="built_in">number</span></span>) &#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">await</span> program.<span class="property">methods</span></span><br><span class="line">    .<span class="title function_">updateAdminPermissions</span>(permission)</span><br><span class="line">    .<span class="title function_">accounts</span>(&#123;</span><br><span class="line">      <span class="attr">authority</span>: wallet.<span class="property">publicKey</span>,</span><br><span class="line">    &#125;)</span><br><span class="line">    .<span class="title function_">signers</span>([wallet.<span class="property">payer</span>])</span><br><span class="line">    .<span class="title function_">rpc</span>();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//至于更新 AmmConfig，则在上一节 Config 的代码中</span></span><br></pre></td></tr></table></figure>
+
+
+<p>调用测试方法：<br><code>anchor/example/index.ts</code></p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> * <span class="keyword">as</span> anchor <span class="keyword">from</span> <span class="string">&#x27;@coral-xyz/anchor&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; connection, program, provider, useDefaultWallet &#125; <span class="keyword">from</span> <span class="string">&#x27;./api/wallet&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; initAdmin, updateAdmin, getAdmin &#125; <span class="keyword">from</span> <span class="string">&#x27;./api/admin&#x27;</span>;</span><br><span class="line"></span><br><span class="line">(<span class="title function_">async</span> () =&gt; &#123;</span><br><span class="line">	<span class="comment">// 获取默认钱包</span></span><br><span class="line">	<span class="keyword">const</span> defaultWallet = <span class="title function_">useDefaultWallet</span>();</span><br><span class="line"></span><br><span class="line">	<span class="comment">//初始化管理员</span></span><br><span class="line">  <span class="keyword">const</span> [init_admin] = <span class="keyword">await</span> <span class="title function_">initAdmin</span>(defaultWallet, <span class="number">1</span>);</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(init_admin);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 获取管理员对象信息</span></span><br><span class="line">  <span class="keyword">const</span> admin = <span class="keyword">await</span> <span class="title function_">getAdmin</span>(defaultWallet);</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;admin is&#x27;</span>, admin);</span><br><span class="line"></span><br><span class="line">  <span class="comment">//更新管理员权限</span></span><br><span class="line">  <span class="keyword">const</span> update_admin = <span class="keyword">await</span> <span class="title function_">updateAdmin</span>(defaultWallet, <span class="number">8</span>);</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;update_admin is&#x27;</span>, update_admin);</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://example.com/2025/02/09/Solana-Dex%20config%20%E5%BC%80%E5%8F%91/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1674,145 +1814,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2024/11/03/Rust-lesson-23/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2024/11/03/Rust-lesson-23/" itemprop="url">Rust lesson 23 - 迭代器</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-11-03T21:47:59+08:00">
-                2024-11-03
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="What-is-迭代器："><a href="#What-is-迭代器：" class="headerlink" title="What is 迭代器："></a>What is 迭代器：</h1><p>迭代器（iterator）是一种用于遍历集合（如数组、向量、链表等）的抽象机制。</p>
-<h2 id="Iterator-Trait-定义："><a href="#Iterator-Trait-定义：" class="headerlink" title="Iterator Trait 定义："></a>Iterator Trait 定义：</h2><p><code>Iterator</code> trait 是 Rust 标准库中定义的一个重要 trait，它有两个主要部分：</p>
-<ol>
-<li>**关联类型 <code>type Item</code>**：表示迭代器产生的项的类型。</li>
-<li>**方法 <code>fn next(&amp;mut self) -&gt; Option&lt;Self::Item&gt;</code>**：返回集合中的下一个元素。如果集合中没有更多元素，则返回 <code>None</code>。</li>
-</ol>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">pub</span> <span class="keyword">trait</span> <span class="title class_">Iterator</span> &#123; </span><br><span class="line">	<span class="keyword">type</span> <span class="title class_">Item</span>; <span class="comment">// 关联类型，表示迭代器产生的项的类型 </span></span><br><span class="line">	<span class="keyword">fn</span> <span class="title function_">next</span>(&amp;<span class="keyword">mut</span> <span class="keyword">self</span>) <span class="punctuation">-&gt;</span> <span class="type">Option</span>&lt;<span class="keyword">Self</span>::Item&gt;; <span class="comment">// 返回下一个元素，如果集合中没有更多元素则返回 None </span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="简单的迭代器"><a href="#简单的迭代器" class="headerlink" title="简单的迭代器"></a>简单的迭代器</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">study</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">number</span> = <span class="built_in">vec!</span>[<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>];</span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">iter</span> = number.<span class="title function_ invoke__">iter</span>();</span><br><span class="line"></span><br><span class="line">    <span class="comment">//iter.next()返回迭代器的下一个元素，如果没有，则返回None</span></span><br><span class="line">    <span class="keyword">while</span> <span class="keyword">let</span> <span class="variable">Some</span>(num) = iter.<span class="title function_ invoke__">next</span>() &#123;</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>, num);</span><br><span class="line">    &#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="创建迭代器的几个方法："><a href="#创建迭代器的几个方法：" class="headerlink" title="创建迭代器的几个方法："></a>创建迭代器的几个方法：</h2><ol>
-<li>iter方法：在不可变引用上创建迭代器。</li>
-<li>into_iter犯法：创建的迭代器会获得所有权。</li>
-<li>iter_mut方法：迭代可变的引用。</li>
-</ol>
-<h2 id="常见迭代器方法："><a href="#常见迭代器方法：" class="headerlink" title="常见迭代器方法："></a>常见迭代器方法：</h2><h3 id="map："><a href="#map：" class="headerlink" title="map："></a>map：</h3><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Vec&lt;_&gt;,下划线自动推断类型</span></span><br><span class="line"><span class="comment">//collect() 方法将迭代器中的所有元素收集到一个新的集合中</span></span><br><span class="line"><span class="comment">//由于 map 生成的是 i32 类型的值，collect() 会将这些值收集到一个 Vec&lt;i32&gt; 中。</span></span><br><span class="line"><span class="keyword">let</span> <span class="variable">squares</span> : <span class="type">Vec</span>&lt;_&gt; = number.<span class="title function_ invoke__">iter</span>().<span class="title function_ invoke__">map</span>(|x| x * x).<span class="title function_ invoke__">collect</span>();</span><br></pre></td></tr></table></figure>
-
-<h3 id="filter："><a href="#filter：" class="headerlink" title="filter："></a>filter：</h3><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//filter()</span></span><br><span class="line">    <span class="comment">//对迭代器中的每个元素应用闭包，过滤出满足条件的元素（即偶数）。</span></span><br><span class="line">    <span class="comment">//用这种方法能提高代码可读性，不用单独写很长很长的代码</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">even_numbers</span> : <span class="type">Vec</span>&lt;_&gt; = number.<span class="title function_ invoke__">iter</span>().<span class="title function_ invoke__">filter</span>(|&amp;x| x % <span class="number">2</span> == <span class="number">0</span>).<span class="title function_ invoke__">collect</span>();</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;squares: &#123;:?&#125;&quot;</span>, even_numbers);</span><br></pre></td></tr></table></figure>
-
-
-<h2 id="自定义迭代器："><a href="#自定义迭代器：" class="headerlink" title="自定义迭代器："></a>自定义迭代器：</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"> <span class="comment">//自定义迭代器</span></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">Counter</span> &#123;</span><br><span class="line">    count: <span class="type">u32</span>,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">impl</span> <span class="title class_">Counter</span> &#123;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">new</span>() <span class="punctuation">-&gt;</span> Counter &#123;</span><br><span class="line">        Counter &#123; count: <span class="number">0</span> &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">impl</span> <span class="title class_">Iterator</span> <span class="keyword">for</span> <span class="title class_">Counter</span> &#123;</span><br><span class="line">    <span class="keyword">type</span> <span class="title class_">Item</span> = <span class="type">u32</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">next</span>(&amp;<span class="keyword">mut</span> <span class="keyword">self</span>) <span class="punctuation">-&gt;</span> <span class="type">Option</span>&lt;<span class="keyword">Self</span>::Item&gt; &#123;</span><br><span class="line">        <span class="keyword">self</span>.count += <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">self</span>.count &lt;= <span class="number">5</span> &#123;</span><br><span class="line">            <span class="title function_ invoke__">Some</span>(<span class="keyword">self</span>.count)</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="literal">None</span></span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">counter</span> = Counter::<span class="title function_ invoke__">new</span>();</span><br><span class="line">    <span class="keyword">while</span> <span class="keyword">let</span> <span class="variable">Some</span>(value) = counter.<span class="title function_ invoke__">next</span>() &#123;</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>, value);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1863,7 +1864,7 @@
               
                 <a href="/archives/%20%7C%7C%20archive">
               
-                  <span class="site-state-item-count">32</span>
+                  <span class="site-state-item-count">33</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
