@@ -79,15 +79,13 @@
 
 
 
-<meta name="description" content="这里以 MacOS 环境为例。 1. Rust 环境安装打开终端，输入以下命令： 1curl --proto &#x27;&#x3D;https&#x27; --tlsv1.2 -sSf https:&#x2F;&#x2F;sh.rustup.rs | sh  检查是否安装成功，版本是多少 1rustc --version   扩展命令说明1.更新 Rust 版本rustup update 2.卸载 Rust 环境rustup">
-<meta property="og:type" content="article">
-<meta property="og:title" content="Rust lesson 1 - 基础安装与&quot;Hello World&quot;">
-<meta property="og:url" content="http://example.com/2024/10/16/Rust-lesson-1/index.html">
+<meta name="description" content="Learning about Rust">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Hexo">
+<meta property="og:url" content="http://example.com/page/4/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="这里以 MacOS 环境为例。 1. Rust 环境安装打开终端，输入以下命令： 1curl --proto &#x27;&#x3D;https&#x27; --tlsv1.2 -sSf https:&#x2F;&#x2F;sh.rustup.rs | sh  检查是否安装成功，版本是多少 1rustc --version   扩展命令说明1.更新 Rust 版本rustup update 2.卸载 Rust 环境rustup">
+<meta property="og:description" content="Learning about Rust">
 <meta property="og:locale">
-<meta property="article:published_time" content="2024-10-16T14:48:07.870Z">
-<meta property="article:modified_time" content="2024-10-17T09:37:48.582Z">
 <meta property="article:author" content="QsunOu">
 <meta property="article:tag" content="rust">
 <meta name="twitter:card" content="summary">
@@ -120,13 +118,13 @@
 
 
 
-  <link rel="canonical" href="http://example.com/2024/10/16/Rust-lesson-1/"/>
+  <link rel="canonical" href="http://example.com/page/4/"/>
 
 
 
 
 
-  <title>Rust lesson 1 - 基础安装与"Hello World" | Hexo</title>
+  <title>Hexo</title>
   
 
 
@@ -145,7 +143,8 @@
     
   
 
-  <div class="container sidebar-position-left page-post-detail">
+  <div class="container sidebar-position-left 
+  page-home">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -218,9 +217,9 @@
         <div class="content-wrap">
           <div id="content" class="content">
             
-
-  <div id="posts" class="posts-expand">
+  <section id="posts" class="posts-expand">
     
+      
 
   
 
@@ -250,7 +249,9 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Rust lesson 1 - 基础安装与"Hello World"</h1>
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2024/10/16/Rust-lesson-1/" itemprop="url">Rust lesson 1 - 基础安装与"Hello World"</a></h1>
         
 
         <div class="post-meta">
@@ -300,7 +301,9 @@
       
 
       
-        <p>这里以 MacOS 环境为例。</p>
+        
+          
+            <p>这里以 MacOS 环境为例。</p>
 <h3 id="1-Rust-环境安装"><a href="#1-Rust-环境安装" class="headerlink" title="1. Rust 环境安装"></a>1. Rust 环境安装</h3><p>打开终端，输入以下命令：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl --proto <span class="string">&#x27;=https&#x27;</span> --tlsv1.2 -sSf https://sh.rustup.rs | sh</span><br></pre></td></tr></table></figure>
 
@@ -374,6 +377,8 @@
 
 <p>首先，创建一个新的镜像源 <code>[source.ustc]</code>，然后将默认的 <code>crates-io</code> 替换成新的镜像源: <code>replace-with = &#39;ustc&#39;</code></p>
 <h5 id="可用的镜像列表"><a href="#可用的镜像列表" class="headerlink" title="可用的镜像列表"></a>可用的镜像列表</h5><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"># 中国科学技术大学</span><br><span class="line">&quot;https://mirrors.ustc.edu.cn/crates.io-index&quot;</span><br><span class="line">&quot;git://mirrors.ustc.edu.cn/crates.io-index&quot;</span><br><span class="line"></span><br><span class="line"># 上海交通大学</span><br><span class="line">&quot;https://mirrors.sjtug.sjtu.edu.cn/git/crates.io-index/&quot;</span><br><span class="line"></span><br><span class="line">#清华大学</span><br><span class="line">&quot;https://mirrors.tuna.tsinghua.edu.cn/git/crates.io-index.git&quot;</span><br><span class="line"></span><br><span class="line">#字节跳动</span><br><span class="line">&quot;https://rsproxy.cn/crates.io-index&quot;</span><br></pre></td></tr></table></figure>
+          
+        
       
     </div>
     
@@ -390,28 +395,12 @@
       
 
       
-      
+
       
 
       
-        <div class="post-nav">
-          <div class="post-nav-next post-nav-item">
-            
-          </div>
-
-          <span class="post-nav-divider"></span>
-
-          <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2024/10/17/Rust-lesson-2/" rel="prev" title="Rust lesson 2 - 变量与常量">
-                Rust lesson 2 - 变量与常量 <i class="fa fa-chevron-right"></i>
-              </a>
-            
-          </div>
-        </div>
       
-
-      
+        <div class="post-eof"></div>
       
     </footer>
   </div>
@@ -421,11 +410,14 @@
   </article>
 
 
+    
+  </section>
 
-    <div class="post-spread">
-      
-    </div>
-  </div>
+  
+  <nav class="pagination">
+    <a class="extend prev" rel="prev" href="/page/3/">&lt;i class&#x3D;&quot;fa fa-angle-left&quot;&gt;&lt;&#x2F;i&gt;</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span>
+  </nav>
+
 
 
           </div>
@@ -433,10 +425,6 @@
 
 
           
-
-  
-
-
 
         </div>
         
@@ -457,17 +445,8 @@
       
 
       
-        <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
-            文章目录
-          </li>
-          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
-            站点概览
-          </li>
-        </ul>
-      
 
-      <section class="site-overview-wrap sidebar-panel">
+      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -509,22 +488,6 @@
         </div>
       </section>
 
-      
-      <!--noindex-->
-        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
-          <div class="post-toc">
-
-            
-              
-            
-
-            
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-Rust-%E7%8E%AF%E5%A2%83%E5%AE%89%E8%A3%85"><span class="nav-number">1.</span> <span class="nav-text">1. Rust 环境安装</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%89%A9%E5%B1%95%E5%91%BD%E4%BB%A4%E8%AF%B4%E6%98%8E"><span class="nav-number">1.0.1.</span> <span class="nav-text">扩展命令说明</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-IDE-%E9%85%8D%E7%BD%AE-VS-Code"><span class="nav-number">2.</span> <span class="nav-text">2. IDE 配置(VS Code)</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E5%86%99%E4%B8%80%E4%B8%AA-%E2%80%9CHello-World%E2%80%9D"><span class="nav-number"></span> <span class="nav-text">2. 写一个 “Hello World”</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-%E4%BD%BF%E7%94%A8Cargo%E5%88%9B%E5%BB%BA%E4%B8%80%E4%B8%AA%E9%A1%B9%E7%9B%AE"><span class="nav-number"></span> <span class="nav-text">3.使用Cargo创建一个项目</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-%E4%BB%80%E4%B9%88%E6%98%AFCargo"><span class="nav-number">0.0.1.</span> <span class="nav-text">1.什么是Cargo</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-Cargo%E5%88%9D%E5%A7%8B%E5%8C%96%E9%A1%B9%E7%9B%AE-%E5%B9%B6-%E6%9E%84%E5%BB%BA%E8%BF%90%E8%A1%8C"><span class="nav-number">0.0.2.</span> <span class="nav-text">2.Cargo初始化项目 并 构建运行</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E6%9E%84%E5%BB%BA%E5%B9%B6%E8%BF%90%E8%A1%8C%E6%9E%84%E5%BB%BA%E5%AE%8C%E6%88%90%E5%90%8E%EF%BC%8C%E5%9C%A8-target-debug-hello-cargo-%E4%B8%8B%E4%BC%9A%E6%9C%89%E4%B8%AA%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6%EF%BC%8C%E7%84%B6%E5%90%8E%E6%89%A7%E8%A1%8C%E4%BB%A5%E4%B8%8B%E5%91%BD%E4%BB%A4%E8%BF%90%E8%A1%8C"><span class="nav-number"></span> <span class="nav-text">3.构建并运行1cargo build构建完成后，在 target&#x2F;debug&#x2F;hello_cargo 下会有个可执行文件，然后执行以下命令运行 1.&#x2F;target&#x2F;debug&#x2F;hello_cargo</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E5%8F%91%E5%B8%83%E6%9E%84%E5%BB%BA"><span class="nav-number">1.</span> <span class="nav-text">3.发布构建</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-Cargo-toml-%E6%96%87%E4%BB%B6%E8%A1%A5%E5%85%85%E8%AF%B4%E6%98%8E"><span class="nav-number">2.</span> <span class="nav-text">4.Cargo.toml 文件补充说明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E9%85%8D%E7%BD%AE%E5%9B%BD%E5%86%85%E9%95%9C%E5%83%8F%EF%BC%8C%E9%BB%98%E8%AE%A4%E5%9B%BD%E5%A4%96%E7%9A%84Crates-io%EF%BC%8C%E9%80%9F%E5%BA%A6%E5%BE%88%E6%85%A2%EF%BC%8C%E6%9C%89%E4%B8%A4%E7%A7%8D%E6%96%B9%E5%BC%8F"><span class="nav-number">3.</span> <span class="nav-text">5.配置国内镜像，默认国外的Crates.io，速度很慢，有两种方式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E6%B7%BB%E5%8A%A0%E6%96%B0%E7%9A%84%E9%95%9C%E5%83%8F%E5%9C%B0%E5%9D%80"><span class="nav-number"></span> <span class="nav-text">1.添加新的镜像地址123456789101112131415161718192021222324### https的，两者相同，选择一种方式即可[registries]ustc &#x3D; { index &#x3D; &quot;https:&#x2F;&#x2F;mirrors.ustc.edu.cn&#x2F;crates.io-index&#x2F;&quot; }[registries.ustc]index &#x3D; &quot;https:&#x2F;&#x2F;mirrors.ustc.edu.cn&#x2F;crates.io-index&#x2F;&quot;### git的，两者相同，选择一种方式即可[registries]ustc &#x3D; { index &#x3D; &quot;git:&#x2F;&#x2F;mirrors.ustc.edu.cn&#x2F;crates.io-index&quot; }[registries.ustc]index &#x3D; &quot;git:&#x2F;&#x2F;mirrors.ustc.edu.cn&#x2F;crates.io-index&quot;## 如果支持稀疏索引的话。两者相同，选择一种方式即可### https的[registries]ustc &#x3D; { index &#x3D; &quot;sparse+https:&#x2F;&#x2F;mirrors.ustc.edu.cn&#x2F;crates.io-index&#x2F;&quot; }[registries.ustc]index &#x3D; &quot;sparse+https:&#x2F;&#x2F;mirrors.ustc.edu.cn&#x2F;crates.io-index&#x2F;&quot;### git的[registries]ustc &#x3D; { index &#x3D; &quot;sparse+git:&#x2F;&#x2F;mirrors.ustc.edu.cn&#x2F;crates.io-index&quot; }[registries.ustc]index &#x3D; &quot;sparse+git:&#x2F;&#x2F;mirrors.ustc.edu.cn&#x2F;crates.io-index&quot;</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%8F%AF%E7%94%A8%E7%9A%84%E9%95%9C%E5%83%8F%E5%88%97%E8%A1%A8"><span class="nav-number">0.0.1.</span> <span class="nav-text">可用的镜像列表</span></a></li></ol></li></ol></li></ol></div>
-            
-
-          </div>
-        </section>
-      <!--/noindex-->
       
 
       
@@ -658,10 +621,6 @@
   
 
   
-  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
-<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
-
-
 
   
 
