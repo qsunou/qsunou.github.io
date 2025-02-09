@@ -232,6 +232,198 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/10/24/Rust-lesson-10/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2024/10/24/Rust-lesson-10/" itemprop="url">Rust lesson 10- 枚举（Enum）</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-10-24T17:07:44+08:00">
+                2024-10-24
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>枚举（Enumeration）是编程中的一种数据类型，用于定义一组命名的常量。在 Rust 中，枚举是一种强大的工具，用于表示具有多个可能值的数据类型。每个可能的值称为一个变体（variant）。枚举可以包含不同类型的变体，每个变体可以有自己的数据结构。</p>
+<h1 id="创建和初始化："><a href="#创建和初始化：" class="headerlink" title="创建和初始化："></a>创建和初始化：</h1><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line"> <span class="meta">#[derive(Debug)]</span></span><br><span class="line">    <span class="keyword">enum</span> <span class="title class_">Pets</span> &#123;</span><br><span class="line">        <span class="title function_ invoke__">Cat</span>(<span class="type">String</span>),</span><br><span class="line">        Dog&#123; name: <span class="type">String</span>, age: <span class="type">usize</span> &#125;,</span><br><span class="line">        Brid, <span class="comment">//Bird 是一个没有附加数据的单元变体（unit variant），类似于单元类型 (),可以作为枚举的默认值或初始状态。</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">cat</span> = Pets::Cat;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">dog</span> = Pets::Dog &#123; </span><br><span class="line">        name: <span class="string">&quot;Alen&quot;</span>.<span class="title function_ invoke__">to_string</span>(), </span><br><span class="line">        age: <span class="number">18</span>, </span><br><span class="line">    &#125;;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;dog is &#123;:?&#125;&quot;</span>,dog);</span><br><span class="line"></span><br><span class="line">	<span class="comment">//为枚举创建方法</span></span><br><span class="line">    <span class="keyword">impl</span> <span class="title class_">Pets</span> &#123;</span><br><span class="line">        <span class="keyword">fn</span> <span class="title function_">speak</span>(&amp;<span class="keyword">self</span>) &#123;</span><br><span class="line">            <span class="built_in">println!</span>(<span class="string">&quot;hallo&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">	<span class="comment">//使用方法</span></span><br><span class="line">    dog.<span class="title function_ invoke__">speak</span>();</span><br><span class="line"></span><br><span class="line">	<span class="comment">//关联函数</span></span><br><span class="line">    <span class="keyword">impl</span> <span class="title class_">Pets</span> &#123;</span><br><span class="line">        <span class="comment">//输入没 &amp;self,所以是关联函数</span></span><br><span class="line">        <span class="keyword">fn</span> <span class="title function_">log</span>(name: <span class="type">String</span>) &#123;</span><br><span class="line">            <span class="built_in">println!</span>(<span class="string">&quot;name is &#123;name&#125;&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// dog.log不行的啦,log是关联函数，是impl中的静态方法，不属于任何具体实例</span></span><br><span class="line">    Pets::<span class="title function_ invoke__">log</span>(<span class="string">&quot;alen&quot;</span>.<span class="title function_ invoke__">to_string</span>());</span><br><span class="line">    </span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h1 id="判别式："><a href="#判别式：" class="headerlink" title="判别式："></a>判别式：</h1><p>枚举的判别式（discriminant）是指每个枚举变体的内部标识符，通常是一个整数值。Rust 会自动为每个枚举变体分配一个唯一的整数值作为判别式，但你也可以自定义这些值。</p>
+<h2 id="默认判别式："><a href="#默认判别式：" class="headerlink" title="默认判别式："></a>默认判别式：</h2><p>代码示例：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">enum</span> <span class="title class_">Color</span> &#123;</span><br><span class="line">    Red,</span><br><span class="line">    Green,</span><br><span class="line">    Blue,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;Red: &#123;:?&#125;&quot;</span>, Color::Red <span class="keyword">as</span> <span class="type">isize</span>);</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;Green: &#123;:?&#125;&quot;</span>, Color::Green <span class="keyword">as</span> <span class="type">isize</span>);</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;Blue: &#123;:?&#125;&quot;</span>, Color::Blue <span class="keyword">as</span> <span class="type">isize</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//输出</span></span><br><span class="line">Red: <span class="number">0</span></span><br><span class="line">Green: <span class="number">1</span></span><br><span class="line">Blue: <span class="number">2</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="自定义判别式："><a href="#自定义判别式：" class="headerlink" title="自定义判别式："></a>自定义判别式：</h2><p>代码示例：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">enum</span> <span class="title class_">Number</span> &#123;</span><br><span class="line">    One = <span class="number">1</span>,</span><br><span class="line">    Two = <span class="number">2</span>,</span><br><span class="line">    Three = <span class="number">3</span>,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;One: &#123;:?&#125;&quot;</span>, Number::One <span class="keyword">as</span> <span class="type">isize</span>);</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;Two: &#123;:?&#125;&quot;</span>, Number::Two <span class="keyword">as</span> <span class="type">isize</span>);</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;Three: &#123;:?&#125;&quot;</span>, Number::Three <span class="keyword">as</span> <span class="type">isize</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="非连续判别式"><a href="#非连续判别式" class="headerlink" title="非连续判别式"></a>非连续判别式</h2><p>代码示例：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">enum</span> <span class="title class_">Status</span> &#123;</span><br><span class="line">    Success = <span class="number">0</span>,</span><br><span class="line">    Failure = <span class="number">100</span>,</span><br><span class="line">    Pending = <span class="number">200</span>,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;Success: &#123;:?&#125;&quot;</span>, Status::Success <span class="keyword">as</span> <span class="type">isize</span>);</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;Failure: &#123;:?&#125;&quot;</span>, Status::Failure <span class="keyword">as</span> <span class="type">isize</span>);</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;Pending: &#123;:?&#125;&quot;</span>, Status::Pending <span class="keyword">as</span> <span class="type">isize</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="判别式的自动递增"><a href="#判别式的自动递增" class="headerlink" title="判别式的自动递增"></a>判别式的自动递增</h2><p>如果你指定了某些变体的判别式值，Rust 会自动为后续的变体分配递增的值。</p>
+<p>例如：代码示例：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">enum</span> <span class="title class_">Message</span> &#123;</span><br><span class="line">    Info = <span class="number">10</span>,</span><br><span class="line">    Warning,</span><br><span class="line">    Error,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;Info: &#123;:?&#125;&quot;</span>, Message::Info <span class="keyword">as</span> <span class="type">isize</span>);</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;Warning: &#123;:?&#125;&quot;</span>, Message::Warning <span class="keyword">as</span> <span class="type">isize</span>);</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;Error: &#123;:?&#125;&quot;</span>, Message::Error <span class="keyword">as</span> <span class="type">isize</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="unit-only-enum-field-less-enum"><a href="#unit-only-enum-field-less-enum" class="headerlink" title="unit-only enum(field-less enum)"></a>unit-only enum(field-less enum)</h1><p>就是这种全是单元变体的</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">enum</span> <span class="title class_">AA</span> &#123;</span><br><span class="line">       A,</span><br><span class="line">       B,</span><br><span class="line">       C,</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+
+<h1 id="Enum-常见用法："><a href="#Enum-常见用法：" class="headerlink" title="Enum 常见用法："></a>Enum 常见用法：</h1><h2 id="比较："><a href="#比较：" class="headerlink" title="比较："></a>比较：</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//方法一：要加#[derive(PartialEq)]</span></span><br><span class="line"> <span class="meta">#[derive(PartialEq)]</span></span><br><span class="line"> <span class="keyword">enum</span> <span class="title class_">Pets</span> &#123;</span><br><span class="line">     Cat,</span><br><span class="line">     Dog,</span><br><span class="line"> &#125;</span><br><span class="line"> <span class="keyword">let</span> <span class="variable">cat</span> = Pets::Cat;</span><br><span class="line"> <span class="keyword">let</span> <span class="variable">dog</span> = Pets::Dog;</span><br><span class="line"> <span class="keyword">if</span> cat == dog &#123;</span><br><span class="line">     <span class="comment">//</span></span><br><span class="line"> &#125;</span><br><span class="line"></span><br><span class="line"> <span class="comment">//方法二：直接使用match</span></span><br><span class="line"> <span class="keyword">match</span> cat &#123;</span><br><span class="line">     Pets::Cat =&gt; &#123;</span><br><span class="line">         <span class="built_in">println!</span>(<span class="string">&quot;is cat &quot;</span>);</span><br><span class="line">     &#125;</span><br><span class="line">     Pets::Dog =&gt; &#123;</span><br><span class="line">         <span class="built_in">println!</span>(<span class="string">&quot;is dog &quot;</span>);</span><br><span class="line">     &#125;</span><br><span class="line"> &#125;</span><br><span class="line"></span><br><span class="line"> <span class="comment">//方法三：if let，这样不需要使用完整的 match 表达式（以后会说match)</span></span><br><span class="line"> <span class="keyword">if</span> <span class="keyword">let</span> <span class="variable">Pets</span>::<span class="title function_ invoke__">Cat</span>(name) = pet &#123;</span><br><span class="line">     <span class="built_in">println!</span>(<span class="string">&quot;It&#x27;s a cat named &#123;&#125;&quot;</span>, name);</span><br><span class="line"> &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">     <span class="built_in">println!</span>(<span class="string">&quot;Not a cat&quot;</span>);</span><br><span class="line"> &#125;</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h1 id="Option-和-Result"><a href="#Option-和-Result" class="headerlink" title="Option 和 Result"></a>Option 和 Result</h1><p><code>Option</code> 和 <code>Result</code> 是两个非常重要的枚举类型，用于处理可能不存在的值和可能出错的操作。</p>
+<h2 id="Option"><a href="#Option" class="headerlink" title="Option:"></a>Option:</h2><p><code>Option</code> 枚举用于表示可能存在或不存在的值。它有两个变体：</p>
+<ol>
+<li>**<code>Some(T)</code>**：表示存在一个值，类型为 <code>T</code>。</li>
+<li>**<code>None</code>**：表示不存在值。</li>
+</ol>
+<h3 id="创建和初始化：-1"><a href="#创建和初始化：-1" class="headerlink" title="创建和初始化："></a>创建和初始化：</h3><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">	<span class="keyword">let</span> <span class="variable">num</span> = <span class="title function_ invoke__">Some</span>(<span class="number">1</span>);</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">none</span>:<span class="type">Option</span>&lt;<span class="type">usize</span>&gt; = <span class="literal">None</span>;</span><br><span class="line">    <span class="keyword">match</span> num &#123;</span><br><span class="line">        <span class="title function_ invoke__">Some</span>(val) =&gt; &#123;&#125;</span><br><span class="line">        <span class="literal">None</span> =&gt; &#123;&#125;</span><br><span class="line">    &#125;&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="使用示例一：哈希表，后面文章还会再讲"><a href="#使用示例一：哈希表，后面文章还会再讲" class="headerlink" title="使用示例一：哈希表，后面文章还会再讲"></a>使用示例一：哈希表，后面文章还会再讲</h3><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">	<span class="keyword">let</span> <span class="variable">map</span>: HashMap&lt;&amp;<span class="type">str</span>, <span class="type">usize</span>&gt; = HashMap::<span class="title function_ invoke__">new</span>();</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">a</span> = map.<span class="title function_ invoke__">get</span>(<span class="string">&quot;a&quot;</span>);</span><br><span class="line">    <span class="keyword">match</span> a &#123;</span><br><span class="line">        <span class="title function_ invoke__">Some</span>(val) =&gt; &#123;&#125;</span><br><span class="line">        <span class="literal">None</span> =&gt; &#123;&#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="使用示例二：向量"><a href="#使用示例二：向量" class="headerlink" title="使用示例二：向量"></a>使用示例二：向量</h3><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">	<span class="keyword">let</span> <span class="variable">vec</span> = <span class="built_in">vec!</span>[<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>];</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">last_one</span> = vec.<span class="title function_ invoke__">iter</span>().<span class="title function_ invoke__">last</span>();</span><br><span class="line">    <span class="keyword">match</span> last_one &#123;</span><br><span class="line">        <span class="title function_ invoke__">Some</span>(val) =&gt; &#123;&#125;</span><br><span class="line">        <span class="literal">None</span> =&gt; &#123;&#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="常用操作："><a href="#常用操作：" class="headerlink" title="常用操作："></a>常用操作：</h3><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//option</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">option</span> = <span class="title function_ invoke__">Some</span>(<span class="number">1</span>);</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">b</span> = option.<span class="title function_ invoke__">map</span>(|num| num + <span class="number">1</span>);</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">c</span> = option.<span class="title function_ invoke__">and_then</span>(|val| <span class="title function_ invoke__">Some</span>((val +<span class="number">1</span> )));</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">d</span> = option.<span class="title function_ invoke__">or_else</span>(|| <span class="title function_ invoke__">Some</span>(<span class="number">1</span>));</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">a</span> = option.<span class="title function_ invoke__">unwrap</span>();</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">a</span> = option.<span class="title function_ invoke__">expect</span>(<span class="string">&quot;msg&quot;</span>);</span><br><span class="line">    dbg!(a);</span><br></pre></td></tr></table></figure>
+
+<h2 id="Result"><a href="#Result" class="headerlink" title="Result:"></a>Result:</h2><p><code>Result</code> 枚举用于表示操作的结果，可能成功也可能失败。它有两个变体：</p>
+<ol>
+<li>**<code>Ok(T)</code>**：表示操作成功，返回一个值，类型为 <code>T</code>。</li>
+<li>**<code>Err(E)</code>**：表示操作失败，返回一个错误，类型为 <code>E</code>。</li>
+</ol>
+<h3 id="创建和初始化：-2"><a href="#创建和初始化：-2" class="headerlink" title="创建和初始化："></a>创建和初始化：</h3><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">	<span class="keyword">let</span> <span class="variable">num</span>:<span class="type">Result</span>&lt;<span class="type">usize</span>, ()&gt; = <span class="title function_ invoke__">ok</span>(<span class="number">1</span>);</span><br><span class="line">    <span class="keyword">match</span> num &#123;</span><br><span class="line">        <span class="title function_ invoke__">Ok</span>(val) =&gt; &#123;&#125;</span><br><span class="line">        <span class="title function_ invoke__">Err</span>(_) =&gt; &#123;&#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="常用操作：-1"><a href="#常用操作：-1" class="headerlink" title="常用操作："></a>常用操作：</h3><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="variable">result</span>: <span class="type">Result</span>&lt;<span class="title function_ invoke__">i32</span> ()&gt; = <span class="title function_ invoke__">Ok</span>(<span class="number">1</span>);</span><br><span class="line">   <span class="keyword">let</span> <span class="variable">b</span> = result.<span class="title function_ invoke__">map</span>(|num| num + <span class="number">1</span>);</span><br><span class="line">   <span class="keyword">let</span> <span class="variable">c</span> = result.<span class="title function_ invoke__">and_then</span>(|val| <span class="title function_ invoke__">Ok</span>(val + <span class="number">1</span>));</span><br><span class="line">   <span class="keyword">let</span> <span class="variable">d</span> = result.<span class="title function_ invoke__">or_else</span>(|val| <span class="title function_ invoke__">Err</span>(<span class="number">1</span>));</span><br><span class="line">   </span><br></pre></td></tr></table></figure>
+
+<h2 id="Option-转-Result："><a href="#Option-转-Result：" class="headerlink" title="Option 转 Result："></a>Option 转 Result：</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="variable">opt</span>: <span class="type">Option</span>&lt;<span class="type">i32</span>&gt; = <span class="title function_ invoke__">Some</span>(<span class="number">42</span>);</span><br><span class="line">   <span class="keyword">let</span> <span class="variable">Result</span>: <span class="type">Result</span>&lt;<span class="type">i32</span>, &amp;<span class="type">str</span>&gt; = opt.<span class="title function_ invoke__">ok_or</span>(<span class="string">&quot;error&quot;</span>);</span><br><span class="line">   <span class="built_in">assert_eq!</span>(result, <span class="title function_ invoke__">Ok</span>(<span class="number">42</span>));</span><br><span class="line"></span><br><span class="line">   <span class="keyword">let</span> <span class="variable">none</span>: <span class="type">Option</span>&lt;<span class="type">i32</span>&gt; = <span class="literal">None</span>;</span><br><span class="line">   <span class="keyword">let</span> <span class="variable">result</span>: <span class="type">Result</span>&lt;<span class="type">i32</span>, &amp;<span class="type">str</span>&gt; = none.<span class="title function_ invoke__">ok_or</span>(<span class="string">&quot;error&quot;</span>);</span><br><span class="line">   <span class="built_in">assert_eq!</span>(result, <span class="title function_ invoke__">Err</span>(<span class="string">&quot;error&quot;</span>));</span><br></pre></td></tr></table></figure>
+
+<h2 id="Result-转-Option："><a href="#Result-转-Option：" class="headerlink" title="Result 转 Option："></a>Result 转 Option：</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="variable">res</span>: <span class="type">Result</span>&lt;<span class="type">i32</span>, &amp;<span class="type">str</span>&gt; = <span class="title function_ invoke__">Ok</span>(<span class="number">24</span>);</span><br><span class="line">   <span class="keyword">let</span> <span class="variable">option</span> = res.<span class="title function_ invoke__">ok</span>();</span><br><span class="line">   <span class="built_in">assert_eq!</span>(opt,<span class="title function_ invoke__">Some</span>(<span class="number">42</span>));</span><br><span class="line"></span><br><span class="line">   <span class="keyword">let</span> <span class="variable">res</span>: <span class="type">Result</span>&lt;<span class="type">i32</span>, &amp;<span class="type">str</span>&gt;= <span class="title function_ invoke__">Err</span>(<span class="string">&quot;Nothing here&quot;</span>);</span><br><span class="line">   <span class="keyword">let</span> <span class="variable">opt</span>: <span class="type">Option</span>&lt;<span class="type">i32</span>&gt; = res.<span class="title function_ invoke__">ok</span>();</span><br><span class="line">   <span class="built_in">assert_eq!</span>(opt,<span class="literal">None</span>);</span><br></pre></td></tr></table></figure>
+
+<h2 id="枚举内存布局："><a href="#枚举内存布局：" class="headerlink" title="枚举内存布局："></a>枚举内存布局：</h2><p>枚举的内存占用取决于其变体的最大内存需求。枚举的内存布局需要能够容纳所有变体中的最大数据量，同时还需要存储一个判别式（discriminant）来区分不同的变体。</p>
+<h3 id="内存布局"><a href="#内存布局" class="headerlink" title="内存布局"></a>内存布局</h3><ol>
+<li><p><strong>判别式</strong>：</p>
+<ul>
+<li>每个枚举变体都有一个判别式，用于区分不同的变体。</li>
+<li>判别式通常是一个整数，其大小取决于枚举变体的数量。对于大多数情况，判别式占用 1 个字节（u8）或 2 个字节（u16），但如果有更多的变体，可能会占用更大的空间。</li>
+</ul>
+</li>
+<li><p><strong>变体数据</strong>：</p>
+<ul>
+<li>每个变体的数据需要存储在枚举的内存中。</li>
+<li>枚举的总内存大小是所有变体中最大数据大小加上判别式的大小。</li>
+</ul>
+</li>
+</ol>
+<p>通过使用 <code>std::mem::size_of_val</code> 函数，你可以查看具体实例的内存占用情况，从而更好地理解枚举的内存布局。</p>
+<p>代码示例：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">enum</span> <span class="title class_">Pets</span> &#123;</span><br><span class="line">    Cat &#123; name: <span class="type">String</span> &#125;,</span><br><span class="line">    Dog &#123; name: <span class="type">String</span>, age: <span class="type">usize</span> &#125;,</span><br><span class="line">    Bird,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">my_cat</span> = Pets::Cat &#123; name: <span class="string">&quot;Whiskers&quot;</span>.<span class="title function_ invoke__">to_string</span>() &#125;;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">my_dog</span> = Pets::Dog &#123; name: <span class="string">&quot;Buddy&quot;</span>.<span class="title function_ invoke__">to_string</span>(), age: <span class="number">3</span> &#125;;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">my_bird</span> = Pets::Bird;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;Size of Cat: &#123;&#125; bytes&quot;</span>, std::mem::<span class="title function_ invoke__">size_of_val</span>(&amp;my_cat));</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;Size of Dog: &#123;&#125; bytes&quot;</span>, std::mem::<span class="title function_ invoke__">size_of_val</span>(&amp;my_dog));</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;Size of Bird: &#123;&#125; bytes&quot;</span>, std::mem::<span class="title function_ invoke__">size_of_val</span>(&amp;my_bird));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//运行结果</span></span><br><span class="line">Size of Cat: <span class="number">24</span> bytes</span><br><span class="line">Size of Dog: <span class="number">24</span> bytes</span><br><span class="line">Size of Bird: <span class="number">1</span> bytes</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>Cat</code> 变体包含一个 <code>String</code>，<code>String</code> 本身占用 24 个字节。</li>
+<li><code>Dog</code> 变体包含一个 <code>String</code> 和一个 <code>usize</code>，<code>String</code> 占用 24 个字节，<code>usize</code> 占用 8 个字节，总共 32 个字节。但由于枚举的内存布局需要对齐（这个自行查找内存对齐），所以实际占用 24 个字节。</li>
+<li><code>Bird</code> 变体没有附加数据，判别式占用 1 个字节。</li>
+</ul>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://example.com/2024/10/23/Rust-lesson-9/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1760,7 +1952,7 @@
               
                 <a href="/archives/%20%7C%7C%20archive">
               
-                  <span class="site-state-item-count">29</span>
+                  <span class="site-state-item-count">30</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
