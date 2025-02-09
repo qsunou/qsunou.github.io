@@ -232,6 +232,147 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/11/03/Rust-lesson-22/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2024/11/03/Rust-lesson-22/" itemprop="url">Rust lesson 22 - 闭包</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-11-03T20:42:54+08:00">
+                2024-11-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="What-is-闭包："><a href="#What-is-闭包：" class="headerlink" title="What is 闭包："></a>What is 闭包：</h1><p>闭包（closures）是一种匿名函数，可以捕获其定义环境中的变量。匿名函数（anonymous functions）是没有名字的函数。它们通常在需要临时使用的场合下定义和使用，而不是像普通函数那样有一个固定的名称。</p>
+<h2 id="闭包基本语法："><a href="#闭包基本语法：" class="headerlink" title="闭包基本语法："></a>闭包基本语法：</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//这个函数就没有名字，就只有内容，然后可以返回值给某个变量</span></span><br><span class="line">|参数<span class="number">1</span>, 参数<span class="number">2</span>, ..., 参数N| <span class="punctuation">-&gt;</span> 返回类型 &#123; </span><br><span class="line">    <span class="comment">// 闭包体</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">x</span> = <span class="number">5</span>;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">add_x</span> = |y: <span class="type">i32</span>| <span class="punctuation">-&gt;</span> <span class="type">i32</span> &#123; x + y &#125;; <span class="comment">//这里就捕获了环境中的变量x</span></span><br><span class="line">    <span class="comment">//let add_x = |y| x + y;  省略写法，编译器会自己推断类型</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">result</span> = <span class="title function_ invoke__">add_x</span>(<span class="number">3</span>);</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;Result: &#123;&#125;&quot;</span>, result); <span class="comment">// 输出 &quot;Result: 8&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="闭包的特点："><a href="#闭包的特点：" class="headerlink" title="闭包的特点："></a>闭包的特点：</h2><ol>
+<li>匿名性：闭包没有名称，通常被赋值给变量或作为参数传递。</li>
+<li>捕获环境：闭包可以捕获其定义环境中的变量。</li>
+<li>类型推断：Rust 编译器可以自动推断闭包的参数类型和返回类型。</li>
+<li>灵活的捕获模式：闭包可以通过三种不同的方式捕获环境中的变量：move、copy 和 borrow。</li>
+</ol>
+<h1 id="闭包的使用："><a href="#闭包的使用：" class="headerlink" title="闭包的使用："></a>闭包的使用：</h1><h2 id="作为函数参数："><a href="#作为函数参数：" class="headerlink" title="作为函数参数："></a>作为函数参数：</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//接受一个泛型参数 `F`</span></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">apply_to_3</span>&lt;F&gt;(f: F) <span class="punctuation">-&gt;</span> <span class="type">i32</span> </span><br><span class="line"><span class="comment">//要求 `F` 实现 `Fn(i32) -&gt; i32`,即 `F` 必须是一个接受一个 `i32` 参数并返回一个 `i32` 的函数或闭包。</span></span><br><span class="line"><span class="keyword">where</span> F : <span class="title function_ invoke__">Fn</span>(<span class="type">i32</span>) <span class="punctuation">-&gt;</span> <span class="type">i32</span> &#123;</span><br><span class="line"><span class="comment">//调用传入的函数或闭包 f，并将 3 作为参数传递给它</span></span><br><span class="line">	<span class="title function_ invoke__">f</span>(<span class="number">3</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">	<span class="keyword">let</span> <span class="variable">double</span> = |x| x * <span class="number">2</span>;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>,<span class="title function_ invoke__">apply_to_3</span>(double));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//输出6</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="捕获环境变量"><a href="#捕获环境变量" class="headerlink" title="捕获环境变量"></a>捕获环境变量</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">closure</span>() &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">x</span> = <span class="number">4</span>;</span><br><span class="line">    <span class="comment">//x 在equal_to_x作用域外 依然被捕获</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">equal_to_x</span> = |z | z==x;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">y</span> = <span class="number">4</span>;</span><br><span class="line">    <span class="built_in">assert!</span>(<span class="title function_ invoke__">equal_to_x</span>(y));</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">	<span class="title function_ invoke__">closure</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="闭包三种捕获方式："><a href="#闭包三种捕获方式：" class="headerlink" title="闭包三种捕获方式："></a>闭包三种捕获方式：</h1><h2 id="引用捕获："><a href="#引用捕获：" class="headerlink" title="引用捕获："></a>引用捕获：</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">closure</span>() &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">x</span> = <span class="number">4</span>;</span><br><span class="line">    <span class="comment">//x 在equal_to_x作用域外 依然被捕获</span></span><br><span class="line">    <span class="comment">//闭包 equal_to_x 内部保存了对 x 的引用，而不是复制 x 的值。</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">equal_to_x</span> = |z | z==x;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">y</span> = <span class="number">4</span>;</span><br><span class="line">    <span class="built_in">assert!</span>(<span class="title function_ invoke__">equal_to_x</span>(y));</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="按可变引用捕获："><a href="#按可变引用捕获：" class="headerlink" title="按可变引用捕获："></a>按可变引用捕获：</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">closure</span>() &#123;</span><br><span class="line">	<span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">num</span> =<span class="number">5</span>;</span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">change_num</span> = |x | num += x;</span><br><span class="line">    <span class="title function_ invoke__">change_num</span>(<span class="number">5</span>);</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;num: &#123;&#125;&quot;</span>, num);</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="移动（Move）捕获："><a href="#移动（Move）捕获：" class="headerlink" title="移动（Move）捕获："></a>移动（Move）捕获：</h2><p>就是所有权移动了</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">s</span> = <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;hello&quot;</span>);</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">print_s</span> = <span class="keyword">move</span> || <span class="built_in">println!</span>(<span class="string">&quot;s is: &#123;&#125;&quot;</span>, s);</span><br><span class="line">    <span class="title function_ invoke__">print_s</span>(); <span class="comment">// 输出 &quot;s is: hello&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 下面这行代码会报错，因为 s 的所有权已经被移动到闭包中</span></span><br><span class="line">    <span class="comment">// println!(&quot;s is: &#123;&#125;&quot;, s);</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h1 id="Move-关键字："><a href="#Move-关键字：" class="headerlink" title="Move 关键字："></a>Move 关键字：</h1><p><code>move</code> 关键字用于强制闭包获取其捕获的环境变量的所有权，而不是仅仅借用这些变量。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">closure</span>() &#123;</span><br><span class="line">	<span class="keyword">let</span> <span class="variable">x</span> = <span class="built_in">vec!</span>[<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>];</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">equal_to_x</span> = <span class="keyword">move</span> |z| z==x;</span><br><span class="line">    <span class="comment">//x 没有所有权</span></span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;can&#x27;t use x here: &#123;:?&#125;&quot;</span>, x);</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://example.com/2024/11/03/Rust-lesson-21/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2077,156 +2218,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2024/10/25/Rust-lesson-12/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2024/10/25/Rust-lesson-12/" itemprop="url">Rust lesson 12 - 模式匹配</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-10-25T17:41:08+08:00">
-                2024-10-25
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>模式匹配，可以让代码轻松地从数据结构中提取值，并根据不同的模式执行不同的操作。</p>
-<h1 id="基础模式匹配："><a href="#基础模式匹配：" class="headerlink" title="基础模式匹配："></a>基础模式匹配：</h1><p>通过match 后面的值，匹配下面某个选项，代码示例：</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">match_1</span>() &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">number</span> = <span class="number">13</span>;</span><br><span class="line">    <span class="keyword">match</span> number &#123;</span><br><span class="line">        <span class="number">1</span> =&gt; <span class="built_in">println!</span>(<span class="string">&quot;1&quot;</span>),</span><br><span class="line">        <span class="number">2</span> =&gt; <span class="built_in">println!</span>(<span class="string">&quot;2&quot;</span>),</span><br><span class="line">        <span class="number">3</span> =&gt; <span class="built_in">println!</span>(<span class="string">&quot;3&quot;</span>),</span><br><span class="line">        <span class="comment">//下划线的意思是通配符，不写会报错</span></span><br><span class="line">        _ =&gt; <span class="built_in">println!</span>(<span class="string">&quot;other&quot;</span>),</span><br><span class="line">    &#125; </span><br><span class="line">&#125;  </span><br></pre></td></tr></table></figure>
-
-
-<h1 id="各种匹配模式："><a href="#各种匹配模式：" class="headerlink" title="各种匹配模式："></a>各种匹配模式：</h1><h2 id="字面值模式，代码示例："><a href="#字面值模式，代码示例：" class="headerlink" title="字面值模式，代码示例："></a>字面值模式，代码示例：</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">match_1</span>() &#123;</span><br><span class="line">	<span class="comment">// 字面值模式</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">y</span> = <span class="string">&quot;Hello&quot;</span>;</span><br><span class="line">    <span class="keyword">match</span> y &#123;</span><br><span class="line">        <span class="string">&quot;Hello&quot;</span> =&gt; <span class="built_in">println!</span>(<span class="string">&quot;Hello&quot;</span>),</span><br><span class="line">        _ =&gt; <span class="built_in">println!</span>(<span class="string">&quot;Other&quot;</span>),</span><br><span class="line">    &#125; </span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<h2 id="变量模式，代码示例："><a href="#变量模式，代码示例：" class="headerlink" title="变量模式，代码示例："></a>变量模式，代码示例：</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">match_1</span>() &#123;</span><br><span class="line">	 <span class="comment">// 变量模式</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">x</span> = <span class="number">42</span>;  <span class="comment">//如果换成 let x = String::from(&quot;Hello&quot;)</span></span><br><span class="line">    <span class="keyword">match</span> x &#123;</span><br><span class="line">        <span class="comment">// x会赋值给var</span></span><br><span class="line">        var =&gt; <span class="built_in">println!</span>(<span class="string">&quot;The value of var is &#123;&#125;&quot;</span>,var),</span><br><span class="line">    &#125; </span><br><span class="line">    <span class="comment">//x=42时不会报错，换成String会报错，因为在上面所有权转移到var上,可去查查什么数据类型转移不转移</span></span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>,x)  </span><br><span class="line">    </span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<h2 id="结构模式，代码示例："><a href="#结构模式，代码示例：" class="headerlink" title="结构模式，代码示例："></a>结构模式，代码示例：</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">match_1</span>() &#123;</span><br><span class="line">	<span class="comment">//结构模式</span></span><br><span class="line">    <span class="keyword">struct</span>  <span class="title class_">Point</span>&#123;x:<span class="type">i32</span> , y:<span class="type">i32</span>&#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">p</span> = Point&#123;x:<span class="number">0</span>,y:<span class="number">7</span>&#125;;</span><br><span class="line">    <span class="keyword">match</span> p &#123;</span><br><span class="line">        Point &#123;x,y: <span class="number">0</span> &#125; =&gt; <span class="built_in">println!</span>(<span class="string">&quot;x is &#123;&#125;&quot;</span>,x),</span><br><span class="line">        <span class="comment">//会匹配到第二条</span></span><br><span class="line">        Point &#123;x: <span class="number">0</span> , y&#125; =&gt;<span class="built_in">println!</span>(<span class="string">&quot;y is &#123;&#125;&quot;</span>,y),</span><br><span class="line">        Point &#123;x, y &#125; =&gt;<span class="built_in">println!</span>(<span class="string">&quot;x is &#123;&#125;,y is &#123;&#125;&quot;</span>,x,y),</span><br><span class="line">    &#125; </span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<h2 id="守卫模式，代码示例："><a href="#守卫模式，代码示例：" class="headerlink" title="守卫模式，代码示例："></a>守卫模式，代码示例：</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">match_1</span>() &#123;</span><br><span class="line">	<span class="comment">//守卫模式，其实就是里面添加条件判断</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">x</span>=<span class="number">5</span>;</span><br><span class="line">    <span class="keyword">match</span> x &#123;</span><br><span class="line">        <span class="comment">// x 会赋值给 n</span></span><br><span class="line">        n <span class="keyword">if</span> n % <span class="number">2</span> == <span class="number">0</span> =&gt; <span class="built_in">println!</span>(<span class="string">&quot;Even&quot;</span>),</span><br><span class="line">        n =&gt; <span class="built_in">println!</span>(<span class="string">&quot;Odd&quot;</span>),</span><br><span class="line"></span><br><span class="line">    &#125; </span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<h2 id="绑定模式，代码示例："><a href="#绑定模式，代码示例：" class="headerlink" title="绑定模式，代码示例："></a>绑定模式，代码示例：</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">match_1</span>() &#123;</span><br><span class="line">	<span class="comment">//绑定模式</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">x</span> = <span class="number">3</span>;</span><br><span class="line">    <span class="keyword">match</span> x &#123;</span><br><span class="line">        var @ <span class="number">1</span>..=<span class="number">5</span> =&gt; <span class="built_in">println!</span>(<span class="string">&quot;var is &#123;&#125;&quot;</span>,var),</span><br><span class="line">        _ =&gt; <span class="built_in">println!</span>(<span class="string">&quot;Default&quot;</span>),</span><br><span class="line">    &#125; </span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-
-<h1 id="高级匹配模式："><a href="#高级匹配模式：" class="headerlink" title="高级匹配模式："></a>高级匹配模式：</h1><h2 id="嵌套匹配，代码示例："><a href="#嵌套匹配，代码示例：" class="headerlink" title="嵌套匹配，代码示例："></a>嵌套匹配，代码示例：</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">match_2</span>() &#123;</span><br><span class="line">    <span class="keyword">enum</span> <span class="title class_">Message</span> &#123;</span><br><span class="line">        Quit,</span><br><span class="line">        Move&#123;x: <span class="type">i32</span>, y: <span class="type">i32</span>&#125;,</span><br><span class="line">        <span class="title function_ invoke__">Write</span>(<span class="type">String</span>),</span><br><span class="line">        <span class="title function_ invoke__">ChangeColor</span>(<span class="type">i32</span>,<span class="type">i32</span>,<span class="type">i32</span>),</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">msg</span> = Message::<span class="title function_ invoke__">ChangeColor</span>(<span class="number">0</span>, <span class="number">255</span>, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">match</span> msg &#123;</span><br><span class="line">        <span class="comment">//就是多了个大括号里面可以写多行</span></span><br><span class="line">        Message::<span class="title function_ invoke__">ChangeColor</span>(r,g ,b ) =&gt; &#123;</span><br><span class="line">            <span class="built_in">println!</span>(<span class="string">&quot;red &#123;&#125;,green &#123;&#125;,blue &#123;&#125;&quot;</span>,r,g,b);</span><br><span class="line">            <span class="built_in">println!</span>(<span class="string">&quot;hahahahaha&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        _ =&gt; (),</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="匹配模式和迭代器使用"><a href="#匹配模式和迭代器使用" class="headerlink" title="匹配模式和迭代器使用:"></a>匹配模式和迭代器使用:</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">match_3</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">vec1</span> = <span class="built_in">vec!</span>[<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>];</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">vec2</span> = <span class="built_in">vec!</span>[<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>];</span><br><span class="line"></span><br><span class="line">    <span class="comment">//iter().zip 用于将两个迭代器合并成一个迭代器，每次迭代时返回一个包含两个元素的元组</span></span><br><span class="line">    <span class="comment">//vec1.iter() 返回一个迭代器，该迭代器产生 vec1 中每个元素的引用（&amp;i32）。</span></span><br><span class="line">    <span class="comment">//zip 方法接受另一个迭代器，并将两个迭代器合并成一个迭代器。</span></span><br><span class="line">    <span class="keyword">for</span> (a , b) <span class="keyword">in</span> vec1.<span class="title function_ invoke__">iter</span>().<span class="title function_ invoke__">zip</span>(vec2) &#123;</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125; + &#123;&#125; = &#123;&#125;&quot;</span>,a,b,a+b);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="if-let-和-while-let简化单个模式匹配"><a href="#if-let-和-while-let简化单个模式匹配" class="headerlink" title="if let 和 while let简化单个模式匹配:"></a><code>if let</code> 和 <code>while let</code>简化单个模式匹配:</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">match_4</span>() &#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">opt</span> = <span class="title function_ invoke__">Some</span>(<span class="number">5</span>);</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">let</span> <span class="variable">Some</span>(x) = opt &#123;</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;The value of x is &#123;&#125;&quot;</span> ,x);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/* 对比 match 语句:</span></span><br><span class="line"><span class="comment">    let opt = Some(5);</span></span><br><span class="line"><span class="comment">    match opt &#123;</span></span><br><span class="line"><span class="comment">        Some(x) =&gt; println!(&quot;The value of x is &#123;&#125;&quot;, x),</span></span><br><span class="line"><span class="comment">        None =&gt; (),</span></span><br><span class="line"><span class="comment">    &#125; */</span></span><br><span class="line">    <span class="comment">//match 语句：需要显式地处理所有可能的分支，即使只有一个分支是有意义的。在这种情况下，None 分支只是简单地什么也不做。</span></span><br><span class="line">    <span class="comment">//if let 语句：只需关注感兴趣的模式（Some(x)），并且代码更简洁。if let 语法省去了不必要的 None 分支，使代码更加聚焦于关键逻辑。</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">iter</span> = <span class="built_in">vec!</span>[<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>].<span class="title function_ invoke__">into_iter</span>();</span><br><span class="line">    <span class="keyword">while</span> <span class="keyword">let</span> <span class="variable">Some</span>(x) = iter.<span class="title function_ invoke__">next</span>() &#123;</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;The value is: &#123;:?&#125;&quot;</span>, x);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* 对比 loop 和 match语句</span></span><br><span class="line"><span class="comment">    let mut iter = vec![1, 2, 3, 4].into_iter();</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">    loop &#123;</span></span><br><span class="line"><span class="comment">        match iter.next() &#123;</span></span><br><span class="line"><span class="comment">            Some(x) =&gt; println!(&quot;The value is: &#123;:?&#125;&quot;, x),</span></span><br><span class="line"><span class="comment">            None =&gt; break,</span></span><br><span class="line"><span class="comment">        &#125;</span></span><br><span class="line"><span class="comment">    &#125; */</span></span><br><span class="line">    <span class="comment">//loop 和 match 语句：需要显式地使用 loop 循环，并在每次迭代时使用 match 语句来检查 iter.next() 的返回值。如果返回 Some(x)，则处理 x；如果返回 None，则退出循环。</span></span><br><span class="line">    <span class="comment">//while let 语句：只需一行代码即可实现相同的功能。while let 语法自动处理了 None 情况下的退出逻辑，使代码更加简洁和易读。</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="ref-ref-mut"><a href="#ref-ref-mut" class="headerlink" title="ref &amp; ref mut:"></a>ref &amp; ref mut:</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//ref 关键字：在模式匹配中创建一个不可变引用，不会移动或改变原始变量的所有权。</span></span><br><span class="line"><span class="comment">//ref mut 关键字：在模式匹配中创建一个可变引用，不会移动或改变原始变量的所有权，但允许修改引用所指向的值。</span></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">match_5</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">x</span> = <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;hello&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">match</span>  x &#123;</span><br><span class="line">        <span class="comment">//ref r：在模式匹配中，ref 关键字用于创建一个新的引用 r，而不是移动或复制 x的值。</span></span><br><span class="line">        <span class="keyword">ref</span> r =&gt; <span class="built_in">println!</span>(<span class="string">&quot;value is &#123;&#125;&quot;</span>,r),</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//在函数或块的其他地方仍可以使用x</span></span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;x still can be used in other place :&#123;&#125;&quot;</span>,x);</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h1 id="模式匹配的应用场景"><a href="#模式匹配的应用场景" class="headerlink" title="模式匹配的应用场景"></a>模式匹配的应用场景</h1><ol>
-<li>处理错误</li>
-<li>解析命令行参数</li>
-<li>解析配置文件</li>
-<li>解析数据包</li>
-<li>解析XML或JSON等数据格式</li>
-</ol>
-<h2 id="处理错误代码示例："><a href="#处理错误代码示例：" class="headerlink" title="处理错误代码示例："></a>处理错误代码示例：</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//使用场景一：错误处理</span></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">divide</span>(a: <span class="type">i32</span>, b: <span class="type">i32</span>) <span class="punctuation">-&gt;</span> <span class="type">Result</span>&lt;<span class="type">i32</span>,<span class="type">String</span>&gt; &#123;</span><br><span class="line">    <span class="keyword">if</span> b==<span class="number">0</span> &#123;</span><br><span class="line">        <span class="title function_ invoke__">Err</span>(<span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;Can not divide by zero&quot;</span>))</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="title function_ invoke__">Ok</span>(a/b)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">	<span class="comment">//错误处理</span></span><br><span class="line">    <span class="keyword">match</span> <span class="title function_ invoke__">divide</span>(<span class="number">4</span>,<span class="number">2</span>) &#123;</span><br><span class="line">        <span class="title function_ invoke__">Ok</span>(n) =&gt; <span class="built_in">println!</span>(<span class="string">&quot;The result is &#123;&#125;&quot;</span>, n),</span><br><span class="line">        <span class="title function_ invoke__">Err</span>(e) =&gt; <span class="built_in">println!</span>(<span class="string">&quot;The error is &#123;&#125;&quot;</span>,e),</span><br><span class="line">    &#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2277,7 +2268,7 @@
               
                 <a href="/archives/%20%7C%7C%20archive">
               
-                  <span class="site-state-item-count">31</span>
+                  <span class="site-state-item-count">32</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
