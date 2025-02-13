@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="一个Dex 会涉及到许多模块，例如用户创建、流动性池创建、监视器创建、管理员创建、SWAP等，接下来会一一讲解，首先讲下 Config 模块。 在创建AMM 的流动型池之前，我们需要先编写 config，通常用于配置和管理AMM相关参数的一组工具或接口。这些参数对于决定流动性池的行为、交易费用、价格发现机制等至关重要，接下来一起看看代码。 合约代码：anchor&#x2F;programs&#x2F;swap&#x2F;src">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Solana 合约开发 - DeFi - Dex 开发一：Config">
+<meta property="og:url" content="http://example.com/2025/02/09/Solana%20-%20Dex%20config%20%E5%BC%80%E5%8F%91/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="一个Dex 会涉及到许多模块，例如用户创建、流动性池创建、监视器创建、管理员创建、SWAP等，接下来会一一讲解，首先讲下 Config 模块。 在创建AMM 的流动型池之前，我们需要先编写 config，通常用于配置和管理AMM相关参数的一组工具或接口。这些参数对于决定流动性池的行为、交易费用、价格发现机制等至关重要，接下来一起看看代码。 合约代码：anchor&#x2F;programs&#x2F;swap&#x2F;src">
+<meta property="og:locale">
+<meta property="article:published_time" content="2025-02-09T07:02:36.608Z">
+<meta property="article:modified_time" content="2025-02-13T15:15:06.629Z">
+<meta property="article:author" content="QsunOu">
+<meta property="article:tag" content="rust">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://example.com/2025/02/09/Solana - Dex config 开发/"/>
+
+
+
+
+
+  <title>Solana 合约开发 - DeFi - Dex 开发一：Config | Hexo</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hexo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2025/02/09/Solana%20-%20Dex%20config%20%E5%BC%80%E5%8F%91/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Solana 合约开发 - DeFi - Dex 开发一：Config</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2025-02-09T15:02:36+08:00">
+                2025-02-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>一个Dex 会涉及到许多模块，例如用户创建、流动性池创建、监视器创建、管理员创建、SWAP等，接下来会一一讲解，首先讲下 <code>Config</code> 模块。</p>
+<p>在创建AMM 的流动型池之前，我们需要先编写 config，通常用于配置和管理AMM相关参数的一组工具或接口。这些参数对于决定流动性池的行为、交易费用、价格发现机制等至关重要，接下来一起看看代码。</p>
+<h1 id="合约代码："><a href="#合约代码：" class="headerlink" title="合约代码："></a>合约代码：</h1><p><code>anchor/programs/swap/src/states/config.rs:</code></p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> anchor_lang::prelude::*;</span><br><span class="line"></span><br><span class="line"><span class="comment">//定义 AmmConfig账户</span></span><br><span class="line"><span class="meta">#[account]</span></span><br><span class="line"><span class="meta">#[derive(InitSpace,Default,Debug)]</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">struct</span> <span class="title class_">AmmConfig</span> &#123;</span><br><span class="line">    <span class="keyword">pub</span> bump: <span class="type">u8</span>,   <span class="comment">//用于生成程序派生地址（PDA）时避免冲突。</span></span><br><span class="line">    <span class="keyword">pub</span> trade_fee_rate: <span class="type">u64</span>, <span class="comment">//交易手续费率，表示每笔交易中收取的费用比例。</span></span><br><span class="line">    <span class="keyword">pub</span> create_pool_fee: <span class="type">u64</span>, <span class="comment">//创建一个新的流动性池时需要支付的一次性费用。</span></span><br><span class="line">    <span class="keyword">pub</span> protocol_fee_rate: <span class="type">u64</span>, <span class="comment">//协议级别的费用比率，可能用于支持协议的发展或维护。</span></span><br><span class="line">    <span class="keyword">pub</span> protocol_owner: Pubkey, <span class="comment">//协议所有者的公钥，通常是接收协议级别费用的账户。</span></span><br><span class="line">    <span class="keyword">pub</span> fund_fee_rate: <span class="type">u64</span>, <span class="comment">//指向基金或其他资金池的费用比率。   </span></span><br><span class="line">    <span class="keyword">pub</span> fund_owner: Pubkey, <span class="comment">//基金或其他资金池的所有者公钥，</span></span><br><span class="line">    <span class="keyword">pub</span> index: <span class="type">u16</span>, <span class="comment">//一个标识符，可能用于区分不同的 AMM 配置实例。</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">impl</span> <span class="title class_">AmmConfig</span> &#123;</span><br><span class="line">	<span class="keyword">pub</span> <span class="keyword">const</span> CONFIG_PREFIX_SEED: &amp;<span class="type">str</span> = <span class="string">&quot;amm_config&quot;</span>;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//使用 1_000_000 作为分母，可以将费率表示为百万分之一的单位。例如，3000 对应 3000 / 1_000_000 = 0.003，即 0.3%。</span></span><br><span class="line">    <span class="keyword">pub</span> <span class="keyword">const</span> FEE_RATE_VALUE: <span class="type">u64</span> = <span class="number">1_000_000</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">get_amm_config_key</span>(index: <span class="type">u16</span>) <span class="punctuation">-&gt;</span> Pubkey &#123;</span><br><span class="line">        <span class="comment">// 计算池子状态账户的PDA</span></span><br><span class="line">        Pubkey::<span class="title function_ invoke__">find_program_address</span>(</span><br><span class="line">            &amp;[<span class="keyword">Self</span>::CONFIG_PREFIX_SEED.<span class="title function_ invoke__">as_bytes</span>(), &amp;index.<span class="title function_ invoke__">to_be_bytes</span>()],</span><br><span class="line">            &amp;crate::ID,</span><br><span class="line">        )</span><br><span class="line">        .<span class="number">0</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><code>anchor/programs/swap/src/accounts_all/config.rs</code>：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> anchor_lang::prelude::*;</span><br><span class="line"><span class="keyword">use</span> crate::states::*;</span><br><span class="line"></span><br><span class="line"><span class="meta">#[derive(Accounts)]</span></span><br><span class="line"><span class="meta">#[instruction(index: u16)]</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">struct</span> <span class="title class_">CreateAmmConfig</span>&lt;<span class="symbol">&#x27;info</span>&gt; &#123;</span><br><span class="line">	<span class="comment">//初始化amm_config账户，space使用了INIT_SPACE自动计算所需要的空间，需要上面states目录文件derive支持</span></span><br><span class="line">	<span class="comment">// 而 &quot;8 +&quot; 是因为Solana 账户有一个 8 字节的头部用于存储账户的分配大小和其他元数据</span></span><br><span class="line">	<span class="comment">// seeds里面使用 &amp;index 是为了区分账户，毕竟多个index会有多个config账户</span></span><br><span class="line">	<span class="comment">// 这里使用 AccountLoader 以后单开一篇再讲</span></span><br><span class="line">	<span class="comment">// &amp;index是引用instruction里面的index，也就是动态获取index</span></span><br><span class="line">	<span class="meta">#[account(</span></span><br><span class="line"><span class="meta">        init,</span></span><br><span class="line"><span class="meta">        payer = owner,</span></span><br><span class="line"><span class="meta">        space = 8+ AmmConfig::INIT_SPACE,</span></span><br><span class="line"><span class="meta">        seeds = [</span></span><br><span class="line"><span class="meta">            AmmConfig::CONFIG_PREFIX_SEED.as_bytes(),</span></span><br><span class="line"><span class="meta">            //&amp;index.to_be_bytes() 是 Rust 中的一个表达式，用于将一个整数（如 u16、u32 等）转换为大端序（Big-Endian）的字节数组,从小到大排序，8个字节为1位，u16即为2位，如果index=1,则为&amp;[0, 1]</span></span><br><span class="line">            &amp;index.<span class="title function_ invoke__">to_be_bytes</span>(),       </span><br><span class="line">        ],</span><br><span class="line">        bump,</span><br><span class="line">        </span><br><span class="line">    )]</span><br><span class="line">    <span class="keyword">pub</span> amm_config: Account&lt;<span class="symbol">&#x27;info</span>, AmmConfig&gt;,</span><br><span class="line"></span><br><span class="line">    <span class="meta">#[account(mut)]</span></span><br><span class="line">    <span class="keyword">pub</span> owner: Signer&lt;<span class="symbol">&#x27;info</span>&gt;,</span><br><span class="line"></span><br><span class="line">    <span class="keyword">pub</span> system_program: Program&lt;<span class="symbol">&#x27;info</span>, System&gt;,</span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+<p>&#96;anchor&#x2F;programs&#x2F;swap&#x2F;src&#x2F;instructions&#x2F;config.rs:</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> crate::accounts_all::*;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> anchor_lang::prelude::*;</span><br><span class="line"></span><br><span class="line"><span class="comment">//设置amm参数,创建amm_config</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">create_amm_config</span>(</span><br><span class="line">    ctx: Context&lt;CreateAmmConfig&gt;,</span><br><span class="line">    index: <span class="type">u16</span>,</span><br><span class="line">    trade_fee_rate: <span class="type">u64</span>,</span><br><span class="line">    protocol_fee_rate: <span class="type">u64</span>,</span><br><span class="line">    create_pool_fee: <span class="type">u64</span>,</span><br><span class="line">    fund_fee_rate: <span class="type">u64</span>,</span><br><span class="line">) <span class="punctuation">-&gt;</span> <span class="type">Result</span>&lt;()&gt; &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">config</span> = ctx.accounts.amm_config.<span class="title function_ invoke__">deref_mut</span>();</span><br><span class="line">    config.protocol_owner = ctx.accounts.owner.<span class="title function_ invoke__">key</span>();</span><br><span class="line">    config.bump = ctx.bumps.amm_config;</span><br><span class="line">    config.trade_fee_rate = trade_fee_rate;</span><br><span class="line">    config.protocol_fee_rate = protocol_fee_rate;</span><br><span class="line">    config.create_pool_fee = create_pool_fee;</span><br><span class="line">    config.fund_fee_rate = fund_fee_rate;</span><br><span class="line">    config.fund_owner = ctx.accounts.owner.<span class="title function_ invoke__">key</span>();</span><br><span class="line">    config.index = index;</span><br><span class="line">    <span class="title function_ invoke__">Ok</span>(())</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">注意！！！这里有个超级大坑：</span><br><span class="line"><span class="meta">#[instruction(index: u16)]</span>不单要参数匹配，还要顺序匹配，也就`index`的位置必须放在create_amm_config方法的第一位，如果不在第一位，哪怕instruction里面写的是index,也会读取到其他第一位的值，例如trade_fee_rate，然后传入到instruction到seeds里面，生成错误的PDA，导致初始化账户一直出现种子冲突问题。</span><br></pre></td></tr></table></figure>
+
+<p><code>lib.rs </code>:</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// pub mod 里面添加以下代码：</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">create_amm_config</span>(</span><br><span class="line">        ctx: Context&lt;CreateAmmConfig&gt;,</span><br><span class="line">        index: <span class="type">u16</span>,</span><br><span class="line">        trade_fee_rate: <span class="type">u64</span>,</span><br><span class="line">        protocol_fee_rate: <span class="type">u64</span>,</span><br><span class="line">        fund_fee_rate: <span class="type">u64</span>,</span><br><span class="line">        create_pool_fee: <span class="type">u64</span>,       </span><br><span class="line">    ) <span class="punctuation">-&gt;</span> <span class="type">Result</span>&lt;()&gt; &#123;</span><br><span class="line">        <span class="built_in">assert!</span>(trade_fee_rate &lt; AmmConfig::FEE_RATE_VALUE);</span><br><span class="line">        <span class="built_in">assert!</span>(protocol_fee_rate &lt;= AmmConfig::FEE_RATE_VALUE);</span><br><span class="line">        <span class="built_in">assert!</span>(fund_fee_rate &lt;= AmmConfig::FEE_RATE_VALUE);</span><br><span class="line">        <span class="built_in">assert!</span>(fund_fee_rate + protocol_fee_rate &lt;= AmmConfig::FEE_RATE_VALUE);</span><br><span class="line">        instructions::<span class="title function_ invoke__">create_amm_config</span>(</span><br><span class="line">            ctx,</span><br><span class="line">            index,</span><br><span class="line">            trade_fee_rate,</span><br><span class="line">            protocol_fee_rate,</span><br><span class="line">            fund_fee_rate,</span><br><span class="line">            create_pool_fee,</span><br><span class="line">            </span><br><span class="line">        )</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">注意！！！这里有个超级大坑：</span><br><span class="line"><span class="meta">#[instruction(index: u16)]</span>不单要参数匹配，还要顺序匹配，也就`index`的位置必须放在create_amm_config方法的第一位，如果不在第一位，哪怕instruction里面写的是index,也会读取到其他第一位的值，例如trade_fee_rate，然后传入到instruction到seeds里面，生成错误的PDA，导致初始化账户一直出现种子冲突问题。</span><br></pre></td></tr></table></figure>
+
+<p>执行Anchor命令：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">anchor build &amp;&amp; anchor deploy</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="前端TS测试代码："><a href="#前端TS测试代码：" class="headerlink" title="前端TS测试代码："></a>前端TS测试代码：</h1><p>获取本地钱包：<br><code>anchor/example/api/wallet.ts</code>:</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> * <span class="keyword">as</span> anchor <span class="keyword">from</span> <span class="string">&quot;@coral-xyz/anchor&quot;</span></span><br><span class="line"><span class="keyword">import</span> &#123; <span class="title class_">Program</span>&#125; <span class="keyword">from</span> <span class="string">&quot;@coral-xyz/anchor&quot;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; swap &#125; <span class="keyword">from</span> <span class="string">&quot;../../target/types/swap&quot;</span>;</span><br><span class="line">  </span><br><span class="line"><span class="keyword">const</span> provider = anchor.<span class="property">AnchorProvider</span>.<span class="title function_">env</span>();</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;provider:&quot;</span>, provider.<span class="property">wallet</span>.<span class="property">publicKey</span>.<span class="title function_">toBase58</span>());</span><br><span class="line">anchor.<span class="title function_">setProvider</span>(provider);</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> program = anchor.<span class="property">workspace</span>.<span class="property">swap</span> <span class="keyword">as</span> <span class="title class_">Program</span>&lt;swap&gt; ;</span><br><span class="line"><span class="keyword">const</span> wallet = provider.<span class="property">wallet</span> <span class="keyword">as</span> anchor.<span class="property">Wallet</span>;</span><br><span class="line"><span class="keyword">const</span> connection = provider.<span class="property">connection</span>;</span><br><span class="line"><span class="keyword">export</span> &#123; program, provider,connection&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">//定义并导出 useDefaultWallet 函数。</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">function</span> <span class="title function_">useDefaultWallet</span>(<span class="params"></span>) &#123;</span><br><span class="line">	<span class="keyword">return</span> anchor.<span class="property">Wallet</span>.<span class="title function_">local</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> * <span class="keyword">as</span> anchor <span class="keyword">from</span> <span class="string">&#x27;@coral-xyz/anchor&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; program &#125; <span class="keyword">from</span> <span class="string">&#x27;./wallet&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; <span class="variable constant_">BN</span> &#125; <span class="keyword">from</span> <span class="string">&#x27;bn.js&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; <span class="title class_">PublicKey</span> &#125; <span class="keyword">from</span> <span class="string">&#x27;@solana/web3.js&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//创建AmmConfig</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">async</span> <span class="keyword">function</span> <span class="title function_">createAmmConfig</span>(<span class="params"></span></span><br><span class="line"><span class="params">  <span class="attr">wallet</span>: anchor.<span class="title class_">Wallet</span>,</span></span><br><span class="line"><span class="params">  <span class="attr">trade_fee_rate</span>: <span class="built_in">number</span>,</span></span><br><span class="line"><span class="params">  <span class="attr">protocol_fee_rate</span>: <span class="built_in">number</span>,</span></span><br><span class="line"><span class="params">  <span class="attr">fund_fee_rate</span>: <span class="built_in">number</span>,</span></span><br><span class="line"><span class="params">  <span class="attr">create_pool_fee</span>: <span class="built_in">number</span>,</span></span><br><span class="line"><span class="params">  <span class="attr">index</span>: <span class="built_in">number</span>,</span></span><br><span class="line"><span class="params"></span>) &#123;</span><br><span class="line">	<span class="keyword">const</span> [ammConfigPda, bump] = <span class="keyword">await</span> <span class="title class_">PublicKey</span>.<span class="title function_">findProgramAddress</span>(</span><br><span class="line">	    [</span><br><span class="line">	    <span class="title class_">Buffer</span>.<span class="title function_">from</span>(<span class="string">&#x27;amm_config&#x27;</span>), <span class="comment">//必须要与合约里面定义的种子前缀一样</span></span><br><span class="line">	    <span class="title function_">u16ToBytes</span>(index)   </span><br><span class="line">	    ],</span><br><span class="line">	    program.<span class="property">programId</span>,</span><br><span class="line">	  );</span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">await</span> program.<span class="property">methods</span></span><br><span class="line">    .<span class="title function_">createAmmConfig</span>(</span><br><span class="line">	  index, <span class="comment">//u16使用number类型就好，不需要BN</span></span><br><span class="line">      <span class="keyword">new</span> <span class="title function_">BN</span>(trade_fee_rate), <span class="comment">// 转换为 BN 类型 ,因为合约参数使用了u64，数值较大</span></span><br><span class="line">      <span class="keyword">new</span> <span class="title function_">BN</span>(protocol_fee_rate), <span class="comment">// 转换为 BN 类型</span></span><br><span class="line">      <span class="keyword">new</span> <span class="title function_">BN</span>(fund_fee_rate), <span class="comment">// 转换为 BN 类型</span></span><br><span class="line">      <span class="keyword">new</span> <span class="title function_">BN</span>(create_pool_fee), <span class="comment">// 转换为 BN 类型     </span></span><br><span class="line">    )</span><br><span class="line">    .<span class="title function_">accounts</span>(&#123;</span><br><span class="line">	  <span class="attr">ammConfig</span>: ammConfigPda,</span><br><span class="line">	  <span class="attr">owner</span>: wallet.<span class="property">publicKey</span>,</span><br><span class="line">    &#125; <span class="keyword">as</span> <span class="built_in">never</span> )</span><br><span class="line">    .<span class="title function_">signers</span>([wallet.<span class="property">payer</span>])</span><br><span class="line">    .<span class="title function_">rpc</span>();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//更新 AmmConfig，暂时不用管，因为还没创建admin账户，这个后面还会讲</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">async</span> <span class="keyword">function</span> <span class="title function_">updateAmmConfig</span>(<span class="params"></span></span><br><span class="line"><span class="params">  <span class="attr">wallet</span>: anchor.<span class="title class_">Wallet</span>,</span></span><br><span class="line"><span class="params">  <span class="attr">num</span>: <span class="built_in">number</span>,</span></span><br><span class="line"><span class="params">  <span class="attr">value</span>: <span class="built_in">number</span>,</span></span><br><span class="line"><span class="params">  <span class="attr">index</span>: <span class="built_in">number</span>,</span></span><br><span class="line"><span class="params"></span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> [adminPda] = anchor.<span class="property">web3</span>.<span class="property">PublicKey</span>.<span class="title function_">findProgramAddressSync</span>(</span><br><span class="line">    [<span class="title class_">Buffer</span>.<span class="title function_">from</span>(<span class="string">&#x27;admin_v1&#x27;</span>), wallet.<span class="property">publicKey</span>.<span class="title function_">toBuffer</span>()],</span><br><span class="line">    program.<span class="property">programId</span>,</span><br><span class="line">  );</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> [ammConfigPda, bump] = <span class="keyword">await</span> <span class="title class_">PublicKey</span>.<span class="title function_">findProgramAddress</span>(</span><br><span class="line">    [<span class="title class_">Buffer</span>.<span class="title function_">from</span>(<span class="string">&#x27;amm_config&#x27;</span>), <span class="title function_">u16ToBytes</span>(index)],</span><br><span class="line">    program.<span class="property">programId</span>,</span><br><span class="line">  );</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">await</span> program.<span class="property">methods</span></span><br><span class="line">    .<span class="title function_">updateAmmConfig</span>(num, <span class="keyword">new</span> <span class="title function_">BN</span>(value))</span><br><span class="line">    .<span class="title function_">accounts</span>(&#123;</span><br><span class="line">      <span class="attr">owner</span>: wallet.<span class="property">publicKey</span>,</span><br><span class="line">      <span class="attr">admin</span>: adminPda,</span><br><span class="line">      <span class="attr">ammConfig</span>: ammConfigPda,</span><br><span class="line">    &#125;)</span><br><span class="line">    .<span class="title function_">signers</span>([wallet.<span class="property">payer</span>])</span><br><span class="line">    .<span class="title function_">rpc</span>();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//获取 AmmConfig配置信息</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">async</span> <span class="keyword">function</span> <span class="title function_">getAmmConfig</span>(<span class="params"><span class="attr">index</span>: <span class="built_in">number</span></span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> [ammConfigPda, bump] = <span class="keyword">await</span> <span class="title class_">PublicKey</span>.<span class="title function_">findProgramAddress</span>(</span><br><span class="line">	    [</span><br><span class="line">	    <span class="title class_">Buffer</span>.<span class="title function_">from</span>(<span class="string">&#x27;amm_config&#x27;</span>), <span class="comment">//必须要与合约里面定义的种子前缀一样</span></span><br><span class="line">	    <span class="title function_">u16ToBytes</span>(index)   </span><br><span class="line">	    ],</span><br><span class="line">	    program.<span class="property">programId</span>,</span><br><span class="line">	  );</span><br><span class="line">	<span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;ammConfig Pda is:&#x27;</span>, ammConfigPda.<span class="title function_">toString</span>());</span><br><span class="line"></span><br><span class="line"><span class="comment">//fetch 方法用于从链上获取账户的数据，并将其反序列化为指定的 Rust 结构体,从链上获取一个特定的 AMM 配置账户（ammConfig）的数据。	</span></span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">await</span> program.<span class="property">account</span>.<span class="property">ammConfig</span>.<span class="title function_">fetch</span>(ammConfigPda);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//将number转换为u16字节数组，对应 &amp;index.to_be_bytes()</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">function</span> <span class="title function_">u16ToBytes</span>(<span class="params"><span class="attr">num</span>: <span class="built_in">number</span></span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> arr = <span class="keyword">new</span> <span class="title class_">ArrayBuffer</span>(<span class="number">2</span>);</span><br><span class="line">  <span class="keyword">const</span> view = <span class="keyword">new</span> <span class="title class_">DataView</span>(arr);</span><br><span class="line">  view.<span class="title function_">setUint16</span>(<span class="number">0</span>, num, <span class="literal">false</span>);</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Uint8Array</span>(arr);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>调用测试方法：<br><code>anchor/example/index.ts</code></p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> * <span class="keyword">as</span> anchor <span class="keyword">from</span> <span class="string">&#x27;@coral-xyz/anchor&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; connection, program, provider, useDefaultWallet &#125; <span class="keyword">from</span> <span class="string">&#x27;./api/wallet&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; createAmmConfig, getAmmConfig &#125; <span class="keyword">from</span> <span class="string">&#x27;./api/config&#x27;</span>;</span><br><span class="line"></span><br><span class="line">(<span class="title function_">async</span> () =&gt; &#123;</span><br><span class="line">	<span class="comment">// 获取默认钱包</span></span><br><span class="line">	<span class="keyword">const</span> defaultWallet = <span class="title function_">useDefaultWallet</span>();</span><br><span class="line"></span><br><span class="line">	<span class="comment">//创建config</span></span><br><span class="line">  <span class="keyword">const</span> amm_config = <span class="keyword">await</span> <span class="title function_">createAmmConfig</span>(defaultWallet, <span class="number">3_000</span>, <span class="number">3_000</span>, <span class="number">3_000</span>, <span class="number">3_000</span>, <span class="number">1</span>);</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(amm_config); <span class="comment">//会输出trancsations</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">//获取config具体信息</span></span><br><span class="line">  <span class="keyword">const</span> <span class="title class_">AmmConfig</span> = <span class="keyword">await</span> <span class="title function_">getAmmConfig</span>(<span class="number">1</span>);</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;get_amm_config is&#x27;</span>, <span class="title class_">AmmConfig</span>); <span class="comment">//输出具体配置</span></span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">	<span class="comment">//更新config，需要admin章节创建admin后才能使用</span></span><br><span class="line">  <span class="keyword">const</span> updateConfig = <span class="keyword">await</span> <span class="title function_">updateAmmConfig</span>(defaultWallet, <span class="number">0</span>, <span class="number">4_000</span>, <span class="number">1</span>);</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;updateAmmConfig is&#x27;</span>, updateConfig);</span><br></pre></td></tr></table></figure>
+
+<p>执行Anchor命令：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">anchor run api</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2025/02/08/Solana%20%E5%90%88%E7%BA%A6%E5%BC%80%E5%8F%91%20-%20DeFi%20%20%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/" rel="next" title="Solana 合约开发 - DeFi  基础概念">
+                <i class="fa fa-chevron-left"></i> Solana 合约开发 - DeFi  基础概念
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2025/02/09/Solana-Dex-Admin/" rel="prev" title="Solana 合约开发 - DeFi - Dex 开发二：Admin">
+                Solana 合约开发 - DeFi - Dex 开发二：Admin <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%20%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">34</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="qsunou@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%90%88%E7%BA%A6%E4%BB%A3%E7%A0%81%EF%BC%9A"><span class="nav-number">1.</span> <span class="nav-text">合约代码：</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E7%AB%AFTS%E6%B5%8B%E8%AF%95%E4%BB%A3%E7%A0%81%EF%BC%9A"><span class="nav-number">2.</span> <span class="nav-text">前端TS测试代码：</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">QsunOu</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
