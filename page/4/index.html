@@ -262,6 +262,159 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/10/19/Rust-lesson-5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2024/10/19/Rust-lesson-5/" itemprop="url">Rust lesson 5 - 数据类型</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-10-19T18:44:43+08:00">
+                2024-10-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%8A%80%E6%9C%AF-Rust-%E5%BC%80%E5%8F%91/" itemprop="url" rel="index">
+                    <span itemprop="name">技术/Rust 开发</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>第一次看随便看看得了，暂时有不懂的也不用那么较劲</p>
+<h1 id="概览："><a href="#概览：" class="headerlink" title="概览："></a>概览：</h1><p><img src="/images/data_type_1.png" alt="Pasted image 20241021184212.png"><br><img src="/images/data_type_2.png" alt="Pasted image 20241021184300.png"><br><img src="/images/data_type_3.png" alt="Pasted image 20241021184409.png"><br><img src="/images/data_type_4.png" alt="Pasted image 20241021184428.png"></p>
+<h1 id="整形："><a href="#整形：" class="headerlink" title="整形："></a>整形：</h1><p>整形可以根据 数据大小 和 有无符号 进行分类：<br><img src="/images/int_1.png" alt="Pasted image 20241021184711.png"></p>
+<p>整形字面书写方式可以按照下表书写：</p>
+<p><img src="/images/int_2.png" alt="Pasted image 20241021184827.png"><br>注：这里98_222的下划线其实没啥用，就是为了视觉上好看点，例如10_000</p>
+<h1 id="浮点型："><a href="#浮点型：" class="headerlink" title="浮点型："></a>浮点型：</h1><p>浮点型数字是带有小数点的数字，两种基本类型：f32 和 f64 ,默认是f64 </p>
+<h1 id="NaN类型（Not-a-Number）："><a href="#NaN类型（Not-a-Number）：" class="headerlink" title="NaN类型（Not a Number）："></a>NaN类型（Not a Number）：</h1><p>通常用于表示那些在数学运算中无法定义或没有意义的数值结果，如 <code>0.0/0.0</code>，任何与NaN交互都会返回NaN。</p>
+<h1 id="布尔类型："><a href="#布尔类型：" class="headerlink" title="布尔类型："></a>布尔类型：</h1><p>跟其他语言一样，true or false。</p>
+<h1 id="字符："><a href="#字符：" class="headerlink" title="字符："></a>字符：</h1><p>所有ASCII和Unicode值都可以作为Rust字符，中日英韩emoji都行，占用4个字节。</p>
+<h1 id="序列："><a href="#序列：" class="headerlink" title="序列："></a>序列：</h1><p>前面也有遇到过，就是（1..5），1-4不包含5。（1..&#x3D;5)就包含5,常用于循环</p>
+<h1 id="强制类型转换："><a href="#强制类型转换：" class="headerlink" title="强制类型转换："></a>强制类型转换：</h1><p><code>as</code> 关键字用于在不同类型之间进行类型转换，这种转换称为 <strong>类型铸造</strong>（type casting）。<code>as</code> 关键字主要用于原始类型的转换，如从一种数字类型转换为另一种数字类型。</p>
+<p>代码示例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">let original_value: OriginalType = ...;</span><br><span class="line">let new_value: NewType = original_value as NewType;</span><br><span class="line"></span><br><span class="line">//i32 转 f64</span><br><span class="line">let int_value: i32 = 10;</span><br><span class="line">let float_value: f64 = int_value as f64;</span><br></pre></td></tr></table></figure>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://example.com/2024/10/18/Rust-lesson-4/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1051,7 +1204,7 @@
               
                 <a href="/archives/%20%7C%7C%20archive">
               
-                  <span class="site-state-item-count">34</span>
+                  <span class="site-state-item-count">35</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
