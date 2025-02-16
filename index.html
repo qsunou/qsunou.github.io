@@ -262,6 +262,166 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2025/02/16/Solana%20%E5%90%88%E7%BA%A6%E5%BC%80%E5%8F%91%20-%20DeFi%20-%20Dex%20%E5%BC%80%E5%8F%91%E5%8D%81%EF%BC%9AProtocol%20Fee/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2025/02/16/Solana%20%E5%90%88%E7%BA%A6%E5%BC%80%E5%8F%91%20-%20DeFi%20-%20Dex%20%E5%BC%80%E5%8F%91%E5%8D%81%EF%BC%9AProtocol%20Fee/" itemprop="url">Solana 合约开发 - DeFi - Dex 开发十：Protocol Fee</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2025-02-16T20:52:29+08:00">
+                2025-02-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Solana%E5%90%88%E7%BA%A6%E5%BC%80%E5%8F%91-DeFi-Dex/" itemprop="url" rel="index">
+                    <span itemprop="name">Solana合约开发-DeFi-Dex</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>在去中心化金融（DeFi）协议中，<strong>Protocol Fee（协议费用）</strong> 是一种机制，用于从交易或流动性池操作中抽取一定比例的费用，以支持协议本身的运营和发展，包括但不限于开发、维护、安全审计等。</p>
+<p>本章节提取Protocol Fee 代码与上节<code>fund fee</code>基本差不多</p>
+<h1 id="合约代码"><a href="#合约代码" class="headerlink" title="合约代码"></a>合约代码</h1><p>anchor&#x2F;programs&#x2F;iswap&#x2F;src&#x2F;accounts_all&#x2F;protocol_fee.rs</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> crate::states::*;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> anchor_lang::prelude::*;</span><br><span class="line"><span class="keyword">use</span> anchor_spl::associated_token::AssociatedToken;</span><br><span class="line"><span class="keyword">use</span> anchor_spl::token::Token;</span><br><span class="line"><span class="keyword">use</span> anchor_spl::token_interface::Mint;</span><br><span class="line"><span class="keyword">use</span> anchor_spl::token_interface::Token2022;</span><br><span class="line"><span class="keyword">use</span> anchor_spl::token_interface::TokenAccount;</span><br><span class="line"></span><br><span class="line"><span class="meta">#[derive(Accounts)]</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">struct</span> <span class="title class_">CollectProtocolFee</span>&lt;<span class="symbol">&#x27;info</span>&gt; &#123;</span><br><span class="line">    <span class="meta">#[account(</span></span><br><span class="line"><span class="meta">        init_if_needed,</span></span><br><span class="line"><span class="meta">        payer = creator,</span></span><br><span class="line"><span class="meta">        associated_token::mint = vault_0_mint,</span></span><br><span class="line"><span class="meta">        associated_token::authority = authority,</span></span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">    )]</span></span><br><span class="line">    <span class="keyword">pub</span> recipient_token_0_protocol_account: <span class="type">Box</span>&lt;InterfaceAccount&lt;<span class="symbol">&#x27;info</span>, TokenAccount&gt;&gt;,</span><br><span class="line"></span><br><span class="line">    <span class="meta">#[account(</span></span><br><span class="line"><span class="meta">        init_if_needed,</span></span><br><span class="line"><span class="meta">        payer = creator,</span></span><br><span class="line"><span class="meta">        associated_token::mint = vault_1_mint,</span></span><br><span class="line"><span class="meta">        associated_token::authority = authority,</span></span><br><span class="line"><span class="meta">    )]</span></span><br><span class="line">    <span class="keyword">pub</span> recipient_token_1_protocol_account: <span class="type">Box</span>&lt;InterfaceAccount&lt;<span class="symbol">&#x27;info</span>, TokenAccount&gt;&gt;,</span><br><span class="line"></span><br><span class="line">    <span class="comment">/// CHECK: pool vault and lp mint authority</span></span><br><span class="line">    <span class="meta">#[account(</span></span><br><span class="line"><span class="meta">        mut,</span></span><br><span class="line"><span class="meta">        seeds = [</span></span><br><span class="line"><span class="meta">            crate::AUTH_SEED.as_bytes(),</span></span><br><span class="line"><span class="meta">        ]</span>,</span><br><span class="line">        bump,</span><br><span class="line">    )]</span><br><span class="line">    <span class="keyword">pub</span> authority: UncheckedAccount&lt;<span class="symbol">&#x27;info</span>&gt;,</span><br><span class="line"></span><br><span class="line">    <span class="meta">#[account(mut)]</span></span><br><span class="line">    <span class="keyword">pub</span> creator: Signer&lt;<span class="symbol">&#x27;info</span>&gt;,</span><br><span class="line"></span><br><span class="line">    <span class="meta">#[account(mut)]</span></span><br><span class="line">    <span class="keyword">pub</span> pool_state: AccountLoader&lt;<span class="symbol">&#x27;info</span>, PoolState&gt;,</span><br><span class="line"></span><br><span class="line">    <span class="meta">#[account(address = pool_state.load()?.amm_config)]</span></span><br><span class="line">    <span class="keyword">pub</span> amm_config: Account&lt;<span class="symbol">&#x27;info</span>, AmmConfig&gt;,</span><br><span class="line"></span><br><span class="line">    <span class="meta">#[account(</span></span><br><span class="line"><span class="meta">        mut,</span></span><br><span class="line"><span class="meta">        constraint = token_0_vault.key() == pool_state.load()?.token_0_vault</span></span><br><span class="line"><span class="meta">    )]</span></span><br><span class="line">    <span class="keyword">pub</span> token_0_vault: <span class="type">Box</span>&lt;InterfaceAccount&lt;<span class="symbol">&#x27;info</span>, TokenAccount&gt;&gt;,</span><br><span class="line"></span><br><span class="line">    <span class="meta">#[account(</span></span><br><span class="line"><span class="meta">        mut,</span></span><br><span class="line"><span class="meta">        constraint = token_1_vault.key() == pool_state.load()?.token_1_vault</span></span><br><span class="line"><span class="meta">    )]</span></span><br><span class="line">    <span class="keyword">pub</span> token_1_vault: <span class="type">Box</span>&lt;InterfaceAccount&lt;<span class="symbol">&#x27;info</span>, TokenAccount&gt;&gt;,</span><br><span class="line"></span><br><span class="line">    <span class="meta">#[account(</span></span><br><span class="line"><span class="meta">        address = token_0_vault.mint</span></span><br><span class="line"><span class="meta">    )]</span></span><br><span class="line">    <span class="keyword">pub</span> vault_0_mint: <span class="type">Box</span>&lt;InterfaceAccount&lt;<span class="symbol">&#x27;info</span>, Mint&gt;&gt;,</span><br><span class="line"></span><br><span class="line">    <span class="meta">#[account(</span></span><br><span class="line"><span class="meta">        address = token_1_vault.mint</span></span><br><span class="line"><span class="meta">    )]</span></span><br><span class="line">    <span class="keyword">pub</span> vault_1_mint: <span class="type">Box</span>&lt;InterfaceAccount&lt;<span class="symbol">&#x27;info</span>, Mint&gt;&gt;,</span><br><span class="line"></span><br><span class="line">    <span class="keyword">pub</span> token_program: Program&lt;<span class="symbol">&#x27;info</span>, Token&gt;,</span><br><span class="line">    <span class="keyword">pub</span> associated_token_program: Program&lt;<span class="symbol">&#x27;info</span>, AssociatedToken&gt;,</span><br><span class="line">    <span class="keyword">pub</span> system_program: Program&lt;<span class="symbol">&#x27;info</span>, System&gt;,</span><br><span class="line">    <span class="keyword">pub</span> token_program_2022: Program&lt;<span class="symbol">&#x27;info</span>, Token2022&gt;,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p>anchor&#x2F;programs&#x2F;swap&#x2F;src&#x2F;instructions&#x2F;protocol_fee.rs</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> crate::accounts_all::*;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> crate::util::*;</span><br><span class="line"><span class="keyword">use</span> anchor_lang::prelude::*;</span><br><span class="line"></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">collect_protocol_fee</span>(</span><br><span class="line">    ctx: Context&lt;CollectProtocolFee&gt;,</span><br><span class="line">    amount_0_requested: <span class="type">u64</span>,</span><br><span class="line">    amount_1_requested: <span class="type">u64</span>,</span><br><span class="line">) <span class="punctuation">-&gt;</span> <span class="type">Result</span>&lt;()&gt; &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">transfer_amount_0</span>: <span class="type">u64</span>;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">transfer_amount_1</span>: <span class="type">u64</span>;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">auth_bump</span>: <span class="type">u8</span>;</span><br><span class="line"></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">let</span> <span class="variable">pool_state</span> = ctx.accounts.pool_state.<span class="title function_ invoke__">load_mut</span>()?;</span><br><span class="line"></span><br><span class="line">        transfer_amount_0 = amount_0_requested.<span class="title function_ invoke__">min</span>(pool_state.protocol_fees_token_0);</span><br><span class="line">        transfer_amount_1 = amount_1_requested.<span class="title function_ invoke__">min</span>(pool_state.protocol_fees_token_1);</span><br><span class="line"></span><br><span class="line">        auth_bump = pool_state.auth_bump;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 转移token0金库费用到协议账户费用</span></span><br><span class="line">    <span class="title function_ invoke__">transfer_from_pool_vault_to_user</span>(</span><br><span class="line">        ctx.accounts.authority.<span class="title function_ invoke__">to_account_info</span>(),</span><br><span class="line">        ctx.accounts.token_0_vault.<span class="title function_ invoke__">to_account_info</span>(),</span><br><span class="line">        ctx.accounts</span><br><span class="line">            .recipient_token_0_protocol_account</span><br><span class="line">            .<span class="title function_ invoke__">to_account_info</span>(),</span><br><span class="line">        ctx.accounts.vault_0_mint.<span class="title function_ invoke__">to_account_info</span>(),</span><br><span class="line">        <span class="keyword">if</span> ctx.accounts.vault_0_mint.<span class="title function_ invoke__">to_account_info</span>().owner == ctx.accounts.token_program.key &#123;</span><br><span class="line">            ctx.accounts.token_program.<span class="title function_ invoke__">to_account_info</span>()</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            ctx.accounts.token_program_2022.<span class="title function_ invoke__">to_account_info</span>()</span><br><span class="line">        &#125;,</span><br><span class="line">        transfer_amount_0,</span><br><span class="line">        ctx.accounts.vault_0_mint.decimals,</span><br><span class="line">        &amp;[&amp;[crate::AUTH_SEED.<span class="title function_ invoke__">as_bytes</span>(), &amp;[auth_bump]]],</span><br><span class="line">    )?;</span><br><span class="line">    <span class="comment">// 转移token1金库费用到协议账户费用</span></span><br><span class="line">    <span class="title function_ invoke__">transfer_from_pool_vault_to_user</span>(</span><br><span class="line">        ctx.accounts.authority.<span class="title function_ invoke__">to_account_info</span>(),</span><br><span class="line">        ctx.accounts.token_1_vault.<span class="title function_ invoke__">to_account_info</span>(),</span><br><span class="line">        ctx.accounts</span><br><span class="line">            .recipient_token_1_protocol_account</span><br><span class="line">            .<span class="title function_ invoke__">to_account_info</span>(),</span><br><span class="line">        ctx.accounts.vault_1_mint.<span class="title function_ invoke__">to_account_info</span>(),</span><br><span class="line">        <span class="keyword">if</span> ctx.accounts.vault_1_mint.<span class="title function_ invoke__">to_account_info</span>().owner == ctx.accounts.token_program.key &#123;</span><br><span class="line">            ctx.accounts.token_program.<span class="title function_ invoke__">to_account_info</span>()</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            ctx.accounts.token_program_2022.<span class="title function_ invoke__">to_account_info</span>()</span><br><span class="line">        &#125;,</span><br><span class="line">        transfer_amount_1,</span><br><span class="line">        ctx.accounts.vault_1_mint.decimals,</span><br><span class="line">        &amp;[&amp;[crate::AUTH_SEED.<span class="title function_ invoke__">as_bytes</span>(), &amp;[auth_bump]]],</span><br><span class="line">    )?;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 更新流动性池状态</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">pool_state</span> = ctx.accounts.pool_state.<span class="title function_ invoke__">load_mut</span>()?;</span><br><span class="line">        pool_state.protocol_fees_token_0 = pool_state</span><br><span class="line">            .protocol_fees_token_0</span><br><span class="line">            .<span class="title function_ invoke__">checked_sub</span>(transfer_amount_0)</span><br><span class="line">            .<span class="title function_ invoke__">unwrap</span>();</span><br><span class="line">        pool_state.protocol_fees_token_1 = pool_state</span><br><span class="line">            .protocol_fees_token_1</span><br><span class="line">            .<span class="title function_ invoke__">checked_sub</span>(transfer_amount_1)</span><br><span class="line">            .<span class="title function_ invoke__">unwrap</span>();</span><br><span class="line"></span><br><span class="line">        pool_state.latest_epoch = Clock::<span class="title function_ invoke__">get</span>()?.epoch;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="title function_ invoke__">Ok</span>(())</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>anchor&#x2F;programs&#x2F;swap&#x2F;src&#x2F;lib.rs</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">collect_protocol_fee</span>(</span><br><span class="line">        ctx: Context&lt;CollectProtocolFee&gt;,</span><br><span class="line">        amount_0_requested: <span class="type">u64</span>,</span><br><span class="line">        amount_1_requested: <span class="type">u64</span>,</span><br><span class="line">    ) <span class="punctuation">-&gt;</span> <span class="type">Result</span>&lt;()&gt; &#123;</span><br><span class="line">        instructions::<span class="title function_ invoke__">collect_protocol_fee</span>(ctx, amount_0_requested, amount_1_requested)</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="前端测试代码"><a href="#前端测试代码" class="headerlink" title="前端测试代码"></a>前端测试代码</h1><p>anchor&#x2F;example&#x2F;index.ts</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//protocol_fee转移</span></span><br><span class="line">  <span class="keyword">const</span> protocolfee_transfer = <span class="keyword">await</span> <span class="title function_">protocolFeeTransfer</span>(</span><br><span class="line">    defaultWallet,</span><br><span class="line">    <span class="keyword">new</span> <span class="title function_">BN</span>(<span class="number">10</span>),</span><br><span class="line">    <span class="keyword">new</span> <span class="title function_">BN</span>(<span class="number">0</span>),</span><br><span class="line">    usdcDevTokenMint,</span><br><span class="line">    eurcDevTokenMint,</span><br><span class="line">    pool_state.<span class="property">token0Vault</span>,</span><br><span class="line">    pool_state.<span class="property">token1Vault</span>,</span><br><span class="line">    <span class="number">6</span>,</span><br><span class="line">  );</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(protocolfee_transfer);</span><br></pre></td></tr></table></figure>
+
+
+<p>anchor&#x2F;example&#x2F;api&#x2F;protocol_fee.ts</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> * <span class="keyword">as</span> anchor <span class="keyword">from</span> <span class="string">&#x27;@coral-xyz/anchor&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; program, provider &#125; <span class="keyword">from</span> <span class="string">&#x27;./wallet&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; <span class="title class_">PublicKey</span> &#125; <span class="keyword">from</span> <span class="string">&#x27;@solana/web3.js&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">async</span> <span class="keyword">function</span> <span class="title function_">protocolFeeTransfer</span>(<span class="params"></span></span><br><span class="line"><span class="params">  <span class="attr">wallet</span>: anchor.<span class="title class_">Wallet</span>,</span></span><br><span class="line"><span class="params">  <span class="attr">transfer_amount_0</span>: anchor.BN,</span></span><br><span class="line"><span class="params">  <span class="attr">transfer_amount_1</span>: anchor.BN,</span></span><br><span class="line"><span class="params">  <span class="attr">token0Mint</span>: anchor.web3.<span class="title class_">PublicKey</span>,</span></span><br><span class="line"><span class="params">  <span class="attr">token1Mint</span>: anchor.web3.<span class="title class_">PublicKey</span>,</span></span><br><span class="line"><span class="params">  <span class="attr">token0Vault</span>: anchor.web3.<span class="title class_">PublicKey</span>,</span></span><br><span class="line"><span class="params">  <span class="attr">token1Vault</span>: anchor.web3.<span class="title class_">PublicKey</span>,</span></span><br><span class="line"><span class="params">  <span class="attr">index</span>: <span class="built_in">number</span>,</span></span><br><span class="line"><span class="params"></span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> [ammConfigPda] = <span class="keyword">await</span> <span class="title class_">PublicKey</span>.<span class="title function_">findProgramAddress</span>(</span><br><span class="line">    [<span class="title class_">Buffer</span>.<span class="title function_">from</span>(<span class="string">&#x27;AMM_Config&#x27;</span>), <span class="title function_">u16ToBytes</span>(index)],</span><br><span class="line">    program.<span class="property">programId</span>,</span><br><span class="line">  );</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> [poolStatePda] = anchor.<span class="property">web3</span>.<span class="property">PublicKey</span>.<span class="title function_">findProgramAddressSync</span>(</span><br><span class="line">    [<span class="title class_">Buffer</span>.<span class="title function_">from</span>(<span class="string">&#x27;pool_v1&#x27;</span>), ammConfigPda.<span class="title function_">toBuffer</span>(), token0Mint.<span class="title function_">toBuffer</span>(), token1Mint.<span class="title function_">toBuffer</span>()],</span><br><span class="line">    program.<span class="property">programId</span>,</span><br><span class="line">  );</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">await</span> program.<span class="property">methods</span></span><br><span class="line">    .<span class="title function_">collectProtocolFee</span>(transfer_amount_0, transfer_amount_1)</span><br><span class="line">    .<span class="title function_">accounts</span>(&#123;</span><br><span class="line">      <span class="attr">creator</span>: wallet.<span class="property">publicKey</span>,</span><br><span class="line">      <span class="attr">ammConfig</span>: ammConfigPda,</span><br><span class="line">      <span class="attr">poolState</span>: poolStatePda,</span><br><span class="line">      <span class="attr">token0Vault</span>: token0Vault,</span><br><span class="line">      <span class="attr">token1Vault</span>: token1Vault,</span><br><span class="line">      <span class="attr">vault0Mint</span>: token0Mint,</span><br><span class="line">      <span class="attr">vault1Mint</span>: token1Mint,</span><br><span class="line">    &#125;)</span><br><span class="line">    .<span class="title function_">signers</span>([wallet.<span class="property">payer</span>])</span><br><span class="line">    .<span class="title function_">rpc</span>();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">function</span> <span class="title function_">u16ToBytes</span>(<span class="params"><span class="attr">num</span>: <span class="built_in">number</span></span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> arr = <span class="keyword">new</span> <span class="title class_">ArrayBuffer</span>(<span class="number">2</span>);</span><br><span class="line">  <span class="keyword">const</span> view = <span class="keyword">new</span> <span class="title class_">DataView</span>(arr);</span><br><span class="line">  view.<span class="title function_">setUint16</span>(<span class="number">0</span>, num, <span class="literal">false</span>);</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Uint8Array</span>(arr);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://example.com/2025/02/16/Solana%20%E5%90%88%E7%BA%A6%E5%BC%80%E5%8F%91%20-%20DeFi%20-%20Dex%20%E5%BC%80%E5%8F%91%E4%B9%9D%EF%BC%9AFund%20Fee/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1781,162 +1941,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2025/02/08/Solana%20%E5%90%88%E7%BA%A6%E5%BC%80%E5%8F%91%20-%20DeFi%20%20%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2025/02/08/Solana%20%E5%90%88%E7%BA%A6%E5%BC%80%E5%8F%91%20-%20DeFi%20%20%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/" itemprop="url">Solana 合约开发 - DeFi  基础概念</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2025-02-08T23:29:26+08:00">
-                2025-02-08
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Solana%E5%90%88%E7%BA%A6%E5%BC%80%E5%8F%91-DeFi-Dex/" itemprop="url" rel="index">
-                    <span itemprop="name">Solana合约开发-DeFi-Dex</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="什么是DeFi？"><a href="#什么是DeFi？" class="headerlink" title="什么是DeFi？"></a>什么是DeFi？</h1><p>去中心化金融（Decentralized Finance，简称 DeFi）是基于区块链技术，构建的一系列金融服务和产品的总称。与传统的中心化金融系统不同，DeFi 平台运行在区块链上，不依赖于银行、公司等中介机构来提供服务。这意味着用户可以直接通过这些平台进行借贷、交易、储蓄、投资等活动，享受更高的透明度、控制权以及更低的进入门槛。</p>
-<h2 id="特点："><a href="#特点：" class="headerlink" title="特点："></a>特点：</h2><p><strong>无需许可</strong>：任何人都可以使用 DeFi 应用程序，无需经过任何机构的审批或同意。<br><strong>去中心化</strong>：没有单一的控制点，而是由智能合约自动执行规则，减少了人为干预的风险。<br><strong>透明性</strong>：所有交易都是公开透明的，并记录在区块链上，任何人都可以查看。<br><strong>可访问性</strong>：只要有互联网连接，全球任何人都能访问 DeFi 服务，不受地域限制。<br><strong>创新性</strong>：提供了传统金融体系中难以实现的新产品和服务，比如流动性挖矿、闪贷等。</p>
-<h2 id="常见的DeFi服务："><a href="#常见的DeFi服务：" class="headerlink" title="常见的DeFi服务："></a>常见的DeFi服务：</h2><p><strong>借贷平台</strong>：如 Compound 和 Aave，允许用户存入资金赚取利息，或者抵押资产借出其他类型的代币。<br><strong>去中心化交易所（DEXs）</strong>：例如 Uniswap 和 SushiSwap，让用户直接从自己的钱包交换加密货币，无需通过中心化的交易所。<br><strong>稳定币</strong>：像 DAI 这样的去中心化稳定币，旨在保持价值相对稳定，通常与美元挂钩。<br><strong>收益农业（Yield Farming）</strong>：通过将资产存入特定协议来获得奖励，通常是该协议的治理代币。</p>
-<h1 id="什么是-AMM？"><a href="#什么是-AMM？" class="headerlink" title="什么是 AMM？"></a>什么是 AMM？</h1><p>自动做市商（Automated Market Maker，简称 AMM）是去中心化金融（DeFi）领域中一种用于在去中心化交易所（DEXs）上实现资产交易的机制。与传统的订单簿模式不同，AMM 不依赖买卖双方直接匹配订单来完成交易（跟你大A股不一样），而是通过算法和流动性池来确定价格并执行交易。</p>
-<h2 id="工作原理："><a href="#工作原理：" class="headerlink" title="工作原理："></a>工作原理：</h2><p>在 AMM 系统中，流动性提供者（Liquidity Providers, LPs）将两种或多种代币存入一个智能合约创建的流动性池中。当用户想要进行交易时（例如用 Token A 交换 Token B），他们不是与另一个买家或卖家匹配，而是与这个流动性池进行交互。交易的价格由预设的数学公式决定，最常见的是恒定乘积公式 <code>x * y = k</code> ,<code>x</code> 和 <code>y</code>  代表两种 token , k 是一个常数， 这个叫<code>恒定乘积公式</code>。</p>
-<p>这意味着如果有人想要购买更多的 Token A，那么 Token A 在流动性池中的数量会减少，而 Token B 的数量会增加，从而导致 Token A 的价格上涨。反之亦然，如果有人卖出 Token A，则其价格会下降。</p>
-<h1 id="什么是流动性提供者（LP）"><a href="#什么是流动性提供者（LP）" class="headerlink" title="什么是流动性提供者（LP）?"></a>什么是流动性提供者（LP）?</h1><p>流动性提供者是那些将自己持有的代币存入特定的智能合约中，以形成一个或多个代币对的“流动性池”的用户。这些池子为去中心化交易所提供了必要的流动性，使得买家和卖家无需等待匹配订单即可立即进行交易。作为回报，流动性提供者通常会从每笔交易中抽取一定比例的手续费作为奖励。</p>
-<p>当你成功向流动性池添加了资金后，你会收到代表你在该池中的份额的LP代币。这些代币（token）不仅证明了你对该池贡献了多少流动性，还可以用于重新取回你的本金及赚取的交易费用。</p>
-<p>每当有用户通过该流动性池进行交易时，都会产生一笔小额的交易费，这笔费用会被分配给所有的流动性提供者，按照他们在池中所占的比例分享。</p>
-<h1 id="什么是质押（Staking）？"><a href="#什么是质押（Staking）？" class="headerlink" title="什么是质押（Staking）？"></a>什么是质押（Staking）？</h1><p>质押涉及将一定数量的代币“锁定”在一个特定的智能合约或钱包地址中，这些代币不能在质押期间随意转移或交易。质押者通过这种方式参与到区块链网络的验证过程中，帮助确认交易和创建新的区块。作为对提供这种服务的补偿，质押者可以获得新生成的代币或其他形式的奖励。<br>就类似于定期存款，给DEX提供流动性，到期还你钱还奖励你一些token。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/2/">&lt;i class&#x3D;&quot;fa fa-angle-right&quot;&gt;&lt;&#x2F;i&gt;</a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/2/">&lt;i class&#x3D;&quot;fa fa-angle-right&quot;&gt;&lt;&#x2F;i&gt;</a>
   </nav>
 
 
@@ -1982,7 +1991,7 @@
               
                 <a href="/archives/%20%7C%7C%20archive">
               
-                  <span class="site-state-item-count">40</span>
+                  <span class="site-state-item-count">41</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

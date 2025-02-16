@@ -262,6 +262,199 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/10/24/Rust-lesson-11/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2024/10/24/Rust-lesson-11/" itemprop="url">Rust lesson 11- 结构体</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-10-24T18:04:12+08:00">
+                2024-10-24
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%8A%80%E6%9C%AF-Rust-%E5%BC%80%E5%8F%91/" itemprop="url" rel="index">
+                    <span itemprop="name">技术/Rust 开发</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="结构体基础"><a href="#结构体基础" class="headerlink" title="结构体基础:"></a>结构体基础:</h1><p>直接通过代码来学习吧：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//知识点一：基础实例化</span></span><br><span class="line">	<span class="comment">//创建User结构体对应的实例,注意：</span></span><br><span class="line">    <span class="comment">//每个字段都必须初始化</span></span><br><span class="line">    <span class="comment">//赋值顺序和定义顺序不需要一致</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">user1</span> = User &#123;</span><br><span class="line">        email: <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;aaa@gmail.com&quot;</span>),</span><br><span class="line">        username: <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;root&quot;</span>),</span><br><span class="line">        active: <span class="literal">true</span>,</span><br><span class="line">        sign_in_count: <span class="number">1</span>,</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	<span class="comment">//知识点二： 初始化简写语法</span></span><br><span class="line">	<span class="comment">/* //实例user2 里面直接写email，就会匹配到外部变量email</span></span><br><span class="line"><span class="comment">    let email = String::from(&quot;aaa@gmail.com&quot;);</span></span><br><span class="line"><span class="comment">    let username = String::from(&quot;root&quot;);</span></span><br><span class="line"><span class="comment">    </span></span><br><span class="line"><span class="comment">    let user2 = User &#123;</span></span><br><span class="line"><span class="comment">        email,</span></span><br><span class="line"><span class="comment">        username,</span></span><br><span class="line"><span class="comment">        active: true,</span></span><br><span class="line"><span class="comment">        sign_in_count: 1,</span></span><br><span class="line"><span class="comment">    &#125; */</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	<span class="comment">//知识点三： 结构体更新语法</span></span><br><span class="line">	<span class="comment">/* </span></span><br><span class="line"><span class="comment">    let user3 = User &#123;</span></span><br><span class="line"><span class="comment">        email: String::from(&quot;bbb@gmail.com&quot;),</span></span><br><span class="line"><span class="comment">        //user3除了email不一样，其余都跟user1一样,&quot;..&quot;就是所有</span></span><br><span class="line"><span class="comment">        ..user1</span></span><br><span class="line"><span class="comment">    &#125;;</span></span><br><span class="line"><span class="comment">    println!(&quot;&#123;&#125;&quot;,user3.email); */</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	<span class="comment">/* 知识点四：实例有mut以后，就可以改里面的值</span></span><br><span class="line"><span class="comment">    let mut user4 = User &#123;</span></span><br><span class="line"><span class="comment">        email: String::from(&quot;aaa@gmail.com&quot;),</span></span><br><span class="line"><span class="comment">        username: String::from(&quot;root&quot;),</span></span><br><span class="line"><span class="comment">        active: true,</span></span><br><span class="line"><span class="comment">        sign_in_count: 1,</span></span><br><span class="line"><span class="comment">    &#125;;</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">    user4.email = String::from(&quot;cccc@example.com&quot;);</span></span><br><span class="line"><span class="comment">    println!(&quot;&#123;&#125;&quot;,user4.email); */</span></span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//创建结构体</span></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">User</span> &#123;</span><br><span class="line">    <span class="comment">// 字段 : 类型,</span></span><br><span class="line">    active: <span class="type">bool</span>,</span><br><span class="line">    username: <span class="type">String</span>,</span><br><span class="line">    email: <span class="type">String</span>,</span><br><span class="line">    sign_in_count: <span class="type">u64</span>,</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="元祖结构体-Tuple-Struct-："><a href="#元祖结构体-Tuple-Struct-：" class="headerlink" title="元祖结构体(Tuple Struct)："></a>元祖结构体(Tuple Struct)：</h1><p>结构体必须有名称，但结构体的字段可以没有，这种结构因为长得像结构体，所以叫元祖结构体。<br>元祖结构体在你希望有个一个整体名称，但又不关心里面字段的名称时很有用。<br>例如<code>Point</code>元祖结构体，3D图形是以（x,y,z)作为坐标点，所以没必要为字段命名</p>
+<p>代码示例：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">	<span class="comment">//元祖结构体实例化</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">point</span> = <span class="title function_ invoke__">Point</span>(<span class="number">0</span>,<span class="number">1</span>,<span class="number">2</span>);</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>,point.<span class="number">0</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//元祖结构体</span></span><br><span class="line"><span class="keyword">struct</span>  <span class="title class_">Point</span>( <span class="type">i32</span>, <span class="type">i32</span>, <span class="type">i32</span>);</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+<h1 id="单元结构体（Unit-like-Struct）："><a href="#单元结构体（Unit-like-Struct）：" class="headerlink" title="单元结构体（Unit-like Struct）："></a>单元结构体（Unit-like Struct）：</h1><p>如果你定义一个结构体，但是我不关心它的字段数据，只关心它的行为（方法），就可以使用单元结构体</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">	<span class="comment">//单元结构体实例化</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">subject</span> = AlwaysEqual;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//不关心AlwaysEqual的字段数据，只关心它的行为，通过impl为它设定行为</span></span><br><span class="line">    <span class="keyword">impl</span> <span class="title class_">SomeTrait</span> <span class="keyword">for</span> <span class="title class_">AlwaysEqual</span> &#123;</span><br><span class="line"></span><br><span class="line">    &#125; </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//单元结构体</span></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">AlwaysEqual</span>;</span><br></pre></td></tr></table></figure>
+
+
+<h1 id="结构体中的所有权："><a href="#结构体中的所有权：" class="headerlink" title="结构体中的所有权："></a>结构体中的所有权：</h1><h3 id="会发生所有权移动的数据类型"><a href="#会发生所有权移动的数据类型" class="headerlink" title="会发生所有权移动的数据类型"></a>会发生所有权移动的数据类型</h3><ol>
+<li><strong>拥有资源的数据类型</strong>：<ul>
+<li>**<code>String</code>**：<code>String</code> 类型拥有其数据的所有权，因此在赋值或传递给函数时会发生所有权移动。</li>
+<li>**<code>Vec&lt;T&gt;</code>**：动态数组，拥有其元素的所有权，同样会在赋值或传递时移动所有权。</li>
+<li><strong>自定义结构体</strong>：如果结构体包含拥有资源的字段（如 <code>String</code> 或 <code>Vec&lt;T&gt;</code>），那么该结构体也会在赋值或传递时移动所有权。</li>
+<li><strong>智能指针</strong>：如 <code>Box&lt;T&gt;</code>、<code>Rc&lt;T&gt;</code> 和 <code>Arc&lt;T&gt;</code> 等，这些类型都拥有其指向的数据的所有权。</li>
+</ul>
+</li>
+</ol>
+<h3 id="不会发生所有权移动的数据类型"><a href="#不会发生所有权移动的数据类型" class="headerlink" title="不会发生所有权移动的数据类型"></a>不会发生所有权移动的数据类型</h3><ol>
+<li><p><strong>标量类型</strong>：</p>
+<ul>
+<li><strong>整数</strong>：如 <code>i32</code>、<code>u32</code> 等。</li>
+<li><strong>浮点数</strong>：如 <code>f32</code>、<code>f64</code> 等。</li>
+<li><strong>布尔值</strong>：<code>bool</code>。</li>
+<li><strong>字符</strong>：<code>char</code>。</li>
+</ul>
+</li>
+<li><p><strong>元组</strong>：如果元组中的所有元素都是不会发生所有权移动的类型，那么整个元组也不会发生所有权移动。</p>
+</li>
+<li><p><strong>引用</strong>：如 <code>&amp;T</code> 和 <code>&amp;mut T</code>，引用本身不拥有数据的所有权，因此在赋值或传递时不会移动所有权。</p>
+</li>
+<li><p><strong>切片</strong>：如 <code>&amp;[T]</code> 和 <code>&amp;str</code>，切片也不拥有数据的所有权，因此不会发生所有权移动。</p>
+</li>
+</ol>
+<p>代码示例：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">	<span class="comment">//所有权</span></span><br><span class="line">    <span class="comment">//1.所有权的范围细粒度是字段，也就是email、username这些</span></span><br><span class="line">    <span class="comment">//2.Copy 特征的类型，会发生复制不会发生所有权移动，例如active</span></span><br><span class="line">    <span class="comment">//3.没有实现Copy特征，会发生所有权的转移,例如email字段</span></span><br><span class="line">    <span class="comment">//4.一旦字结构体中一个字段发生了所有权移动，那么整个结构体就不能再被传递和赋值，但可直接打印</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">user5</span> = User &#123;</span><br><span class="line">        email: <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;aaa@gmail.com&quot;</span>),</span><br><span class="line">        username: <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;root&quot;</span>),</span><br><span class="line">        active: <span class="literal">true</span>,</span><br><span class="line">        sign_in_count: <span class="number">1</span>,</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//user5.email发生所有权移动给email</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">email</span> = user5.email;</span><br><span class="line">    <span class="comment">//打印因为所有权移动会报错</span></span><br><span class="line">    <span class="comment">//println!(&quot;&#123;&#125;&quot;,user5.email);</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">User</span> &#123;</span><br><span class="line">    <span class="comment">// 字段 : 类型,</span></span><br><span class="line">    active: <span class="type">bool</span>,</span><br><span class="line">    username: <span class="type">String</span>,</span><br><span class="line">    email: <span class="type">String</span>,</span><br><span class="line">    sign_in_count: <span class="type">u64</span>,</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="方法："><a href="#方法：" class="headerlink" title="方法："></a>方法：</h1><p>使用<code>fn</code>关键字和名称声明，可以拥有参数和返回值，同时包含在某处调用该方法时会执行代码。<br>方法与函数不同，方法在结构体的上下文中被定义，并且它的第一个参数总是<code>self</code>,它代表调用该方法的结构体实例</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#[derive(Debug)]</span>  <span class="comment">//加上这个，println的时候才能用debugstruct </span></span><br><span class="line">Rectangle &#123;</span><br><span class="line">    width: <span class="type">u32</span>,</span><br><span class="line">    height: <span class="type">u32</span>,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">impl</span> <span class="title class_">Rectangle</span> &#123;</span><br><span class="line">    <span class="comment">//以下3种fn写法效果一样</span></span><br><span class="line">    <span class="comment">// fn area(self: &amp;Self)</span></span><br><span class="line">    <span class="comment">// fn area(self: &amp;Rectangle)</span></span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">area</span>(&amp;<span class="keyword">self</span>) <span class="punctuation">-&gt;</span> <span class="type">u32</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">self</span>.width * <span class="keyword">self</span>.height;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//修改width,注意 &amp;mut</span></span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">set_width</span>(&amp;<span class="keyword">mut</span> <span class="keyword">self</span>, new_width: <span class="type">u32</span>) &#123;</span><br><span class="line">        <span class="keyword">self</span>.width = new_width;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//这种没self的方法外部是不能 xxx.new()这样直接调用,但可以用rect3那种方式</span></span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">new</span>(width: <span class="type">u32</span>, height: <span class="type">u32</span>) <span class="punctuation">-&gt;</span> Rectangle &#123;</span><br><span class="line">        Rectangle &#123; width, height&#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">impl</span> <span class="title class_">Display</span> <span class="keyword">for</span> <span class="title class_">Rectangle</span> &#123;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">fmt</span>(&amp;<span class="keyword">self</span>, f: &amp;<span class="keyword">mut</span> std::fmt::Formatter&lt;<span class="symbol">&#x27;_</span>&gt;) <span class="punctuation">-&gt;</span> std::fmt::<span class="type">Result</span> &#123;</span><br><span class="line">        <span class="keyword">for</span> <span class="variable">_</span> <span class="keyword">in</span> <span class="number">0</span>..<span class="keyword">self</span>.height &#123;</span><br><span class="line">            <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">s</span> = <span class="type">String</span>::<span class="title function_ invoke__">new</span>();</span><br><span class="line">            <span class="keyword">for</span> <span class="variable">_</span> <span class="keyword">in</span> <span class="number">0</span>..<span class="keyword">self</span>.width &#123;</span><br><span class="line">                s.<span class="title function_ invoke__">push</span>(<span class="string">&#x27;#&#x27;</span>);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="built_in">write!</span>(f, <span class="string">&quot;&#123;&#125;\n&quot;</span>, s);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="title function_ invoke__">Ok</span>(());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">print_area</span>(rectangle: &amp;Rectangle ) &#123;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>, rectangle.<span class="title function_ invoke__">area</span>());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">	<span class="comment">//rect1.area()直接调用area方法</span></span><br><span class="line">	<span class="keyword">let</span> <span class="variable">rect1</span> = Rectangle &#123; width: <span class="number">30</span> , height: <span class="number">50</span> &#125;;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>,rect1.<span class="title function_ invoke__">area</span>());</span><br><span class="line"></span><br><span class="line">	<span class="comment">//直接调用set_width方法</span></span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">rect2</span> = Rectangle&#123;width:<span class="number">10</span>, height: <span class="number">40</span>&#125;;</span><br><span class="line">    rect2.<span class="title function_ invoke__">set_width</span>(<span class="number">10</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">rect3</span> = Rectangle::<span class="title function_ invoke__">new</span>(<span class="number">10</span>, <span class="number">30</span>);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">let</span> <span class="variable">rect4</span> = Rectangle::<span class="title function_ invoke__">new</span>(<span class="number">10</span>, <span class="number">30</span>);</span><br><span class="line">    <span class="title function_ invoke__">print_area</span>(&amp;rect4);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">let</span> <span class="variable">rect5</span> = Rectangle::<span class="title function_ invoke__">new</span>(<span class="number">10</span>, <span class="number">30</span>);</span><br><span class="line">    <span class="comment">//注意，结构体上面必须要有#[derive(Debug)] 才能使用&#123;:?&#125; 来debug输出</span></span><br><span class="line">    <span class="comment">//&#123;:? &#125; 换成 &#123;:#?&#125; 能输出更多结构体信息</span></span><br><span class="line">    <span class="comment">//使用dbg!(rect5) 也能输出</span></span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;rect5 is &#123;:?&#125;&quot;</span>,rect5);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//如果&#123;:?&#125; 和 dbg的输出格式你都不满意，还能自己impl Display方法去实现</span></span><br><span class="line">    <span class="comment">//然后就可以直接打印了</span></span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>,rect5);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="trait："><a href="#trait：" class="headerlink" title="trait："></a>trait：</h1><p>Rust中没有借口，但<code>trait</code>类似于其他语言的接口<br>如果不同的类型具有相同的行为(共享行为），那么我们就可以定义一个特征，然后为这些类型实现该特征。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Rectangle和HaHaHa都具有相同的行为Shape</span></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">Rectangle</span>;</span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">HaHaHa</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">trait</span> <span class="title class_">Shape</span> &#123;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">area</span>(&amp;<span class="keyword">self</span>) <span class="punctuation">-&gt;</span> <span class="type">f64</span>;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">impl</span> <span class="title class_">Shape</span> <span class="keyword">for</span> <span class="title class_">Rectangle</span> &#123;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">area</span>(&amp;<span class="keyword">self</span>) <span class="punctuation">-&gt;</span> <span class="type">f64</span> &#123;</span><br><span class="line">        <span class="title function_ invoke__">return</span> (<span class="keyword">self</span>.width * <span class="keyword">self</span>.height) <span class="keyword">as</span> <span class="type">f64</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">impl</span> <span class="title class_">Shape</span> <span class="keyword">for</span> <span class="title class_">HaHaHa</span> &#123;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">area</span>(&amp;<span class="keyword">self</span>) <span class="punctuation">-&gt;</span> <span class="type">f64</span> &#123;</span><br><span class="line">        <span class="title function_ invoke__">return</span> (<span class="keyword">self</span>.width * <span class="keyword">self</span>.height) <span class="keyword">as</span> <span class="type">f64</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://example.com/2024/10/24/Rust-lesson-10/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1938,225 +2131,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2024/10/16/Rust-lesson-1/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2024/10/16/Rust-lesson-1/" itemprop="url">Rust lesson 1 - 基础安装与"Hello World"</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-10-16T22:48:07+08:00">
-                2024-10-16
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%8A%80%E6%9C%AF-Rust-%E5%BC%80%E5%8F%91/" itemprop="url" rel="index">
-                    <span itemprop="name">技术/Rust 开发</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>这里以 MacOS 环境为例。</p>
-<h3 id="1-Rust-环境安装"><a href="#1-Rust-环境安装" class="headerlink" title="1. Rust 环境安装"></a>1. Rust 环境安装</h3><p>打开终端，输入以下命令：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl --proto <span class="string">&#x27;=https&#x27;</span> --tlsv1.2 -sSf https://sh.rustup.rs | sh</span><br></pre></td></tr></table></figure>
-
-<p>检查是否安装成功，版本是多少</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rustc --version</span><br></pre></td></tr></table></figure>
-
-
-<h5 id="扩展命令说明"><a href="#扩展命令说明" class="headerlink" title="扩展命令说明"></a>扩展命令说明</h5><p>1.更新 Rust 版本<br><code>rustup update</code></p>
-<p>2.卸载 Rust 环境<br><code>rustup self uninstall</code></p>
-<p>3.离线查看 Rust 文档<br><code>rustup doc</code></p>
-<h3 id="2-IDE-配置-VS-Code"><a href="#2-IDE-配置-VS-Code" class="headerlink" title="2. IDE 配置(VS Code)"></a>2. IDE 配置(VS Code)</h3><p>Vs code 推荐安装插件</p>
-<ol>
-<li>rust-analyzer </li>
-<li>Even Better TOML </li>
-<li>depandi（原 crates 已弃用)</li>
-</ol>
-<h1 id="2-写一个-“Hello-World”"><a href="#2-写一个-“Hello-World”" class="headerlink" title="2. 写一个 “Hello World”"></a>2. 写一个 “Hello World”</h1><p>1.创建一个 Rust 代码目录</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> hello_world</span><br><span class="line"><span class="built_in">cd</span> hello_word</span><br></pre></td></tr></table></figure>
-
-<p>2.创建一个以 .rs 扩展名结尾的文件，自行创建一个 main.rs，并写入以下代码</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">	<span class="built_in">println!</span>(<span class="string">&quot;Hello, world!&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>3.编译 main.rs</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rustc main.rs</span><br></pre></td></tr></table></figure>
-
-
-<p>4.得到一个二进制可执行文件 main</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">ls</span></span><br><span class="line">main main.rs</span><br></pre></td></tr></table></figure>
-
-<p>5.运行二进制文件<br>Rust是预编译静态类型语言，编译后的二进制文件可在任何环境运行，哪怕没安装 Rust 环境</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./main</span><br></pre></td></tr></table></figure>
-
-<h1 id="3-使用Cargo创建一个项目"><a href="#3-使用Cargo创建一个项目" class="headerlink" title="3.使用Cargo创建一个项目"></a>3.使用Cargo创建一个项目</h1><h5 id="1-什么是Cargo"><a href="#1-什么是Cargo" class="headerlink" title="1.什么是Cargo"></a>1.什么是Cargo</h5><p>Cargo 是一个工具,允许 Rust 项目声明其各种依赖项，并确保您始终获得可重复的构建。</p>
-<p>为了实现这一目标,Cargo 做了四件事:</p>
-<ul>
-<li>引入两个，包含各种项目信息的元数据文件。</li>
-<li>获取，并构建项目的依赖项.</li>
-<li>正确使用参数，以调用<code>rustc</code>或其他构建工具，构建你的项目。</li>
-<li>介绍，更容易使用 Rust 项目的约定(规范&#x2F;风格)。</li>
-</ul>
-<h5 id="2-Cargo初始化项目-并-构建运行"><a href="#2-Cargo初始化项目-并-构建运行" class="headerlink" title="2.Cargo初始化项目 并 构建运行"></a>2.Cargo初始化项目 并 构建运行</h5><p>1.创建一个Cargo 项目并进入</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cargo new hello_cargo</span><br><span class="line"><span class="built_in">cd</span> hello_cargo</span><br></pre></td></tr></table></figure>
-
-<p>2.在 hello_cargo&#x2F;src 目录下创建 main.rs文件，并写入 “Hello World”</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;Hello, world!&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="3-构建并运行构建完成后，在-target-debug-hello-cargo-下会有个可执行文件，然后执行以下命令运行"><a href="#3-构建并运行构建完成后，在-target-debug-hello-cargo-下会有个可执行文件，然后执行以下命令运行" class="headerlink" title="3.构建并运行构建完成后，在 target&#x2F;debug&#x2F;hello_cargo 下会有个可执行文件，然后执行以下命令运行 "></a>3.构建并运行<br><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cargo build</span><br></pre></td></tr></table></figure><br>构建完成后，在 target&#x2F;debug&#x2F;hello_cargo 下会有个可执行文件，然后执行以下命令运行<br> <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./target/debug/hello_cargo</span><br></pre></td></tr></table></figure></h2><p>  其实还有种方法更方便，就是使用 cargo run 直接使用一条命令构建并运行，不用分成两条：<br>  <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cargo run</span><br></pre></td></tr></table></figure></p>
-<h3 id="3-发布构建"><a href="#3-发布构建" class="headerlink" title="3.发布构建"></a>3.发布构建</h3><p>项目准备最终发布时，将代码构建后文件在release目录下，不是debug目录下。debug目录用于开发，release目录·用于最终用户程序：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cargo build --release  </span><br></pre></td></tr></table></figure>
-
-<h3 id="4-Cargo-toml-文件补充说明"><a href="#4-Cargo-toml-文件补充说明" class="headerlink" title="4.Cargo.toml 文件补充说明"></a>4.Cargo.toml 文件补充说明</h3><figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[package]</span></span><br><span class="line"></span><br><span class="line"><span class="attr">name</span> = <span class="string">&quot;hello_cargo&quot;</span></span><br><span class="line"><span class="attr">version</span> = <span class="string">&quot;0.1.0&quot;</span></span><br><span class="line"><span class="attr">edition</span> = <span class="string">&quot;2021&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="section">[dependencies]</span></span><br><span class="line"><span class="attr">rand</span> = <span class="string">&quot;0.8.5&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p><strong>[package]</strong></p>
-<ul>
-<li><p>项目的名称</p>
-</li>
-<li><p>项目的版本</p>
-</li>
-<li><p>使用的 Rust 版本</p>
-</li>
-</ul>
-<p><strong>[dependencies]</strong></p>
-<p>罗列项目依赖，在 Rust 中，代码包被称为 <em>crates</em>, 次处添加了一个随机数功能的库(crate)，名为”rand”，会从 Crates.io 拉取依赖包，并将指定的依赖版本写入 Cargo.lock文件中。</p>
-<h3 id="5-配置国内镜像，默认国外的Crates-io，速度很慢，有两种方式"><a href="#5-配置国内镜像，默认国外的Crates-io，速度很慢，有两种方式" class="headerlink" title="5.配置国内镜像，默认国外的Crates.io，速度很慢，有两种方式"></a>5.配置国内镜像，默认国外的Crates.io，速度很慢，有两种方式</h3><p>为了使用 <code>crates.io</code> 之外的注册服务，我们需要对 <code>$HOME/.cargo/config.toml</code>文件进行配置，添加新的服务提供商</p>
-<h2 id="1-添加新的镜像地址"><a href="#1-添加新的镜像地址" class="headerlink" title="1.添加新的镜像地址"></a>1.添加新的镜像地址<br><figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">### https的，两者相同，选择一种方式即可</span></span><br><span class="line"><span class="section">[registries]</span></span><br><span class="line"><span class="attr">ustc</span> = &#123; index = <span class="string">&quot;https://mirrors.ustc.edu.cn/crates.io-index/&quot;</span> &#125;</span><br><span class="line"><span class="section">[registries.ustc]</span></span><br><span class="line"><span class="attr">index</span> = <span class="string">&quot;https://mirrors.ustc.edu.cn/crates.io-index/&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">### git的，两者相同，选择一种方式即可</span></span><br><span class="line"><span class="section">[registries]</span></span><br><span class="line"><span class="attr">ustc</span> = &#123; index = <span class="string">&quot;git://mirrors.ustc.edu.cn/crates.io-index&quot;</span> &#125;</span><br><span class="line"><span class="section">[registries.ustc]</span></span><br><span class="line"><span class="attr">index</span> = <span class="string">&quot;git://mirrors.ustc.edu.cn/crates.io-index&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">## 如果支持稀疏索引的话。两者相同，选择一种方式即可</span></span><br><span class="line"><span class="comment">### https的</span></span><br><span class="line"><span class="section">[registries]</span></span><br><span class="line"><span class="attr">ustc</span> = &#123; index = <span class="string">&quot;sparse+https://mirrors.ustc.edu.cn/crates.io-index/&quot;</span> &#125;</span><br><span class="line"><span class="section">[registries.ustc]</span></span><br><span class="line"><span class="attr">index</span> = <span class="string">&quot;sparse+https://mirrors.ustc.edu.cn/crates.io-index/&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">### git的</span></span><br><span class="line"><span class="section">[registries]</span></span><br><span class="line"><span class="attr">ustc</span> = &#123; index = <span class="string">&quot;sparse+git://mirrors.ustc.edu.cn/crates.io-index&quot;</span> &#125;</span><br><span class="line"><span class="section">[registries.ustc]</span></span><br><span class="line"><span class="attr">index</span> = <span class="string">&quot;sparse+git://mirrors.ustc.edu.cn/crates.io-index&quot;</span></span><br></pre></td></tr></table></figure></h2><p>这种方式只会新增一个新的镜像地址，因此在引入依赖的时候，需要指定该地址，例如在项目中引入 <code>time</code> 包，你需要在 <code>Cargo.toml</code> 中使用以下方式引入</p>
-<figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[dependencies]</span></span><br><span class="line"><span class="attr">rand</span> = &#123;  registry = <span class="string">&quot;ustc&quot;</span> &#125;</span><br></pre></td></tr></table></figure>
-
-<p>2.覆盖默认的镜像地址<br>而第二种方式，则不需要修改 <code>Cargo.toml</code> 文件，**因为它是直接使用新注册服务来替代默认的 <code>crates.io</code>**。</p>
-<p>在 <code>$HOME/.cargo/config.toml</code> 添加以下内容：</p>
-<figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[source.crates-io]</span></span><br><span class="line"><span class="attr">replace-with</span> = <span class="string">&#x27;ustc&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="section">[source.ustc]</span></span><br><span class="line"><span class="attr">registry</span> = <span class="string">&quot;git://mirrors.ustc.edu.cn/crates.io-index&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>首先，创建一个新的镜像源 <code>[source.ustc]</code>，然后将默认的 <code>crates-io</code> 替换成新的镜像源: <code>replace-with = &#39;ustc&#39;</code></p>
-<h5 id="可用的镜像列表"><a href="#可用的镜像列表" class="headerlink" title="可用的镜像列表"></a>可用的镜像列表</h5><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"># 中国科学技术大学</span><br><span class="line">&quot;https://mirrors.ustc.edu.cn/crates.io-index&quot;</span><br><span class="line">&quot;git://mirrors.ustc.edu.cn/crates.io-index&quot;</span><br><span class="line"></span><br><span class="line"># 上海交通大学</span><br><span class="line">&quot;https://mirrors.sjtug.sjtu.edu.cn/git/crates.io-index/&quot;</span><br><span class="line"></span><br><span class="line">#清华大学</span><br><span class="line">&quot;https://mirrors.tuna.tsinghua.edu.cn/git/crates.io-index.git&quot;</span><br><span class="line"></span><br><span class="line">#字节跳动</span><br><span class="line">&quot;https://rsproxy.cn/crates.io-index&quot;</span><br></pre></td></tr></table></figure>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/3/">&lt;i class&#x3D;&quot;fa fa-angle-left&quot;&gt;&lt;&#x2F;i&gt;</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span>
+    <a class="extend prev" rel="prev" href="/page/3/">&lt;i class&#x3D;&quot;fa fa-angle-left&quot;&gt;&lt;&#x2F;i&gt;</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/5/">&lt;i class&#x3D;&quot;fa fa-angle-right&quot;&gt;&lt;&#x2F;i&gt;</a>
   </nav>
 
 
@@ -2202,7 +2181,7 @@
               
                 <a href="/archives/%20%7C%7C%20archive">
               
-                  <span class="site-state-item-count">40</span>
+                  <span class="site-state-item-count">41</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
