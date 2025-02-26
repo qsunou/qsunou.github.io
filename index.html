@@ -515,6 +515,233 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2025/02/23/Solana%20%E5%90%88%E7%BA%A6%E5%BC%80%E5%8F%91%20-%20to_owned()%E4%B8%8Eto_clone()%E7%9A%84%E5%AF%B9%E6%AF%94/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2025/02/23/Solana%20%E5%90%88%E7%BA%A6%E5%BC%80%E5%8F%91%20-%20to_owned()%E4%B8%8Eto_clone()%E7%9A%84%E5%AF%B9%E6%AF%94/" itemprop="url">Solana 合约开发 - to_owned()与to_clone()的对比</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2025-02-23T23:12:59+08:00">
+                2025-02-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Solana%E5%90%88%E7%BA%A6%E5%BC%80%E5%8F%91/" itemprop="url" rel="index">
+                    <span itemprop="name">Solana合约开发</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="使用to-owned-和使用引用对比："><a href="#使用to-owned-和使用引用对比：" class="headerlink" title="使用to_owned()和使用引用对比："></a>使用to_owned()和使用引用对比：</h1><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="variable">accounts</span> = ctx</span><br><span class="line">    .remaining_accounts</span><br><span class="line">    .<span class="title function_ invoke__">iter</span>()</span><br><span class="line">    .<span class="title function_ invoke__">map</span>(|x| (x.<span class="title function_ invoke__">key</span>(), x.<span class="title function_ invoke__">to_owned</span>()))</span><br><span class="line">    .collect::&lt;HashMap&lt;_, _&gt;&gt;();</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p><strong><code>所有权转移</code></strong> ：<br>x.to_owned() 会创建一个 AccountInfo 的深拷贝（即完全独立的副本），并将这个副本存储到 HashMap 中。<br>这意味着 accounts 拥有这些 AccountInfo 的所有权，而不是借用它们。</p>
+</li>
+<li><p><strong><code>生命周期</code></strong> ：<br>因为 accounts 存储的是深拷贝的数据，它的生命周期与 ctx.remaining_accounts 无关。<br>它可以独立存在，即使 ctx.remaining_accounts 被释放或超出作用域，accounts 仍然有效。</p>
+</li>
+<li><p><strong><code>内存开销</code></strong> ：<br>由于每个 AccountInfo 都被深拷贝，这会导致额外的内存分配和性能开销。</p>
+</li>
+<li><p><strong><code>适用场景</code></strong> ：<br>如果你需要在函数外部返回 accounts(例如<code>fn xxx() -&gt; HashMap&lt;Pubkey, AccountInfo&gt;</code>)，或者长时间持有这些数据，这种方法是合适的。<br>但要注意，Solana 程序中通常不建议频繁深拷贝数据，因为这会增加计算和内存开销。</p>
+</li>
+</ul>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="variable">accounts_map</span>: HashMap&lt;&amp;Pubkey, &amp;AccountInfo&lt;<span class="symbol">&#x27;info</span>&gt;&gt; = ctx</span><br><span class="line">    .remaining_accounts</span><br><span class="line">    .<span class="title function_ invoke__">iter</span>()</span><br><span class="line">    .<span class="title function_ invoke__">map</span>(|acc| (acc.key, acc))</span><br><span class="line">    .<span class="title function_ invoke__">collect</span>();</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p><strong><code>借用而非拥有</code></strong> ：<br>这里没有调用 to_owned()，而是直接借用 ctx.remaining_accounts 中的 AccountInfo 引用。<br>accounts_map 中存储的是对 ctx.remaining_accounts 中元素的引用（&amp;AccountInfo&lt;’info&gt;），而不是独立的副本。</p>
+</li>
+<li><p><strong><code>生命周期绑定</code></strong> ：<br>accounts_map 的生命周期与 ctx.remaining_accounts 绑定。<br>如果 ctx.remaining_accounts 被释放或超出作用域，accounts_map 中的引用也会失效。<br>这是因为 accounts_map 中的引用依赖于 ctx.remaining_accounts 的生命周期。</p>
+</li>
+<li><p><strong><code>内存开销</code></strong> ：<br>由于只是存储引用，不会产生额外的内存分配，性能更高。</p>
+</li>
+<li><p><strong><code>适用场景</code></strong> ：<br>如果你只需要在当前函数的作用域内使用 accounts_map，并且不需要长期持有这些数据，这种方法更高效。<br>这是 Solana 程序中推荐的方式，因为它避免了不必要的深拷贝。</p>
+</li>
+</ul>
+<h1 id="使用to-owned-和clone-对比："><a href="#使用to-owned-和clone-对比：" class="headerlink" title="使用to_owned()和clone()对比："></a>使用to_owned()和clone()对比：</h1><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="variable">pool_input_vault_info</span> = accounts   <span class="comment">//HashMap&lt;&amp;Pubkey, &amp;AccountInfo&lt;&#x27;info&gt;&gt;</span></span><br><span class="line">	.<span class="title function_ invoke__">get</span>(&amp;pool_input_vault_key) <span class="comment">//Option&lt;&amp;&amp;AccountInfo&lt;&#x27;info&gt;&gt;</span></span><br><span class="line">    .<span class="title function_ invoke__">ok_or</span>(ErrorCode::InvalidAccounts)? <span class="comment">// &amp;&amp;AccountInfo</span></span><br><span class="line">    .<span class="title function_ invoke__">to_owned</span>(); <span class="comment">// &amp;AccountInfo</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>**<code>定义</code>**：to_owned() 是一个特定于某些类型的方法，通常用于将借用的数据（如引用）转换为拥有所有权的数据。</p>
+</li>
+<li><p>**<code>行为</code>**：<br><code>to_owned()</code> 通常用于从借用类型（如 &amp;str 或 &amp;AccountInfo）创建拥有所有权的类型（如 String 或 AccountInfo）。<br>它不会递归地复制所有子对象，而是根据具体类型的行为来决定如何复制数据。<br>对于字符串切片 &amp;str，to_owned() 返回一个 String；对于 &amp;AccountInfo，它返回一个 AccountInfo。</p>
+</li>
+<li><p>**<code>适用场景</code>**：<br>当你有一个借用的数据（如引用），并且你需要拥有该数据的所有权时。<br>当你需要避免双重引用的问题，或者当你需要确保后续代码可以安全地使用该数据时。</p>
+</li>
+<li><p>**<code>性能考虑</code>**：<br>to_owned() 通常比 clone() 更高效，因为它只复制必要的部分，而不是递归地复制整个对象树。<br>对于简单的类型（如字符串或基本数据结构），to_owned() 的性能开销较小。</p>
+</li>
+</ul>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="variable">pool_input_vault_info</span> = accounts</span><br><span class="line">    .<span class="title function_ invoke__">get</span>(&amp;pool_input_vault_key)</span><br><span class="line">    .<span class="title function_ invoke__">ok_or</span>(ErrorCode::InvalidAccounts)?</span><br><span class="line">    .<span class="title function_ invoke__">clone</span>();</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>**<code>定义</code>**：clone() 是一个 trait 方法，属于 Clone trait。它用于创建一个类型的新实例，该实例是原始实例的深度副本。</p>
+</li>
+<li><p>**<code>行为</code>**：<br>clone() 会递归地复制整个对象及其所有子对象。<br>对于实现了 Clone trait 的类型，clone() 可以用于任何类型的对象，包括复杂的数据结构（如 Vec<T>、HashMap&lt;K, V&gt; 等）。<br>如果类型中的字段也实现了 Clone，则这些字段也会被递归复制。</p>
+</li>
+<li><p>**<code>适用场景</code>**：<br>当你需要完全复制一个复杂的对象，并且不希望两个对象共享任何内部数据时。<br>当你需要确保两个变量拥有独立的状态时。</p>
+</li>
+<li><p>**<code>性能考虑</code>**：<br>clone() 可能会导致较高的性能开销，因为它需要递归地复制所有子对象。对于大型或复杂的数据结构，这可能会导致显著的性能下降。</p>
+</li>
+</ul>
+<p>在上面两段代码中<br>to_owned()：<br>适用于你只需要将引用转换为拥有所有权的对象，而不需要递归复制整个对象树的情况。<br>在代码中，accounts 是一个 HashMap&lt;&amp;Pubkey, &amp;AccountInfo&lt;’info&gt;&gt;，因此 to_owned() 可以将 &amp;&amp;AccountInfo&lt;’info&gt; 转换为 &amp;AccountInfo&lt;’info&gt;，从而避免双重引用问题。</p>
+<h2 id="双重引用问题："><a href="#双重引用问题：" class="headerlink" title="双重引用问题："></a>双重引用问题：</h2><p>在 Rust 中，双重引用（double reference）是指你有一个指向另一个引用的引用。例如，&amp;AccountInfo&lt;’info&gt; 是一个对 AccountInfo&lt;’info&gt; 的引用。</p>
+<h3 id="双重引用问题的背景"><a href="#双重引用问题的背景" class="headerlink" title="双重引用问题的背景"></a>双重引用问题的背景</h3><p>在之前的代码中，accounts 是一个 HashMap&lt;&amp;Pubkey, &amp;AccountInfo&lt;’info&gt;&gt;，即键是 Pubkey 的引用，值是 AccountInfo&lt;’info&gt; 的引用。当你从 accounts 中获取某个账户信息时，返回的是 Option&lt;&amp;&amp;AccountInfo&lt;’info&gt;&gt;，即对 AccountInfo&lt;’info&gt; 的引用的引用。</p>
+<p>如果你直接在这个引用上使用 .clone()，它只会复制这个引用，而不是内部的 AccountInfo&lt;’info&gt; 对象。这会导致双重引用的问题，即你最终会得到的还是 &amp;&amp;AccountInfo&lt;’info&gt;，而不是你期望的 &amp;AccountInfo&lt;’info&gt;。</p>
+<h2 id="如何避免双重引用问题"><a href="#如何避免双重引用问题" class="headerlink" title="如何避免双重引用问题"></a>如何避免双重引用问题</h2><p>为了避免双重引用问题，你可以使用以下几种方法：</p>
+<ul>
+<li><p>**<code>使用 .to_owned()</code>**：<br><code>.to_owned()</code> 用于将借用的数据转换为拥有所有权的数据。对于 &amp;AccountInfo&lt;’info&gt;，它会创建一个新的 AccountInfo&lt;’info&gt; 实例，从而避免了双重引用问题。</p>
+</li>
+<li><p>**<code>解引用并克隆</code>**：<br>你可以先解引用，然后克隆内部的数据。例如，<code>*accounts.get(&amp;key).ok_or(ErrorCode::InvalidAccounts).clone()?</code>，但这通常不如 .to_owned() 简洁和高效。</p>
+</li>
+<li><p>**<code>直接解引用</code>**：<br>如果你只需要读取数据而不需要修改或复制整个对象，可以直接解引用并使用该数据。例如，<code>*accounts.get(&amp;key).ok_or(ErrorCode::InvalidAccounts)?</code>。</p>
+</li>
+</ul>
+<h2 id="为什么to-owned-更高效？"><a href="#为什么to-owned-更高效？" class="headerlink" title="为什么to_owned()更高效？"></a>为什么to_owned()更高效？</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 创建一个包含 Borrowed 数据的 OuterData</span></span><br><span class="line"><span class="keyword">let</span> <span class="variable">original</span> = OuterData &#123;</span><br><span class="line">    name: <span class="string">&quot;outer&quot;</span>.<span class="title function_ invoke__">to_string</span>(),</span><br><span class="line">    inner: InnerData &#123;</span><br><span class="line">        value: Cow::<span class="title function_ invoke__">Borrowed</span>(<span class="string">&quot;hello&quot;</span>),</span><br><span class="line">    &#125;,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">此时内存布局：</span><br><span class="line">original.name → <span class="string">&quot;outer&quot;</span> (堆内存)</span><br><span class="line">original.inner.value → <span class="string">&quot;hello&quot;</span> (静态内存，Borrowed)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>使用<code>clone()</code>:</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="variable">cloned</span> = original.<span class="title function_ invoke__">clone</span>();</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>clone()</code> 会递归克隆所有字段：<ul>
+<li>name: String：深拷贝堆内存中的字符串（分配新堆内存）。</li>
+<li>inner: InnerData：调用 InnerData 的 clone()：</li>
+<li>value: Cow::Borrowed(“hello”) → 仍然指向原始静态内存。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>使用<code>to_owned()</code>:</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="variable">owned</span> = original.<span class="title function_ invoke__">to_owned</span>();</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>to_owned()</code> 会按需复制 ：<ul>
+<li>name: String：已经是拥有所有权的类型，直接转移所有权（原堆内存，无需复制）。</li>
+<li>inner.value: Cow::Borrowed → 转换为 Cow::Owned，复制数据到堆内存。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>总结：<br><code>clone()</code> 是“傻瓜式”深拷贝 ：不管数据是否已拥有，都会递归复制。<br><code>to_owned()</code> 是“智能”所有权转换 ：仅复制必要的借用数据，最大化复用已有资源。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://example.com/2025/02/16/Solana%20%E5%90%88%E7%BA%A6%E5%BC%80%E5%8F%91%20-%20DeFi%20-%20Dex%20%E5%BC%80%E5%8F%91%E5%8D%81%E4%B8%80%EF%BC%9ALP%20Token%20Stake&Unstake%EF%BC%88%E5%8D%95%E4%B8%80%E5%A5%96%E5%8A%B1%E6%B1%A0%EF%BC%89/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1870,184 +2097,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2025/02/10/Solana-Dex-%E9%A1%B9%E7%9B%AE%E5%8E%9F%E7%94%9F%20Token/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2025/02/10/Solana-Dex-%E9%A1%B9%E7%9B%AE%E5%8E%9F%E7%94%9F%20Token/" itemprop="url">Solana 合约开发 - DeFi - Dex 开发三：项目Token</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2025-02-10T21:46:35+08:00">
-                2025-02-10
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Solana%E5%90%88%E7%BA%A6%E5%BC%80%E5%8F%91-DeFi-Dex/" itemprop="url" rel="index">
-                    <span itemprop="name">Solana合约开发-DeFi-Dex</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>SPL Token在之前已经介绍过了，在这再水一次，solana上面很多著名的项目都会发行自己项目的代币，这里也不例外。</p>
-<h2 id="合约代码："><a href="#合约代码：" class="headerlink" title="合约代码："></a>合约代码：</h2><p>注意：建议在<code>devnet</code>环境下测试，因为<code>localnet</code>默认不支持 Token metadata program，它属于第三方开源框架，当然也有其他办法在localnet上使用，就是麻烦点。</p>
-<p>首先在Anchor 项目下创建<code>accounts_all/token.rs</code>  文件，用来记录所需要用到哪些账户<br>例如：anchor&#x2F;programs&#x2F;swap&#x2F;src&#x2F;accounts_all&#x2F;token.rs</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> anchor_lang:: prelude::*;</span><br><span class="line"><span class="keyword">use</span> anchor_spl::&#123;</span><br><span class="line">    metadata::Metadata,</span><br><span class="line">    token::&#123;Mint, Token&#125;,</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">use</span> crate::states::token;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">#[derive(Accounts)]</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">struct</span> <span class="title class_">CreateMintAndMetadata</span>&lt;<span class="symbol">&#x27;info</span>&gt; &#123;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//创建一个 token Mint账户</span></span><br><span class="line">	<span class="comment">//init就是初始化账户，假如不存在这个账户就会自动创建</span></span><br><span class="line">	<span class="comment">//payer就是创建这个账户所花的fee由谁来支付</span></span><br><span class="line">	<span class="comment">//根据seeds的内容 自动构建一个PDA，生成账户地址</span></span><br><span class="line">	<span class="comment">//bump 自动生成的 bump 种子值，用于解决 PDA 地址冲突问题。PDA 是一种特殊的 Solana 地址，它不是由私钥控制的，而是通过程序逻辑生成的。Bump 值确保生成的地址不会与任何有效的公钥冲突。</span></span><br><span class="line">	<span class="comment">//mint::decimals: 设置新代币的小数位数</span></span><br><span class="line">	<span class="comment">//mint::authority: 指定哪个账户拥有对这个 Mint 账户的控制权,设成别的账户也可以</span></span><br><span class="line">	<span class="meta">#[account(</span></span><br><span class="line"><span class="meta">        init,</span></span><br><span class="line"><span class="meta">        payer = payer,</span></span><br><span class="line"><span class="meta">        seeds = [</span></span><br><span class="line"><span class="meta">            token::SWAP_TOKEN_SEED.as_bytes(),</span></span><br><span class="line"><span class="meta">        ]</span>,        </span><br><span class="line">        bump,</span><br><span class="line">        mint::decimals = token::SWAP_TOKEN_DECIMALS,</span><br><span class="line">        mint::authority = authority.<span class="title function_ invoke__">key</span>(),</span><br><span class="line">    )]</span><br><span class="line">    <span class="keyword">pub</span> swap_token_mint: <span class="type">Box</span>&lt;Account&lt;<span class="symbol">&#x27;info</span>, Mint&gt;&gt;,</span><br><span class="line"></span><br><span class="line">	<span class="comment">//创建一个 token metadata账户</span></span><br><span class="line">	<span class="comment">//因为这里使用了UncheckedAccount类型的账户，所以需要写&quot;///CHECK&quot;,不然build不通过，至于内容随意</span></span><br><span class="line">	<span class="comment">// mut 表示该账户是可变的，意味着在交易过程中可以修改它的内容,而不使用init是因为在代码里动态创建。</span></span><br><span class="line">	<span class="comment">// 指定哪个程序负责生成这个 PDA。在这里，指定的是 token_metadata_program，这意味着只有这个特定的元数据程序才能生成或操作这个账户。</span></span><br><span class="line">	<span class="comment">/// CHECK: Validate address by derving pda</span></span><br><span class="line">    <span class="meta">#[account(</span></span><br><span class="line"><span class="meta">        mut,</span></span><br><span class="line"><span class="meta">        seeds = [</span></span><br><span class="line"><span class="meta">            token::SWAP_TOKEN_METADATA.as_bytes(),</span></span><br><span class="line"><span class="meta">            token_metadata_program.key().as_ref(),</span></span><br><span class="line"><span class="meta">            swap_token_mint.key().as_ref(),</span></span><br><span class="line"><span class="meta">        ]</span>,</span><br><span class="line">        bump,</span><br><span class="line">        seeds::program = token_metadata_program.<span class="title function_ invoke__">key</span>(),</span><br><span class="line">    )]</span><br><span class="line">    <span class="keyword">pub</span> swap_token_metadata: UncheckedAccount&lt;<span class="symbol">&#x27;info</span>&gt;,</span><br><span class="line"></span><br><span class="line">	</span><br><span class="line">    <span class="comment">/// CHECK: pool vault and lp mint authority</span></span><br><span class="line">    <span class="meta">#[account(</span></span><br><span class="line"><span class="meta">        seeds = [</span></span><br><span class="line"><span class="meta">            crate::AUTH_SEED.as_bytes(),</span></span><br><span class="line"><span class="meta">        ]</span>,</span><br><span class="line">        bump,</span><br><span class="line">    )]</span><br><span class="line">    <span class="keyword">pub</span> authority: UncheckedAccount&lt;<span class="symbol">&#x27;info</span>&gt;,</span><br><span class="line"></span><br><span class="line">	<span class="comment">//可以使用你的钱包地址</span></span><br><span class="line">    <span class="meta">#[account(mut)]</span></span><br><span class="line">    <span class="keyword">pub</span> payer: Signer&lt;<span class="symbol">&#x27;info</span>&gt;,</span><br><span class="line"></span><br><span class="line">	<span class="comment">//都是所使用到的一些程序账户</span></span><br><span class="line">    <span class="keyword">pub</span> token_metadata_program: Program&lt;<span class="symbol">&#x27;info</span>, Metadata&gt;,</span><br><span class="line">    <span class="keyword">pub</span> token_program: Program&lt;<span class="symbol">&#x27;info</span>, Token&gt;,</span><br><span class="line">    <span class="keyword">pub</span> system_program: Program&lt;<span class="symbol">&#x27;info</span>, System&gt;,</span><br><span class="line">    <span class="keyword">pub</span> rent: Sysvar&lt;<span class="symbol">&#x27;info</span>, Rent&gt;,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-<p>然后在Anchor 项目下创建<code>states/token.rs</code>  文件<br>例如：anchor&#x2F;programs&#x2F;swap&#x2F;src&#x2F;states&#x2F;token.rs</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//用来创建一些常量，在上面的accounts里面所使用</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">const</span> SWAP_TOKEN_SEED: &amp;<span class="type">str</span> = <span class="string">&quot;swap_token_V1&quot;</span>;</span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">const</span> SWAP_TOKEN_METADATA: &amp;<span class="type">str</span> = <span class="string">&quot;metadata&quot;</span>;</span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">const</span> SWAP_TOKEN_DECIMALS: <span class="type">u8</span> = <span class="number">9</span>;</span><br></pre></td></tr></table></figure>
-
-
-<p>然后在Anchor 项目下创建<code>instruction/token.rs</code>  文件，用来写具体的创建代码<br>例如：anchor&#x2F;programs&#x2F;swap&#x2F;src&#x2F;instruction&#x2F;token.rs</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//这里的use都是引入哪些包</span></span><br><span class="line"><span class="keyword">use</span> crate::accounts_all::*;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> anchor_lang::prelude::*;</span><br><span class="line"><span class="keyword">use</span> anchor_spl::metadata::&#123;</span><br><span class="line">    create_metadata_accounts_v3, mpl_token_metadata::types::DataV2, CreateMetadataAccountsV3,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">//具体创建token代码</span></span><br><span class="line"><span class="comment">//ctx就是上面的 accounts 结构体，也就是把账户信息都传进来</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">create_token_metadata</span>(ctx: Context&lt;CreateMintAndMetadata&gt;) <span class="punctuation">-&gt;</span> <span class="type">Result</span>&lt;()&gt; &#123;</span><br><span class="line">	<span class="comment">//生成签名种子，以便在 CPI 调用中作为签名者。</span></span><br><span class="line">	<span class="keyword">let</span> <span class="variable">signer_seeds</span>: &amp;[&amp;[&amp;[<span class="type">u8</span>]]] =</span><br><span class="line">        &amp;[&amp;[crate::AUTH_SEED.<span class="title function_ invoke__">as_bytes</span>(), &amp;[ctx.bumps.authority]]];</span><br><span class="line"></span><br><span class="line">    <span class="title function_ invoke__">create_metadata_accounts_v3</span>(</span><br><span class="line">        CpiContext::<span class="title function_ invoke__">new_with_signer</span>(</span><br><span class="line">	    <span class="comment">//ctx.accounts.lp_token_metadata.to_account_info()，指向元数据账户的信息。</span></span><br><span class="line">	        ctx.accounts.iswap_token_metadata.<span class="title function_ invoke__">to_account_info</span>(),</span><br><span class="line">	        <span class="comment">//metadata: 元数据账户本身。</span></span><br><span class="line">			<span class="comment">//mint: 关联的 Mint 账户。</span></span><br><span class="line">			<span class="comment">//mint_authority: Mint 账户的权威机构。</span></span><br><span class="line">			<span class="comment">//update_authority: 更新元数据账户的权威机构。</span></span><br><span class="line">			<span class="comment">//payer: 支付交易费用的账户。</span></span><br><span class="line">			<span class="comment">//system_program: Solana 系统程序。</span></span><br><span class="line">			<span class="comment">//rent: 租金变量，确保账户有足够的资金来避免被系统回收          </span></span><br><span class="line">			CreateMetadataAccountsV3 &#123;</span><br><span class="line">                metadata: ctx.accounts.iswap_token_metadata.<span class="title function_ invoke__">to_account_info</span>(),</span><br><span class="line">                mint: ctx.accounts.iswap_token_mint.<span class="title function_ invoke__">to_account_info</span>(),</span><br><span class="line">                mint_authority: ctx.accounts.authority.<span class="title function_ invoke__">to_account_info</span>(),</span><br><span class="line">                update_authority: ctx.accounts.authority.<span class="title function_ invoke__">to_account_info</span>(),</span><br><span class="line">                payer: ctx.accounts.payer.<span class="title function_ invoke__">to_account_info</span>(),</span><br><span class="line">                system_program: ctx.accounts.system_program.<span class="title function_ invoke__">to_account_info</span>(),</span><br><span class="line">                rent: ctx.accounts.rent.<span class="title function_ invoke__">to_account_info</span>(),</span><br><span class="line">            &#125;,</span><br><span class="line">            signer_seeds,</span><br><span class="line">        ),</span><br><span class="line">        <span class="comment">//定义了元数据的具体内容</span></span><br><span class="line">        <span class="comment">//name: 代币名称。</span></span><br><span class="line">		<span class="comment">//symbol: 代币符号。</span></span><br><span class="line">		<span class="comment">//uri: 指向更多元数据信息的 URL（例如，代币的图标、描述等）。</span></span><br><span class="line">		<span class="comment">//seller_fee_basis_points: 卖家费用百分比点数，通常用于 NFTs 的二次销售。</span></span><br><span class="line">		<span class="comment">//creators, collection, uses: 可选字段，分别指代币创作者信息、所属集合信息及用途信息，在这个例子中均设为 None。</span></span><br><span class="line">		DataV2 &#123;</span><br><span class="line">            name: <span class="string">&quot;swap&quot;</span>.<span class="title function_ invoke__">to_string</span>(),</span><br><span class="line">            symbol: <span class="string">&quot;swap&quot;</span>.<span class="title function_ invoke__">to_string</span>(),</span><br><span class="line">            uri: <span class="string">&quot;swap.com&quot;</span>.<span class="title function_ invoke__">to_string</span>(),</span><br><span class="line">            seller_fee_basis_points: <span class="number">0</span>,</span><br><span class="line">            creators: <span class="literal">None</span>,</span><br><span class="line">            collection: <span class="literal">None</span>,</span><br><span class="line">            uses: <span class="literal">None</span>,</span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="comment">//第三个参数 false: 是否更新现有元数据账户。</span></span><br><span class="line">		<span class="comment">//第四个参数 true: 是否使用更新权限。</span></span><br><span class="line">		<span class="comment">//第五个参数 None: 可选的额外参数。        </span></span><br><span class="line">		<span class="literal">false</span>,</span><br><span class="line">        <span class="literal">true</span>,</span><br><span class="line">        <span class="literal">None</span>,</span><br><span class="line">    )?;</span><br><span class="line"></span><br><span class="line">    <span class="title function_ invoke__">Ok</span>(())</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><code>lib.rs</code> 添加以下内容：</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">const</span> AUTH_SEED: &amp;<span class="type">str</span> = <span class="string">&quot;swap_auth_seed&quot;</span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">#[program]</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">mod</span> swap &#123;</span><br><span class="line">    <span class="keyword">use</span> super::*;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">create_token_metadata</span>(ctx: Context&lt;CreateMintAndMetadata&gt;) <span class="punctuation">-&gt;</span> <span class="type">Result</span>&lt;()&gt; &#123;</span><br><span class="line">        instructions::<span class="title function_ invoke__">create_token_metadata</span>(ctx)</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-
-<p><code>Cargo.toml</code> 文件里面添加以下内容：</p>
-<figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[features]</span></span><br><span class="line"><span class="attr">idl-build</span> = [<span class="string">&quot;anchor-lang/idl-build&quot;</span>, <span class="string">&quot;anchor-spl/idl-build&quot;</span>]</span><br><span class="line"></span><br><span class="line"><span class="section">[dependencies]</span></span><br><span class="line"><span class="attr">anchor-lang</span> = &#123; version = <span class="string">&quot;0.30.1&quot;</span>, features = [<span class="string">&quot;init-if-needed&quot;</span>] &#125;</span><br><span class="line"><span class="attr">anchor-spl</span> = &#123; version = <span class="string">&quot;0.30.1&quot;</span>, features = [<span class="string">&quot;metadata&quot;</span>] &#125;</span><br></pre></td></tr></table></figure>
-
-<p>执行Anchor命令：</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">anchor build &amp;&amp; anchor deploy</span><br></pre></td></tr></table></figure>
-<h2 id="前端TS测试合约代码："><a href="#前端TS测试合约代码：" class="headerlink" title="前端TS测试合约代码："></a>前端TS测试合约代码：</h2><p>获取本地钱包：<br>anchor&#x2F;example&#x2F;api&#x2F;wallet.ts</p>
-<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> * <span class="keyword">as</span> anchor <span class="keyword">from</span> <span class="string">&quot;@coral-xyz/anchor&quot;</span></span><br><span class="line"><span class="keyword">import</span> &#123; <span class="title class_">Program</span>&#125; <span class="keyword">from</span> <span class="string">&quot;@coral-xyz/anchor&quot;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; swap &#125; <span class="keyword">from</span> <span class="string">&quot;../../target/types/swap&quot;</span>;</span><br><span class="line">  </span><br><span class="line"><span class="keyword">const</span> provider = anchor.<span class="property">AnchorProvider</span>.<span class="title function_">env</span>();</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;provider:&quot;</span>, provider.<span class="property">wallet</span>.<span class="property">publicKey</span>.<span class="title function_">toBase58</span>());</span><br><span class="line">anchor.<span class="title function_">setProvider</span>(provider);</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> program = anchor.<span class="property">workspace</span>.<span class="property">swap</span> <span class="keyword">as</span> <span class="title class_">Program</span>&lt;swap&gt; ;</span><br><span class="line"><span class="keyword">const</span> wallet = provider.<span class="property">wallet</span> <span class="keyword">as</span> anchor.<span class="property">Wallet</span>;</span><br><span class="line"><span class="keyword">const</span> connection = provider.<span class="property">connection</span>;</span><br><span class="line"><span class="keyword">export</span> &#123; program, provider,connection&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">//定义并导出 useDefaultWallet 函数。</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">function</span> <span class="title function_">useDefaultWallet</span>(<span class="params"></span>) &#123;</span><br><span class="line">	<span class="keyword">return</span> anchor.<span class="property">Wallet</span>.<span class="title function_">local</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>编写测试方法：<br>anchor&#x2F;example&#x2F;api&#x2F;token.ts</p>
-<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> * <span class="keyword">as</span> anchor <span class="keyword">from</span> <span class="string">&#x27;@coral-xyz/anchor&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; program &#125; <span class="keyword">from</span> <span class="string">&#x27;./wallet&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//这个方法就是lib.rs里的方法</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">async</span> <span class="keyword">function</span> <span class="title function_">createTokenMetadata</span>(<span class="params"><span class="attr">wallet</span>: anchor.<span class="title class_">Wallet</span></span>) &#123;</span><br><span class="line">	</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">await</span> program.<span class="property">methods</span></span><br><span class="line">    .<span class="title function_">createTokenMetadata</span>()</span><br><span class="line">    .<span class="title function_">accounts</span>(&#123;</span><br><span class="line">      <span class="attr">payer</span>: wallet.<span class="property">publicKey</span>,</span><br><span class="line">    &#125;)</span><br><span class="line">    .<span class="title function_">signers</span>([wallet.<span class="property">payer</span>])</span><br><span class="line">    .<span class="title function_">rpc</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>调用测试方法：<br>anchor&#x2F;example&#x2F;index.ts&#96;&#96;&#96;</p>
-<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> * <span class="keyword">as</span> anchor <span class="keyword">from</span> <span class="string">&#x27;@coral-xyz/anchor&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; connection, program, provider, useDefaultWallet &#125; <span class="keyword">from</span> <span class="string">&#x27;./api/wallet&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; createTokenMetadata &#125; <span class="keyword">from</span> <span class="string">&#x27;./api/token&#x27;</span>;</span><br><span class="line"></span><br><span class="line">(<span class="title function_">async</span> () =&gt; &#123;</span><br><span class="line">	<span class="comment">// 获取默认钱包</span></span><br><span class="line">	<span class="keyword">const</span> defaultWallet = <span class="title function_">useDefaultWallet</span>();</span><br><span class="line"></span><br><span class="line">	<span class="comment">//创建token</span></span><br><span class="line">	<span class="keyword">const</span> create_token = <span class="keyword">await</span> <span class="title function_">createTokenMetadata</span>(</span><br><span class="line">		defaultWallet,</span><br><span class="line">   );</span><br><span class="line">   <span class="variable language_">console</span>.<span class="title function_">log</span>(create_token);</span><br><span class="line">&#125;)();</span><br></pre></td></tr></table></figure>
-
-
-<p>执行Anchor命令：</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">anchor run api</span><br></pre></td></tr></table></figure>
-
-
-<p>测试成功后会输出交易的transactions,  可将这个transactions输入到区块链浏览器里，查看交易的具体细节，产生了什么。<br>链接： <a target="_blank" rel="noopener" href="https://explorer.solana.com/">https://explorer.solana.com/</a></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2098,7 +2147,7 @@
               
                 <a href="/archives/%20%7C%7C%20archive">
               
-                  <span class="site-state-item-count">43</span>
+                  <span class="site-state-item-count">44</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

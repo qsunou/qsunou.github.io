@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Rust,Solana,Anchor," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="使用to_owned()和使用引用对比：12345let accounts &#x3D; ctx    .remaining_accounts    .iter()    .map(|x| (x.key(), x.to_owned()))    .collect::&lt;HashMap&lt;_, _&gt;&gt;();   所有权转移 ：x.to_owned() 会创建一个 AccountInfo 的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Solana 合约开发 - to_owned()与to_clone()的对比">
+<meta property="og:url" content="http://example.com/2025/02/23/Solana%20%E5%90%88%E7%BA%A6%E5%BC%80%E5%8F%91%20-%20to_owned()%E4%B8%8Eto_clone()%E7%9A%84%E5%AF%B9%E6%AF%94/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="使用to_owned()和使用引用对比：12345let accounts &#x3D; ctx    .remaining_accounts    .iter()    .map(|x| (x.key(), x.to_owned()))    .collect::&lt;HashMap&lt;_, _&gt;&gt;();   所有权转移 ：x.to_owned() 会创建一个 AccountInfo 的">
+<meta property="og:locale">
+<meta property="article:published_time" content="2025-02-23T15:12:59.734Z">
+<meta property="article:modified_time" content="2025-02-26T14:39:23.297Z">
+<meta property="article:author" content="QsunOu">
+<meta property="article:tag" content="Rust">
+<meta property="article:tag" content="Solana">
+<meta property="article:tag" content="Anchor">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://example.com/2025/02/23/Solana 合约开发 - to_owned()与to_clone()的对比/"/>
+
+
+
+
+
+  <title>Solana 合约开发 - to_owned()与to_clone()的对比 | Hexo</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hexo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2025/02/23/Solana%20%E5%90%88%E7%BA%A6%E5%BC%80%E5%8F%91%20-%20to_owned()%E4%B8%8Eto_clone()%E7%9A%84%E5%AF%B9%E6%AF%94/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Solana 合约开发 - to_owned()与to_clone()的对比</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2025-02-23T23:12:59+08:00">
+                2025-02-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Solana%E5%90%88%E7%BA%A6%E5%BC%80%E5%8F%91/" itemprop="url" rel="index">
+                    <span itemprop="name">Solana合约开发</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="使用to-owned-和使用引用对比："><a href="#使用to-owned-和使用引用对比：" class="headerlink" title="使用to_owned()和使用引用对比："></a>使用to_owned()和使用引用对比：</h1><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="variable">accounts</span> = ctx</span><br><span class="line">    .remaining_accounts</span><br><span class="line">    .<span class="title function_ invoke__">iter</span>()</span><br><span class="line">    .<span class="title function_ invoke__">map</span>(|x| (x.<span class="title function_ invoke__">key</span>(), x.<span class="title function_ invoke__">to_owned</span>()))</span><br><span class="line">    .collect::&lt;HashMap&lt;_, _&gt;&gt;();</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p><strong><code>所有权转移</code></strong> ：<br>x.to_owned() 会创建一个 AccountInfo 的深拷贝（即完全独立的副本），并将这个副本存储到 HashMap 中。<br>这意味着 accounts 拥有这些 AccountInfo 的所有权，而不是借用它们。</p>
+</li>
+<li><p><strong><code>生命周期</code></strong> ：<br>因为 accounts 存储的是深拷贝的数据，它的生命周期与 ctx.remaining_accounts 无关。<br>它可以独立存在，即使 ctx.remaining_accounts 被释放或超出作用域，accounts 仍然有效。</p>
+</li>
+<li><p><strong><code>内存开销</code></strong> ：<br>由于每个 AccountInfo 都被深拷贝，这会导致额外的内存分配和性能开销。</p>
+</li>
+<li><p><strong><code>适用场景</code></strong> ：<br>如果你需要在函数外部返回 accounts(例如<code>fn xxx() -&gt; HashMap&lt;Pubkey, AccountInfo&gt;</code>)，或者长时间持有这些数据，这种方法是合适的。<br>但要注意，Solana 程序中通常不建议频繁深拷贝数据，因为这会增加计算和内存开销。</p>
+</li>
+</ul>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="variable">accounts_map</span>: HashMap&lt;&amp;Pubkey, &amp;AccountInfo&lt;<span class="symbol">&#x27;info</span>&gt;&gt; = ctx</span><br><span class="line">    .remaining_accounts</span><br><span class="line">    .<span class="title function_ invoke__">iter</span>()</span><br><span class="line">    .<span class="title function_ invoke__">map</span>(|acc| (acc.key, acc))</span><br><span class="line">    .<span class="title function_ invoke__">collect</span>();</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p><strong><code>借用而非拥有</code></strong> ：<br>这里没有调用 to_owned()，而是直接借用 ctx.remaining_accounts 中的 AccountInfo 引用。<br>accounts_map 中存储的是对 ctx.remaining_accounts 中元素的引用（&amp;AccountInfo&lt;’info&gt;），而不是独立的副本。</p>
+</li>
+<li><p><strong><code>生命周期绑定</code></strong> ：<br>accounts_map 的生命周期与 ctx.remaining_accounts 绑定。<br>如果 ctx.remaining_accounts 被释放或超出作用域，accounts_map 中的引用也会失效。<br>这是因为 accounts_map 中的引用依赖于 ctx.remaining_accounts 的生命周期。</p>
+</li>
+<li><p><strong><code>内存开销</code></strong> ：<br>由于只是存储引用，不会产生额外的内存分配，性能更高。</p>
+</li>
+<li><p><strong><code>适用场景</code></strong> ：<br>如果你只需要在当前函数的作用域内使用 accounts_map，并且不需要长期持有这些数据，这种方法更高效。<br>这是 Solana 程序中推荐的方式，因为它避免了不必要的深拷贝。</p>
+</li>
+</ul>
+<h1 id="使用to-owned-和clone-对比："><a href="#使用to-owned-和clone-对比：" class="headerlink" title="使用to_owned()和clone()对比："></a>使用to_owned()和clone()对比：</h1><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="variable">pool_input_vault_info</span> = accounts   <span class="comment">//HashMap&lt;&amp;Pubkey, &amp;AccountInfo&lt;&#x27;info&gt;&gt;</span></span><br><span class="line">	.<span class="title function_ invoke__">get</span>(&amp;pool_input_vault_key) <span class="comment">//Option&lt;&amp;&amp;AccountInfo&lt;&#x27;info&gt;&gt;</span></span><br><span class="line">    .<span class="title function_ invoke__">ok_or</span>(ErrorCode::InvalidAccounts)? <span class="comment">// &amp;&amp;AccountInfo</span></span><br><span class="line">    .<span class="title function_ invoke__">to_owned</span>(); <span class="comment">// &amp;AccountInfo</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>**<code>定义</code>**：to_owned() 是一个特定于某些类型的方法，通常用于将借用的数据（如引用）转换为拥有所有权的数据。</p>
+</li>
+<li><p>**<code>行为</code>**：<br><code>to_owned()</code> 通常用于从借用类型（如 &amp;str 或 &amp;AccountInfo）创建拥有所有权的类型（如 String 或 AccountInfo）。<br>它不会递归地复制所有子对象，而是根据具体类型的行为来决定如何复制数据。<br>对于字符串切片 &amp;str，to_owned() 返回一个 String；对于 &amp;AccountInfo，它返回一个 AccountInfo。</p>
+</li>
+<li><p>**<code>适用场景</code>**：<br>当你有一个借用的数据（如引用），并且你需要拥有该数据的所有权时。<br>当你需要避免双重引用的问题，或者当你需要确保后续代码可以安全地使用该数据时。</p>
+</li>
+<li><p>**<code>性能考虑</code>**：<br>to_owned() 通常比 clone() 更高效，因为它只复制必要的部分，而不是递归地复制整个对象树。<br>对于简单的类型（如字符串或基本数据结构），to_owned() 的性能开销较小。</p>
+</li>
+</ul>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="variable">pool_input_vault_info</span> = accounts</span><br><span class="line">    .<span class="title function_ invoke__">get</span>(&amp;pool_input_vault_key)</span><br><span class="line">    .<span class="title function_ invoke__">ok_or</span>(ErrorCode::InvalidAccounts)?</span><br><span class="line">    .<span class="title function_ invoke__">clone</span>();</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>**<code>定义</code>**：clone() 是一个 trait 方法，属于 Clone trait。它用于创建一个类型的新实例，该实例是原始实例的深度副本。</p>
+</li>
+<li><p>**<code>行为</code>**：<br>clone() 会递归地复制整个对象及其所有子对象。<br>对于实现了 Clone trait 的类型，clone() 可以用于任何类型的对象，包括复杂的数据结构（如 Vec<T>、HashMap&lt;K, V&gt; 等）。<br>如果类型中的字段也实现了 Clone，则这些字段也会被递归复制。</p>
+</li>
+<li><p>**<code>适用场景</code>**：<br>当你需要完全复制一个复杂的对象，并且不希望两个对象共享任何内部数据时。<br>当你需要确保两个变量拥有独立的状态时。</p>
+</li>
+<li><p>**<code>性能考虑</code>**：<br>clone() 可能会导致较高的性能开销，因为它需要递归地复制所有子对象。对于大型或复杂的数据结构，这可能会导致显著的性能下降。</p>
+</li>
+</ul>
+<p>在上面两段代码中<br>to_owned()：<br>适用于你只需要将引用转换为拥有所有权的对象，而不需要递归复制整个对象树的情况。<br>在代码中，accounts 是一个 HashMap&lt;&amp;Pubkey, &amp;AccountInfo&lt;’info&gt;&gt;，因此 to_owned() 可以将 &amp;&amp;AccountInfo&lt;’info&gt; 转换为 &amp;AccountInfo&lt;’info&gt;，从而避免双重引用问题。</p>
+<h2 id="双重引用问题："><a href="#双重引用问题：" class="headerlink" title="双重引用问题："></a>双重引用问题：</h2><p>在 Rust 中，双重引用（double reference）是指你有一个指向另一个引用的引用。例如，&amp;AccountInfo&lt;’info&gt; 是一个对 AccountInfo&lt;’info&gt; 的引用。</p>
+<h3 id="双重引用问题的背景"><a href="#双重引用问题的背景" class="headerlink" title="双重引用问题的背景"></a>双重引用问题的背景</h3><p>在之前的代码中，accounts 是一个 HashMap&lt;&amp;Pubkey, &amp;AccountInfo&lt;’info&gt;&gt;，即键是 Pubkey 的引用，值是 AccountInfo&lt;’info&gt; 的引用。当你从 accounts 中获取某个账户信息时，返回的是 Option&lt;&amp;&amp;AccountInfo&lt;’info&gt;&gt;，即对 AccountInfo&lt;’info&gt; 的引用的引用。</p>
+<p>如果你直接在这个引用上使用 .clone()，它只会复制这个引用，而不是内部的 AccountInfo&lt;’info&gt; 对象。这会导致双重引用的问题，即你最终会得到的还是 &amp;&amp;AccountInfo&lt;’info&gt;，而不是你期望的 &amp;AccountInfo&lt;’info&gt;。</p>
+<h2 id="如何避免双重引用问题"><a href="#如何避免双重引用问题" class="headerlink" title="如何避免双重引用问题"></a>如何避免双重引用问题</h2><p>为了避免双重引用问题，你可以使用以下几种方法：</p>
+<ul>
+<li><p>**<code>使用 .to_owned()</code>**：<br><code>.to_owned()</code> 用于将借用的数据转换为拥有所有权的数据。对于 &amp;AccountInfo&lt;’info&gt;，它会创建一个新的 AccountInfo&lt;’info&gt; 实例，从而避免了双重引用问题。</p>
+</li>
+<li><p>**<code>解引用并克隆</code>**：<br>你可以先解引用，然后克隆内部的数据。例如，<code>*accounts.get(&amp;key).ok_or(ErrorCode::InvalidAccounts).clone()?</code>，但这通常不如 .to_owned() 简洁和高效。</p>
+</li>
+<li><p>**<code>直接解引用</code>**：<br>如果你只需要读取数据而不需要修改或复制整个对象，可以直接解引用并使用该数据。例如，<code>*accounts.get(&amp;key).ok_or(ErrorCode::InvalidAccounts)?</code>。</p>
+</li>
+</ul>
+<h2 id="为什么to-owned-更高效？"><a href="#为什么to-owned-更高效？" class="headerlink" title="为什么to_owned()更高效？"></a>为什么to_owned()更高效？</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 创建一个包含 Borrowed 数据的 OuterData</span></span><br><span class="line"><span class="keyword">let</span> <span class="variable">original</span> = OuterData &#123;</span><br><span class="line">    name: <span class="string">&quot;outer&quot;</span>.<span class="title function_ invoke__">to_string</span>(),</span><br><span class="line">    inner: InnerData &#123;</span><br><span class="line">        value: Cow::<span class="title function_ invoke__">Borrowed</span>(<span class="string">&quot;hello&quot;</span>),</span><br><span class="line">    &#125;,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">此时内存布局：</span><br><span class="line">original.name → <span class="string">&quot;outer&quot;</span> (堆内存)</span><br><span class="line">original.inner.value → <span class="string">&quot;hello&quot;</span> (静态内存，Borrowed)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>使用<code>clone()</code>:</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="variable">cloned</span> = original.<span class="title function_ invoke__">clone</span>();</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>clone()</code> 会递归克隆所有字段：<ul>
+<li>name: String：深拷贝堆内存中的字符串（分配新堆内存）。</li>
+<li>inner: InnerData：调用 InnerData 的 clone()：</li>
+<li>value: Cow::Borrowed(“hello”) → 仍然指向原始静态内存。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>使用<code>to_owned()</code>:</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="variable">owned</span> = original.<span class="title function_ invoke__">to_owned</span>();</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>to_owned()</code> 会按需复制 ：<ul>
+<li>name: String：已经是拥有所有权的类型，直接转移所有权（原堆内存，无需复制）。</li>
+<li>inner.value: Cow::Borrowed → 转换为 Cow::Owned，复制数据到堆内存。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>总结：<br><code>clone()</code> 是“傻瓜式”深拷贝 ：不管数据是否已拥有，都会递归复制。<br><code>to_owned()</code> 是“智能”所有权转换 ：仅复制必要的借用数据，最大化复用已有资源。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Rust/" rel="tag"># Rust</a>
+          
+            <a href="/tags/Solana/" rel="tag"># Solana</a>
+          
+            <a href="/tags/Anchor/" rel="tag"># Anchor</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2025/02/16/Solana%20%E5%90%88%E7%BA%A6%E5%BC%80%E5%8F%91%20-%20DeFi%20-%20Dex%20%E5%BC%80%E5%8F%91%E5%8D%81%E4%B8%80%EF%BC%9ALP%20Token%20Stake&Unstake%EF%BC%88%E5%8D%95%E4%B8%80%E5%A5%96%E5%8A%B1%E6%B1%A0%EF%BC%89/" rel="next" title="Solana 合约开发 - DeFi - Dex 开发十一：LP Token Stake&Unstake（单一奖励池）">
+                <i class="fa fa-chevron-left"></i> Solana 合约开发 - DeFi - Dex 开发十一：LP Token Stake&Unstake（单一奖励池）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2025/02/24/Solana%20%E5%90%88%E7%BA%A6%E5%BC%80%E5%8F%91%20-%20Account%20&%20AccountInfo%20&%20InterfaceAccount%20&%20AccountLoader/" rel="prev" title="Solana 合约开发 - Account & AccountInfo & InterfaceAccount & AccountLoader 区别">
+                Solana 合约开发 - Account & AccountInfo & InterfaceAccount & AccountLoader 区别 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%20%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">44</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="qsunou@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8to-owned-%E5%92%8C%E4%BD%BF%E7%94%A8%E5%BC%95%E7%94%A8%E5%AF%B9%E6%AF%94%EF%BC%9A"><span class="nav-number">1.</span> <span class="nav-text">使用to_owned()和使用引用对比：</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8to-owned-%E5%92%8Cclone-%E5%AF%B9%E6%AF%94%EF%BC%9A"><span class="nav-number">2.</span> <span class="nav-text">使用to_owned()和clone()对比：</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%8C%E9%87%8D%E5%BC%95%E7%94%A8%E9%97%AE%E9%A2%98%EF%BC%9A"><span class="nav-number">2.1.</span> <span class="nav-text">双重引用问题：</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%8C%E9%87%8D%E5%BC%95%E7%94%A8%E9%97%AE%E9%A2%98%E7%9A%84%E8%83%8C%E6%99%AF"><span class="nav-number">2.1.1.</span> <span class="nav-text">双重引用问题的背景</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E9%81%BF%E5%85%8D%E5%8F%8C%E9%87%8D%E5%BC%95%E7%94%A8%E9%97%AE%E9%A2%98"><span class="nav-number">2.2.</span> <span class="nav-text">如何避免双重引用问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88to-owned-%E6%9B%B4%E9%AB%98%E6%95%88%EF%BC%9F"><span class="nav-number">2.3.</span> <span class="nav-text">为什么to_owned()更高效？</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">QsunOu</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
