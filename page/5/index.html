@@ -262,6 +262,174 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/10/18/Rust-lesson-3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2024/10/18/Rust-lesson-3/" itemprop="url">Rust lesson 3 - 函数</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-10-18T14:12:29+08:00">
+                2024-10-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%8A%80%E6%9C%AF-Rust-%E5%BC%80%E5%8F%91/" itemprop="url" rel="index">
+                    <span itemprop="name">技术/Rust 开发</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="1-声明函数的关键字-fn"><a href="#1-声明函数的关键字-fn" class="headerlink" title="1.声明函数的关键字 fn"></a>1.声明函数的关键字 fn</h2><p>fn位置随便放，调用前后都行</p>
+<h4 id="代码示例："><a href="#代码示例：" class="headerlink" title="代码示例："></a>代码示例：</h4><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">add</span>(i: <span class="type">i32</span>, j: <span class="type">i32</span>) <span class="punctuation">-&gt;</span> <span class="type">i32</span> &#123;</span><br><span class="line">	i + j</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-函数名"><a href="#2-函数名" class="headerlink" title="2.函数名"></a>2.函数名</h2><h5 id="规则："><a href="#规则：" class="headerlink" title="规则："></a>规则：</h5><ol>
+<li>开头是字符，后面是数字，下划线，字母</li>
+<li>开头是下划线，后面是数字，下划线，字母，不能仅有下划线</li>
+<li>函数名和变量名使用蛇形命名法(snake case)，例如 fn add_two() -&gt; ()</li>
+</ol>
+<h2 id="3-函数参数"><a href="#3-函数参数" class="headerlink" title="3.函数参数"></a>3.函数参数</h2><p>Rust是强类型语言，每一个函数参数要标出具体类型</p>
+<h4 id="代码示例"><a href="#代码示例" class="headerlink" title="代码示例"></a>代码示例</h4><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//参数 i 和 j 的参数类型都是i32,必须每个都要写</span></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">add</span>(i: <span class="type">i32</span>, j: <span class="type">i32</span>) <span class="punctuation">-&gt;</span> <span class="type">i32</span> &#123;</span><br><span class="line">	i + j</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="4-函数返回"><a href="#4-函数返回" class="headerlink" title="4.函数返回"></a>4.函数返回</h2><p>函数的返回值就是函数体最后一条表达式的返回值，也可以使用return提前返回。<br>其实简单分类就两种写法：</p>
+<ol>
+<li>return+分号</li>
+<li>没有return，也没有分号</li>
+</ol>
+<h4 id="代码示例-1"><a href="#代码示例-1" class="headerlink" title="代码示例"></a>代码示例</h4><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 这里返回值的类型是 i32 ,也就是 -&gt; i32 的i32</span></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">add</span>(i: <span class="type">i32</span>, j: <span class="type">i32</span>) <span class="punctuation">-&gt;</span> <span class="type">i32</span> &#123;</span><br><span class="line">    <span class="comment">//第一种写法，没return，也没分号</span></span><br><span class="line">    <span class="comment">//i + j</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">//第二种写法，return加分号</span></span><br><span class="line">    <span class="keyword">return</span>  i+j; </span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="特殊返回："><a href="#特殊返回：" class="headerlink" title="特殊返回："></a>特殊返回：</h4><ol>
+<li><p>没返回值，就简单打印，两种写法：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//第一种写法，这里没有 -&gt; i32 这个东西</span></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">print</span>(i: <span class="type">i32</span>, j: <span class="type">i32</span>) &#123;</span><br><span class="line">	<span class="built_in">println!</span>(<span class="string">&quot;HaHaHa&quot;</span>)</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//第二种写法，返回一个空值 -&gt;() </span></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">print</span>(i: <span class="type">i32</span>, j: <span class="type">i32</span>) <span class="punctuation">-&gt;</span> () &#123;</span><br><span class="line">	<span class="built_in">println!</span>(<span class="string">&quot;HaHaHa&quot;</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>函数永远不返回，要用 ！作为函数返回值：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//第一种情况是panic,程序崩溃直接退出</span></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">dead_end</span> <span class="punctuation">-&gt;</span> ! &#123;</span><br><span class="line">    <span class="built_in">panic!</span>(<span class="string">&quot;程序已经崩溃凉了，洗洗睡吧&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//第二种情况是有死循环，永远跳不出来</span></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">forever</span>() <span class="punctuation">-&gt;</span> ! &#123; </span><br><span class="line">  <span class="keyword">loop</span> &#123;</span><br><span class="line">    <span class="comment">//...</span></span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h2 id="5-函数体"><a href="#5-函数体" class="headerlink" title="5.函数体"></a>5.函数体</h2><p>也就是函数fn代码块里面，具体执行的内容</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://example.com/2024/10/17/Rust-lesson-2/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -700,7 +868,7 @@
               
                 <a href="/archives/%20%7C%7C%20archive">
               
-                  <span class="site-state-item-count">42</span>
+                  <span class="site-state-item-count">43</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
