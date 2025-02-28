@@ -262,6 +262,179 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/11/14/Solana-%20token%20%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2024/11/14/Solana-%20token%20%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/" itemprop="url">Solana 合约开发 - token 基础概念</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-11-14T17:57:09+08:00">
+                2024-11-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Solana%E5%90%88%E7%BA%A6%E5%BC%80%E5%8F%91-DeFi-Dex/" itemprop="url" rel="index">
+                    <span itemprop="name">Solana合约开发-DeFi-Dex</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="What-is-token？"><a href="#What-is-token？" class="headerlink" title="What is token？"></a>What is token？</h1><p>在 Solana 区块链上，<strong>Token</strong> 是一种数字资产，用于表示价值或所有权。这些 Token 可以代表各种类型的资产，如货币、股权、积分、NFT（非同质化代币）等。Solana 使用 <strong>SPL Token Program</strong> 来管理和操作这些 Token。</p>
+<h1 id="What-is-SPL"><a href="#What-is-SPL" class="headerlink" title="What is SPL?"></a>What is SPL?</h1><p><strong>SPL (Solana Program Library)</strong> 是一组用于在 Solana 区块链上构建去中心化应用程序的智能合约库。SPL 提供了多种标准和工具，使开发者能够更容易地创建和管理各种类型的代币、账户和其他常见功能。</p>
+<h1 id="SPL-Token版本："><a href="#SPL-Token版本：" class="headerlink" title="SPL Token版本："></a>SPL Token版本：</h1><p>分为 SPL Token 和 SPL Token 2022 两个版本，都可以使用，SPL Token是最初版本，兼容性较好，SPL Token 2022 是对原始 SPL Token 标准的一个增强版本，它通过引入一系列扩展增强了代币的功能性。例如允许开发者为代币添加额外的功能。例如，可以添加转移费用、利息积累率、可选转移能力等功能。这些扩展使得 Token 2022 更加灵活和强大，当然还有其他方面的增强。</p>
+<h1 id="Coin-和-Token-的区别："><a href="#Coin-和-Token-的区别：" class="headerlink" title="Coin 和 Token 的区别："></a>Coin 和 Token 的区别：</h1><h2 id="Coin："><a href="#Coin：" class="headerlink" title="Coin："></a>Coin：</h2><p>Coin 是指那些原生存在于其自身的区块链上的数字货币。例如，在 Solana 上，SOL 就是该平台的原生 coin。</p>
+<p><strong>用途</strong>：<br>作为交易费用支付给网络中的验证者以确保交易被处理。<br>参与质押（staking），帮助维护网络安全并获得奖励。</p>
+<h2 id="Token（代币）："><a href="#Token（代币）：" class="headerlink" title="Token（代币）："></a>Token（代币）：</h2><p>Token 是在现有的区块链平台上创建的数字资产。在 Solana 上，这些通常是通过 SPL-Token 标准来实现的。</p>
+<p><strong>分类</strong>：<br>同质化代币（Fungible Tokens）：每个单位的价值相同且可互换，如稳定币 USDC。<br>非同质化代币（Non-Fungible Tokens, NFTs）：每个代币都是独一无二的，通常用来表示收藏品、艺术品等独特物品。<br><strong>用途</strong>：<br>代表各种形式的价值，包括但不限于货币、股票、积分、游戏内物品等。<br>可用于参与去中心化应用（DApps）的各种功能和服务。</p>
+<h1 id="主要概念："><a href="#主要概念：" class="headerlink" title="主要概念："></a>主要概念：</h1><h2 id="Token-program"><a href="#Token-program" class="headerlink" title="Token program:"></a>Token program:</h2><p><strong>Token Program</strong> 是 SPL 中最核心的部分之一，用于创建和管理代币。它实现了 ERC-20 标准的功能，包括转账、授权等操作。</p>
+<h3 id="主要功能："><a href="#主要功能：" class="headerlink" title="主要功能："></a>主要功能：</h3><ul>
+<li><strong>创建代币</strong>：创建新的代币，并初始化代币账户。</li>
+<li><strong>转账</strong>：在不同账户之间转移代币。</li>
+<li><strong>授权</strong>：授权其他账户在你的账户中转移代币。</li>
+<li><strong>撤销授权</strong>：撤销之前授权的权限。</li>
+<li><strong>查询余额</strong>：查询某个账户的代币余额。</li>
+</ul>
+<h2 id="Mint-Account（铸币账户）"><a href="#Mint-Account（铸币账户）" class="headerlink" title="Mint Account（铸币账户）"></a>Mint Account（铸币账户）</h2><p><strong>Mint Account</strong> 是用于定义和管理某种代币的基本属性的账户。每个代币类型都有一个唯一的 Mint Account。</p>
+<h3 id="主要功能：-1"><a href="#主要功能：-1" class="headerlink" title="主要功能："></a>主要功能：</h3><ul>
+<li><strong>定义代币属性</strong>：包括代币的名称、符号、小数位数等。</li>
+<li><strong>创建代币供应</strong>：初始发行代币。</li>
+<li><strong>管理供应</strong>：增加或减少代币的总供应量。</li>
+</ul>
+<h2 id="Token-Account（代币账户）"><a href="#Token-Account（代币账户）" class="headerlink" title="Token Account（代币账户）"></a>Token Account（代币账户）</h2><p><strong>Token Account</strong> 是用于存储特定用户持有的代币数量的账户。每个用户持有一种代币都需要一个对应的 Token Account。</p>
+<h3 id="主要功能：-2"><a href="#主要功能：-2" class="headerlink" title="主要功能："></a>主要功能：</h3><ul>
+<li><strong>存储代币余额</strong>：记录用户持有的代币数量。</li>
+<li><strong>转账</strong>：在不同用户之间转移代币。</li>
+</ul>
+<h2 id="ATA（关联代币账户）"><a href="#ATA（关联代币账户）" class="headerlink" title="ATA（关联代币账户）"></a>ATA（关联代币账户）</h2><p><strong>Associated Token Account (ATA)</strong> 是一种特殊的 Token Account，它的地址是通过特定的种子和程序 ID 生成的，确保每个用户和每种代币只有一个唯一的 Token Account。</p>
+<h3 id="主要功能：-3"><a href="#主要功能：-3" class="headerlink" title="主要功能："></a>主要功能：</h3><ul>
+<li><strong>简化账户创建</strong>：通过 ATA，用户可以轻松地为每种代币创建一个唯一的 Token Account。</li>
+<li><strong>避免重复账户</strong>：确保每个用户和每种代币只有一个 Token Account，避免重复创建。</li>
+</ul>
+<p>现在不懂也没关系，后面代码还会再讲，这里留个印象。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://example.com/2024/11/14/Solana-%E8%B4%A6%E6%88%B7%E6%A6%82%E5%BF%B5&%E7%AE%80%E5%8D%95%E4%BA%A4%E4%BA%92/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2091,154 +2264,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2024/11/01/Rust-lesson-18/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2024/11/01/Rust-lesson-18/" itemprop="url">Rust lesson 18 - 生命周期</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-11-01T17:09:40+08:00">
-                2024-11-01
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Rust-%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
-                    <span itemprop="name">Rust 开发基础</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="为什么需要生命周期注解？"><a href="#为什么需要生命周期注解？" class="headerlink" title="为什么需要生命周期注解？"></a>为什么需要生命周期注解？</h1><h2 id="引用的有效范围："><a href="#引用的有效范围：" class="headerlink" title="引用的有效范围："></a>引用的有效范围：</h2><p>当函数返回一个引用时，编译器需要确保这个引用在其生命周期内始终有效。<br>如果没有生命周期注解，编译器无法确定返回的引用 &amp;str 的生命周期与输入引用 x 和 y 的生命周期之间的关系。</p>
-<h2 id="悬垂引用："><a href="#悬垂引用：" class="headerlink" title="悬垂引用："></a>悬垂引用：</h2><p>悬垂引用是指指向已经释放的内存的引用。这是非常危险的，因为它会导致未定义行为。<br>生命周期注解帮助编译器确保返回的引用在其生命周期内始终有效，从而避免悬垂引用。</p>
-<h2 id="创建生命周期："><a href="#创建生命周期：" class="headerlink" title="创建生命周期："></a>创建生命周期：</h2><p>生命周期主要通过生命周期注解来创建和使用。使用显示声明，例如<code>&#39;a</code>这种单引号加字母的方式，至于字母是什么无所谓，有单引号就行。</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//&#x27;a 是一个生命周期参数，表示 x 和 y 的生命周期至少与返回的引用的生命周期一样长</span></span><br><span class="line"><span class="comment">//x: &amp;&#x27;a str 和 y: &amp;&#x27;a str 表示 x 和 y 都是生命周期为 &#x27;a 的字符串切片</span></span><br><span class="line"><span class="comment">//-&gt; &amp;&#x27;a str 表示返回的字符串切片的生命周期也是 &#x27;a</span></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">longest</span>&lt;<span class="symbol">&#x27;a</span>&gt;(x: &amp;<span class="symbol">&#x27;a</span> <span class="type">str</span>, y: &amp;<span class="symbol">&#x27;a</span> <span class="type">str</span>) <span class="punctuation">-&gt;</span> &amp;<span class="symbol">&#x27;a</span> <span class="type">str</span>&#123;</span><br><span class="line">    <span class="keyword">if</span> x.<span class="title function_ invoke__">len</span>() &gt; y.<span class="title function_ invoke__">len</span>()&#123;</span><br><span class="line">        x</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        y</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h1 id="生命周期类别："><a href="#生命周期类别：" class="headerlink" title="生命周期类别："></a>生命周期类别：</h1><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">example</span>&lt;<span class="symbol">&#x27;a</span>&gt;(input: &amp;<span class="symbol">&#x27;a</span> <span class="type">str</span>) <span class="punctuation">-&gt;</span> &amp;<span class="symbol">&#x27;a</span> <span class="type">str</span> &#123;</span><br><span class="line">    input</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">Example</span>&lt;<span class="symbol">&#x27;a</span>&gt; &#123;</span><br><span class="line">    a: &amp;<span class="symbol">&#x27;a</span> <span class="type">str</span>,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">enum</span> <span class="title class_">StringOption</span>&lt;<span class="symbol">&#x27;a</span>&gt; &#123;</span><br><span class="line">    <span class="title function_ invoke__">Some</span>(&amp;<span class="symbol">&#x27;a</span> <span class="type">str</span>),</span><br><span class="line">    <span class="literal">None</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">impl</span>&lt;<span class="symbol">&#x27;a</span>, <span class="symbol">&#x27;b</span>&gt; StringOption &lt;<span class="symbol">&#x27;a</span>, <span class="symbol">&#x27;b</span>&gt; &#123;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">get</span>(&amp;<span class="keyword">self</span>) &#123;</span><br><span class="line">        <span class="comment">//</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h1 id="特殊生命周期标注"><a href="#特殊生命周期标注" class="headerlink" title="特殊生命周期标注"></a>特殊生命周期标注</h1><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">//&#x27;static 是特殊的生命周期。</span></span><br><span class="line"><span class="comment">//&#x27;static 是 Rust 中最长的生命周期，表示引用在整个程序的生命周期内都是有效的。(注意整个程序)，通常用于全局变量和字符串字面量。</span></span><br><span class="line"><span class="keyword">let</span> <span class="variable">s</span>: &amp;<span class="symbol">&#x27;static</span> <span class="type">str</span> = <span class="string">&quot;hello&quot;</span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> SOME_COORDINATE: (<span class="type">i32</span>, <span class="type">i32</span>) = (<span class="number">7</span>, <span class="number">4</span>);</span><br><span class="line"><span class="comment">//static_reference 是一个指向 SOME_COORDINATE 的引用，具有 &#x27;static 生命周期。</span></span><br><span class="line"><span class="keyword">let</span> <span class="variable">static_reference</span>: &amp;<span class="symbol">&#x27;static</span> (<span class="type">i32</span>, <span class="type">i32</span>) = &amp;SOME_COORDINATE;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">Counter</span>&lt;<span class="symbol">&#x27;a</span>&gt; &#123;</span><br><span class="line">    counter: &amp;<span class="symbol">&#x27;a</span> <span class="keyword">mut</span> <span class="type">i32</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//impl&lt;&#x27;a&gt; Counter&lt;&#x27;a&gt; 能简写成下面这样</span></span><br><span class="line"><span class="comment">//&#x27;_&#x27; 是一个匿名生命周期参数，表示编译器会自动推断出适当的生命周期。</span></span><br><span class="line"><span class="keyword">impl</span> <span class="title class_">Counter</span>&lt;<span class="symbol">&#x27;_</span>&gt; &#123;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">increment</span>(&amp;<span class="keyword">mut</span> <span class="keyword">self</span>) &#123;</span><br><span class="line">        *<span class="keyword">self</span>.counter += <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2289,7 +2314,7 @@
               
                 <a href="/archives/%20%7C%7C%20archive">
               
-                  <span class="site-state-item-count">47</span>
+                  <span class="site-state-item-count">48</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

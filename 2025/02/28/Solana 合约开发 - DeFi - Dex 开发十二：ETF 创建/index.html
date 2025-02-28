@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Rust,Solana,Anchor," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="什么是ETF?交易型开放式指数基金（ETF） 是一种将多个资产打包成一个投资组合的金融工具，投资者可以通过交易所像股票一样买卖 ETF 份额。ETF 常常追踪某一特定市场指数（如 S&amp;P 500）或者行业、商品、债券等多元化资产。通过 ETF，投资者能够低成本地获得广泛的市场暴露，通常用于长期投资和资产配置。 什么是DeFi ETF？很简单，跟ETF的区别在于由智能合约进行管理，ETF包含">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Solana 合约开发 - DeFi - Dex 开发十二：ETF 创建">
+<meta property="og:url" content="http://example.com/2025/02/28/Solana%20%E5%90%88%E7%BA%A6%E5%BC%80%E5%8F%91%20-%20DeFi%20-%20Dex%20%E5%BC%80%E5%8F%91%E5%8D%81%E4%BA%8C%EF%BC%9AETF%20%E5%88%9B%E5%BB%BA/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="什么是ETF?交易型开放式指数基金（ETF） 是一种将多个资产打包成一个投资组合的金融工具，投资者可以通过交易所像股票一样买卖 ETF 份额。ETF 常常追踪某一特定市场指数（如 S&amp;P 500）或者行业、商品、债券等多元化资产。通过 ETF，投资者能够低成本地获得广泛的市场暴露，通常用于长期投资和资产配置。 什么是DeFi ETF？很简单，跟ETF的区别在于由智能合约进行管理，ETF包含">
+<meta property="og:locale">
+<meta property="article:published_time" content="2025-02-28T14:22:19.735Z">
+<meta property="article:modified_time" content="2025-02-28T15:02:20.813Z">
+<meta property="article:author" content="QsunOu">
+<meta property="article:tag" content="Rust">
+<meta property="article:tag" content="Solana">
+<meta property="article:tag" content="Anchor">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://example.com/2025/02/28/Solana 合约开发 - DeFi - Dex 开发十二：ETF 创建/"/>
+
+
+
+
+
+  <title>Solana 合约开发 - DeFi - Dex 开发十二：ETF 创建 | Hexo</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hexo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2025/02/28/Solana%20%E5%90%88%E7%BA%A6%E5%BC%80%E5%8F%91%20-%20DeFi%20-%20Dex%20%E5%BC%80%E5%8F%91%E5%8D%81%E4%BA%8C%EF%BC%9AETF%20%E5%88%9B%E5%BB%BA/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Solana 合约开发 - DeFi - Dex 开发十二：ETF 创建</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2025-02-28T22:22:19+08:00">
+                2025-02-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Solana%E5%90%88%E7%BA%A6%E5%BC%80%E5%8F%91-DeFi-Dex/" itemprop="url" rel="index">
+                    <span itemprop="name">Solana合约开发-DeFi-Dex</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="什么是ETF"><a href="#什么是ETF" class="headerlink" title="什么是ETF?"></a>什么是ETF?</h1><p>交易型开放式指数基金（ETF） 是一种将多个资产打包成一个投资组合的金融工具，投资者可以通过交易所像股票一样买卖 ETF 份额。ETF 常常追踪某一特定市场指数（如 S&amp;P 500）或者行业、商品、债券等多元化资产。通过 ETF，投资者能够低成本地获得广泛的市场暴露，通常用于长期投资和资产配置。</p>
+<h1 id="什么是DeFi-ETF？"><a href="#什么是DeFi-ETF？" class="headerlink" title="什么是DeFi ETF？"></a>什么是DeFi ETF？</h1><p>很简单，跟ETF的区别在于由智能合约进行管理，ETF包含的资产从股票等变成了各种Token，流动性也依赖于AMM，交易透明，全天24小时开放。</p>
+<h1 id="合约代码："><a href="#合约代码：" class="headerlink" title="合约代码："></a>合约代码：</h1><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// anchor/programs/swap/src/states/etf.rs</span></span><br><span class="line"><span class="keyword">use</span> anchor_lang::prelude::*;</span><br><span class="line"></span><br><span class="line"><span class="comment">// ETF代币</span></span><br><span class="line"><span class="meta">#[account]</span></span><br><span class="line"><span class="meta">#[derive(InitSpace)]</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">struct</span> <span class="title class_">EtfToken</span> &#123;</span><br><span class="line">    <span class="keyword">pub</span> etf_mint: Pubkey,</span><br><span class="line">    <span class="keyword">pub</span> creator: Pubkey,</span><br><span class="line">    <span class="keyword">pub</span> create_time: <span class="type">i64</span>,</span><br><span class="line">    <span class="meta">#[max_len(50)]</span></span><br><span class="line">    <span class="keyword">pub</span> description: <span class="type">String</span>,</span><br><span class="line">    <span class="meta">#[max_len(10)]</span></span><br><span class="line">    <span class="keyword">pub</span> assets: <span class="type">Vec</span>&lt;EtfAsset&gt;,  <span class="comment">//其实创建ETF跟创建普通token差不多，区别在于这里用Vec包含多个token的Mint地址。</span></span><br><span class="line">    <span class="keyword">pub</span> status: <span class="type">u8</span>,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">impl</span> <span class="title class_">EtfToken</span> &#123;</span><br><span class="line">    <span class="keyword">pub</span> <span class="keyword">const</span> ETFTOKEN_SEED_PREFIX: &amp;<span class="symbol">&#x27;static</span> <span class="type">str</span> = <span class="string">&quot;etf_token_v1&quot;</span>;</span><br><span class="line">    <span class="keyword">pub</span> <span class="keyword">const</span> ETFTOKEN_DECIMALS: <span class="type">u8</span> = <span class="number">9</span>;</span><br><span class="line">    <span class="keyword">pub</span> <span class="keyword">const</span> ETFTOKEN_METADATA_PREFIX: &amp;<span class="symbol">&#x27;static</span> <span class="type">str</span> = <span class="string">&quot;metadata&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// ETF代币总资产信息,作为结构体传入，用于创建ETF代币</span></span><br><span class="line"><span class="meta">#[account]</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">struct</span> <span class="title class_">EtfTokenArgs</span> &#123;</span><br><span class="line">    <span class="keyword">pub</span> name: <span class="type">String</span>,</span><br><span class="line">    <span class="keyword">pub</span> symbol: <span class="type">String</span>,</span><br><span class="line">    <span class="keyword">pub</span> description: <span class="type">String</span>,</span><br><span class="line">    <span class="keyword">pub</span> url: <span class="type">String</span>,</span><br><span class="line">    <span class="keyword">pub</span> assets: <span class="type">Vec</span>&lt;EtfAsset&gt;,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">impl</span> <span class="title class_">EtfTokenArgs</span> &#123;</span><br><span class="line">    <span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">create_account</span>(<span class="keyword">self</span>, creator: Pubkey, etf_mint: Pubkey) <span class="punctuation">-&gt;</span> EtfToken &#123;</span><br><span class="line">        <span class="keyword">let</span> <span class="variable">clock</span> = Clock::<span class="title function_ invoke__">get</span>().<span class="title function_ invoke__">unwrap</span>();</span><br><span class="line">        <span class="keyword">let</span> <span class="variable">status</span> = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">        EtfToken &#123;</span><br><span class="line">            creator,</span><br><span class="line">            etf_mint,</span><br><span class="line">            description: <span class="keyword">self</span>.description,</span><br><span class="line">            assets: <span class="keyword">self</span>.assets,</span><br><span class="line">            create_time: clock.unix_timestamp,</span><br><span class="line">            status,</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// ETF代币子资产信息</span></span><br><span class="line"><span class="meta">#[account]</span></span><br><span class="line"><span class="meta">#[derive(InitSpace)]</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">struct</span> <span class="title class_">EtfAsset</span> &#123;</span><br><span class="line">    <span class="keyword">pub</span> token: Pubkey,</span><br><span class="line">    <span class="keyword">pub</span> weight: <span class="type">u16</span>,  <span class="comment">// 每种子资产token占ETF的比例</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// anchor/programs/swap/src/accounts_all/etf.rs</span></span><br><span class="line"><span class="keyword">use</span> anchor_lang::prelude::*;</span><br><span class="line"><span class="keyword">use</span> anchor_spl::associated_token::AssociatedToken;</span><br><span class="line"><span class="keyword">use</span> anchor_spl::metadata::Metadata;</span><br><span class="line"><span class="keyword">use</span> anchor_spl::token::Token;</span><br><span class="line"><span class="keyword">use</span> anchor_spl::token_2022::Token2022;</span><br><span class="line"><span class="keyword">use</span> anchor_spl::token_interface::&#123;Mint,  TokenAccount, TokenInterface&#125;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> crate::states::&#123;EtfToken, BuyerOrderInfo,  EtfTokenArgs,AmmConfig&#125;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">#[derive(Accounts)]</span></span><br><span class="line"><span class="meta">#[instruction(args: EtfTokenArgs)]</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">struct</span> <span class="title class_">EtfTokenCreate</span>&lt;<span class="symbol">&#x27;info</span>&gt; &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 用于存储etf token的信息</span></span><br><span class="line">    <span class="meta">#[account(</span></span><br><span class="line"><span class="meta">        init_if_needed,</span></span><br><span class="line"><span class="meta">        payer = authority,</span></span><br><span class="line"><span class="meta">        space = 8 + EtfToken::INIT_SPACE,</span></span><br><span class="line"><span class="meta">        seeds = [</span></span><br><span class="line"><span class="meta">            EtfToken::ETFTOKEN_SEED_PREFIX.as_bytes(),</span></span><br><span class="line"><span class="meta">            etf_token_mint_account.key().as_ref(),</span></span><br><span class="line"><span class="meta">        ]</span>,</span><br><span class="line">        bump,</span><br><span class="line">    )]</span><br><span class="line">    <span class="keyword">pub</span> etf_token_info: <span class="type">Box</span>&lt;Account&lt;<span class="symbol">&#x27;info</span>, EtfToken&gt;&gt;,</span><br><span class="line"></span><br><span class="line">    <span class="comment">/// CHECK: Validate address by deriving pda</span></span><br><span class="line">    <span class="meta">#[account(</span></span><br><span class="line"><span class="meta">        mut,</span></span><br><span class="line"><span class="meta">        seeds = [</span></span><br><span class="line"><span class="meta">            EtfToken::ETFTOKEN_METADATA_PREFIX.as_bytes(),</span></span><br><span class="line"><span class="meta">            token_metadata_program.key().as_ref(),</span></span><br><span class="line"><span class="meta">            etf_token_mint_account.key().as_ref()</span></span><br><span class="line"><span class="meta">        ]</span>,</span><br><span class="line">        bump,</span><br><span class="line">        seeds::program = token_metadata_program.<span class="title function_ invoke__">key</span>(),</span><br><span class="line">    )]</span><br><span class="line">    <span class="keyword">pub</span> etf_metadata_account: UncheckedAccount&lt;<span class="symbol">&#x27;info</span>&gt;,</span><br><span class="line"></span><br><span class="line">    <span class="comment">// ETF token mint</span></span><br><span class="line">    <span class="meta">#[account(</span></span><br><span class="line"><span class="meta">        init,</span></span><br><span class="line"><span class="meta">        payer = authority,</span></span><br><span class="line"><span class="meta">        seeds = [</span></span><br><span class="line"><span class="meta">            EtfToken::ETFTOKEN_SEED_PREFIX.as_bytes(),</span></span><br><span class="line"><span class="meta">            args.symbol.as_bytes(), // symbol不允许重复</span></span><br><span class="line"><span class="meta">        ]</span>,</span><br><span class="line">        bump,</span><br><span class="line">        mint::decimals = EtfToken::ETFTOKEN_DECIMALS,</span><br><span class="line">        mint::authority = etf_token_info.<span class="title function_ invoke__">key</span>(), </span><br><span class="line">    )]</span><br><span class="line">    <span class="keyword">pub</span> etf_token_mint_account: <span class="type">Box</span>&lt;InterfaceAccount&lt;<span class="symbol">&#x27;info</span>, Mint&gt;&gt;,</span><br><span class="line"></span><br><span class="line">    <span class="meta">#[account(mut)]</span></span><br><span class="line">    <span class="keyword">pub</span> authority: Signer&lt;<span class="symbol">&#x27;info</span>&gt;,</span><br><span class="line"></span><br><span class="line">    <span class="keyword">pub</span> token_metadata_program: Program&lt;<span class="symbol">&#x27;info</span>, Metadata&gt;,</span><br><span class="line">    <span class="keyword">pub</span> token_program: Program&lt;<span class="symbol">&#x27;info</span>, Token&gt;,</span><br><span class="line">    <span class="keyword">pub</span> token_program_2022: Program&lt;<span class="symbol">&#x27;info</span>, Token2022&gt;,</span><br><span class="line">    <span class="keyword">pub</span> system_program: Program&lt;<span class="symbol">&#x27;info</span>, System&gt;,</span><br><span class="line">    <span class="keyword">pub</span> rent: Sysvar&lt;<span class="symbol">&#x27;info</span>, Rent&gt;,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> anchor_lang::prelude::*;</span><br><span class="line"><span class="keyword">use</span> anchor_spl::token::TokenAccount;</span><br><span class="line"><span class="keyword">use</span> anchor_spl::&#123;</span><br><span class="line">    associated_token::get_associated_token_address,</span><br><span class="line">    metadata::&#123;</span><br><span class="line">        create_metadata_accounts_v3, mpl_token_metadata::types::DataV2, CreateMetadataAccountsV3,</span><br><span class="line">    &#125;,</span><br><span class="line">    token::&#123;burn, mint_to, transfer, Burn, MintTo, Transfer&#125;,</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">use</span> std::collections::HashMap;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> crate::accounts_all::*;</span><br><span class="line"><span class="keyword">use</span> crate::calculate::*;</span><br><span class="line"><span class="keyword">use</span> crate::error::ErrorCode;</span><br><span class="line"><span class="keyword">use</span> crate::states::*;</span><br><span class="line"><span class="keyword">use</span> crate::util::*;</span><br><span class="line"></span><br><span class="line"><span class="comment">//ETF创建</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">create_etf_token_metadata</span>(ctx: Context&lt;EtfTokenCreate&gt;, args: EtfTokenArgs) <span class="punctuation">-&gt;</span> <span class="type">Result</span>&lt;()&gt; &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">etf_token_mint_key</span> = ctx.accounts.etf_token_mint_account.<span class="title function_ invoke__">key</span>();</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">signer_seeds</span>: &amp;[&amp;[&amp;[<span class="type">u8</span>]]] = &amp;[&amp;[</span><br><span class="line">        EtfToken::ETFTOKEN_SEED_PREFIX.<span class="title function_ invoke__">as_bytes</span>(),</span><br><span class="line">        etf_token_mint_key.<span class="title function_ invoke__">as_ref</span>(),</span><br><span class="line">        &amp;[ctx.bumps.etf_token_info],</span><br><span class="line">    ]];</span><br><span class="line"></span><br><span class="line">    <span class="title function_ invoke__">create_metadata_accounts_v3</span>(</span><br><span class="line">        CpiContext::<span class="title function_ invoke__">new_with_signer</span>(</span><br><span class="line">            ctx.accounts.etf_metadata_account.<span class="title function_ invoke__">to_account_info</span>(),</span><br><span class="line">            CreateMetadataAccountsV3 &#123;</span><br><span class="line">                metadata: ctx.accounts.etf_metadata_account.<span class="title function_ invoke__">to_account_info</span>(),</span><br><span class="line">                mint: ctx.accounts.etf_token_mint_account.<span class="title function_ invoke__">to_account_info</span>(),</span><br><span class="line">                mint_authority: ctx.accounts.etf_token_info.<span class="title function_ invoke__">to_account_info</span>(),</span><br><span class="line">                update_authority: ctx.accounts.etf_token_info.<span class="title function_ invoke__">to_account_info</span>(),</span><br><span class="line">                payer: ctx.accounts.authority.<span class="title function_ invoke__">to_account_info</span>(),</span><br><span class="line">                system_program: ctx.accounts.system_program.<span class="title function_ invoke__">to_account_info</span>(),</span><br><span class="line">                rent: ctx.accounts.rent.<span class="title function_ invoke__">to_account_info</span>(),</span><br><span class="line">            &#125;,</span><br><span class="line">            signer_seeds,</span><br><span class="line">        ),</span><br><span class="line">        DataV2 &#123;</span><br><span class="line">            name: args.name.<span class="title function_ invoke__">to_string</span>(),</span><br><span class="line">            symbol: args.symbol.<span class="title function_ invoke__">to_string</span>(),</span><br><span class="line">            uri: args.url.<span class="title function_ invoke__">to_string</span>(),</span><br><span class="line">            seller_fee_basis_points: <span class="number">0</span>,</span><br><span class="line">            creators: <span class="literal">None</span>,</span><br><span class="line">            collection: <span class="literal">None</span>,</span><br><span class="line">            uses: <span class="literal">None</span>,</span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="literal">false</span>,</span><br><span class="line">        <span class="literal">true</span>,</span><br><span class="line">        <span class="literal">None</span>,</span><br><span class="line">    )?;</span><br><span class="line"></span><br><span class="line">    ctx.accounts.etf_token_info.<span class="title function_ invoke__">set_inner</span>(args.<span class="title function_ invoke__">create_account</span>(</span><br><span class="line">        ctx.accounts.authority.<span class="title function_ invoke__">key</span>(),</span><br><span class="line">        ctx.accounts.etf_token_mint_account.<span class="title function_ invoke__">key</span>(),</span><br><span class="line">    ));</span><br><span class="line"></span><br><span class="line">    <span class="title function_ invoke__">Ok</span>(())</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// lib.rs</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">create_etf_token_metadata</span>(</span><br><span class="line">        ctx: Context&lt;EtfTokenCreate&gt;,</span><br><span class="line">        args: EtfTokenArgs,</span><br><span class="line">    ) <span class="punctuation">-&gt;</span> <span class="type">Result</span>&lt;()&gt; &#123;</span><br><span class="line">        instructions::<span class="title function_ invoke__">create_etf_token_metadata</span>(ctx, args)</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="前端测试代码："><a href="#前端测试代码：" class="headerlink" title="前端测试代码："></a>前端测试代码：</h1><figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// anchor/example/api/etf.ts</span></span><br><span class="line"><span class="keyword">import</span> * <span class="keyword">as</span> anchor <span class="keyword">from</span> <span class="string">&#x27;@coral-xyz/anchor&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; program, provider &#125; <span class="keyword">from</span> <span class="string">&#x27;./wallet&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; <span class="title class_">PublicKey</span> &#125; <span class="keyword">from</span> <span class="string">&#x27;@solana/web3.js&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">async</span> <span class="keyword">function</span> <span class="title function_">createETFToken</span>(<span class="params"></span></span><br><span class="line"><span class="params">  <span class="attr">wallet</span>: anchor.<span class="title class_">Wallet</span>,</span></span><br><span class="line"><span class="params">  <span class="attr">token_1_mint</span>: anchor.web3.<span class="title class_">PublicKey</span>,</span></span><br><span class="line"><span class="params">  <span class="attr">token_2_mint</span>: anchor.web3.<span class="title class_">PublicKey</span>,</span></span><br><span class="line"><span class="params"></span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> etfTokenArgs = &#123;</span><br><span class="line">    <span class="attr">name</span>: <span class="string">&#x27;ETF_v1&#x27;</span>,</span><br><span class="line">    <span class="attr">symbol</span>: <span class="string">&#x27;ETF_v1&#x27;</span>,</span><br><span class="line">    <span class="attr">description</span>: <span class="string">&#x27;This is an example ETF token v1&#x27;</span>,</span><br><span class="line">    <span class="attr">url</span>: <span class="string">&#x27;https://example.com&#x27;</span>,</span><br><span class="line">    <span class="attr">assets</span>: [</span><br><span class="line">      &#123; <span class="attr">token</span>: token_1_mint, <span class="attr">weight</span>: <span class="number">50</span> &#125;,</span><br><span class="line">      &#123; <span class="attr">token</span>: token_2_mint, <span class="attr">weight</span>: <span class="number">50</span> &#125;,</span><br><span class="line">    ],</span><br><span class="line">  &#125;;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">await</span> program.<span class="property">methods</span></span><br><span class="line">    .<span class="title function_">createEtfTokenMetadata</span>(etfTokenArgs)</span><br><span class="line">    .<span class="title function_">accounts</span>(&#123;</span><br><span class="line">      <span class="attr">authority</span>: wallet.<span class="property">publicKey</span>,</span><br><span class="line">    &#125;)</span><br><span class="line">    .<span class="title function_">signers</span>([wallet.<span class="property">payer</span>])</span><br><span class="line">    .<span class="title function_">rpc</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// anchor/example/index.ts</span></span><br><span class="line"><span class="comment">// 创建 ETF Token</span></span><br><span class="line">  <span class="keyword">const</span> etf_token = <span class="keyword">await</span> <span class="title function_">createETFToken</span>(defaultWallet, usdcDevTokenMint, eurcDevTokenMint);</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(etf_token);</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Rust/" rel="tag"># Rust</a>
+          
+            <a href="/tags/Solana/" rel="tag"># Solana</a>
+          
+            <a href="/tags/Anchor/" rel="tag"># Anchor</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2025/02/28/Solana%20%E5%90%88%E7%BA%A6%E5%BC%80%E5%8F%91%20-%20%E5%90%88%E7%BA%A6%E5%AE%89%E5%85%A8%20solana%E9%87%8D%E5%85%A5%E6%94%BB%E5%87%BB/" rel="next" title="Solana 合约开发 - 合约安全 Solana重入攻击">
+                <i class="fa fa-chevron-left"></i> Solana 合约开发 - 合约安全 Solana重入攻击
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%20%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">48</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="qsunou@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFETF"><span class="nav-number">1.</span> <span class="nav-text">什么是ETF?</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFDeFi-ETF%EF%BC%9F"><span class="nav-number">2.</span> <span class="nav-text">什么是DeFi ETF？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%90%88%E7%BA%A6%E4%BB%A3%E7%A0%81%EF%BC%9A"><span class="nav-number">3.</span> <span class="nav-text">合约代码：</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E7%AB%AF%E6%B5%8B%E8%AF%95%E4%BB%A3%E7%A0%81%EF%BC%9A"><span class="nav-number">4.</span> <span class="nav-text">前端测试代码：</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">QsunOu</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

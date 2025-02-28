@@ -262,6 +262,154 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/11/01/Rust-lesson-18/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2024/11/01/Rust-lesson-18/" itemprop="url">Rust lesson 18 - 生命周期</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-11-01T17:09:40+08:00">
+                2024-11-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Rust-%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
+                    <span itemprop="name">Rust 开发基础</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="为什么需要生命周期注解？"><a href="#为什么需要生命周期注解？" class="headerlink" title="为什么需要生命周期注解？"></a>为什么需要生命周期注解？</h1><h2 id="引用的有效范围："><a href="#引用的有效范围：" class="headerlink" title="引用的有效范围："></a>引用的有效范围：</h2><p>当函数返回一个引用时，编译器需要确保这个引用在其生命周期内始终有效。<br>如果没有生命周期注解，编译器无法确定返回的引用 &amp;str 的生命周期与输入引用 x 和 y 的生命周期之间的关系。</p>
+<h2 id="悬垂引用："><a href="#悬垂引用：" class="headerlink" title="悬垂引用："></a>悬垂引用：</h2><p>悬垂引用是指指向已经释放的内存的引用。这是非常危险的，因为它会导致未定义行为。<br>生命周期注解帮助编译器确保返回的引用在其生命周期内始终有效，从而避免悬垂引用。</p>
+<h2 id="创建生命周期："><a href="#创建生命周期：" class="headerlink" title="创建生命周期："></a>创建生命周期：</h2><p>生命周期主要通过生命周期注解来创建和使用。使用显示声明，例如<code>&#39;a</code>这种单引号加字母的方式，至于字母是什么无所谓，有单引号就行。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//&#x27;a 是一个生命周期参数，表示 x 和 y 的生命周期至少与返回的引用的生命周期一样长</span></span><br><span class="line"><span class="comment">//x: &amp;&#x27;a str 和 y: &amp;&#x27;a str 表示 x 和 y 都是生命周期为 &#x27;a 的字符串切片</span></span><br><span class="line"><span class="comment">//-&gt; &amp;&#x27;a str 表示返回的字符串切片的生命周期也是 &#x27;a</span></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">longest</span>&lt;<span class="symbol">&#x27;a</span>&gt;(x: &amp;<span class="symbol">&#x27;a</span> <span class="type">str</span>, y: &amp;<span class="symbol">&#x27;a</span> <span class="type">str</span>) <span class="punctuation">-&gt;</span> &amp;<span class="symbol">&#x27;a</span> <span class="type">str</span>&#123;</span><br><span class="line">    <span class="keyword">if</span> x.<span class="title function_ invoke__">len</span>() &gt; y.<span class="title function_ invoke__">len</span>()&#123;</span><br><span class="line">        x</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        y</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="生命周期类别："><a href="#生命周期类别：" class="headerlink" title="生命周期类别："></a>生命周期类别：</h1><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">example</span>&lt;<span class="symbol">&#x27;a</span>&gt;(input: &amp;<span class="symbol">&#x27;a</span> <span class="type">str</span>) <span class="punctuation">-&gt;</span> &amp;<span class="symbol">&#x27;a</span> <span class="type">str</span> &#123;</span><br><span class="line">    input</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">Example</span>&lt;<span class="symbol">&#x27;a</span>&gt; &#123;</span><br><span class="line">    a: &amp;<span class="symbol">&#x27;a</span> <span class="type">str</span>,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">enum</span> <span class="title class_">StringOption</span>&lt;<span class="symbol">&#x27;a</span>&gt; &#123;</span><br><span class="line">    <span class="title function_ invoke__">Some</span>(&amp;<span class="symbol">&#x27;a</span> <span class="type">str</span>),</span><br><span class="line">    <span class="literal">None</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">impl</span>&lt;<span class="symbol">&#x27;a</span>, <span class="symbol">&#x27;b</span>&gt; StringOption &lt;<span class="symbol">&#x27;a</span>, <span class="symbol">&#x27;b</span>&gt; &#123;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">get</span>(&amp;<span class="keyword">self</span>) &#123;</span><br><span class="line">        <span class="comment">//</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="特殊生命周期标注"><a href="#特殊生命周期标注" class="headerlink" title="特殊生命周期标注"></a>特殊生命周期标注</h1><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">//&#x27;static 是特殊的生命周期。</span></span><br><span class="line"><span class="comment">//&#x27;static 是 Rust 中最长的生命周期，表示引用在整个程序的生命周期内都是有效的。(注意整个程序)，通常用于全局变量和字符串字面量。</span></span><br><span class="line"><span class="keyword">let</span> <span class="variable">s</span>: &amp;<span class="symbol">&#x27;static</span> <span class="type">str</span> = <span class="string">&quot;hello&quot;</span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> SOME_COORDINATE: (<span class="type">i32</span>, <span class="type">i32</span>) = (<span class="number">7</span>, <span class="number">4</span>);</span><br><span class="line"><span class="comment">//static_reference 是一个指向 SOME_COORDINATE 的引用，具有 &#x27;static 生命周期。</span></span><br><span class="line"><span class="keyword">let</span> <span class="variable">static_reference</span>: &amp;<span class="symbol">&#x27;static</span> (<span class="type">i32</span>, <span class="type">i32</span>) = &amp;SOME_COORDINATE;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">Counter</span>&lt;<span class="symbol">&#x27;a</span>&gt; &#123;</span><br><span class="line">    counter: &amp;<span class="symbol">&#x27;a</span> <span class="keyword">mut</span> <span class="type">i32</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//impl&lt;&#x27;a&gt; Counter&lt;&#x27;a&gt; 能简写成下面这样</span></span><br><span class="line"><span class="comment">//&#x27;_&#x27; 是一个匿名生命周期参数，表示编译器会自动推断出适当的生命周期。</span></span><br><span class="line"><span class="keyword">impl</span> <span class="title class_">Counter</span>&lt;<span class="symbol">&#x27;_</span>&gt; &#123;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">increment</span>(&amp;<span class="keyword">mut</span> <span class="keyword">self</span>) &#123;</span><br><span class="line">        *<span class="keyword">self</span>.counter += <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://example.com/2024/10/31/Rust-lesson-17/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2276,170 +2424,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2024/10/22/Rust-lesson-8/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2024/10/22/Rust-lesson-8/" itemprop="url">Rust lesson 8 - 数组与切片</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-10-22T21:02:37+08:00">
-                2024-10-22
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Rust-%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
-                    <span itemprop="name">Rust 开发基础</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>其实与Golang 的差不多</p>
-<h1 id="数组（Array）："><a href="#数组（Array）：" class="headerlink" title="数组（Array）："></a>数组（Array）：</h1><ol>
-<li>就是一段连续的相同数据类型的内存块，是静态的，初始化后不可更改长度。</li>
-<li>数组中每个元素按顺序存储，它的顺序号称为下标，从0开始，也就是第一个元素的下标是0。</li>
-<li>可以修改或更新数组元素的值，但不能删除。</li>
-</ol>
-<p>直接通过代码来学习吧：</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//arr_base();</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">arr</span> = [<span class="number">10</span>,<span class="number">20</span>,<span class="number">30</span>];</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;main before : &#123;:?&#125;&quot;</span>,arr);</span><br><span class="line">    <span class="title function_ invoke__">value_trans</span>(arr);</span><br><span class="line">    <span class="comment">//value_trans前后，arr 都没变</span></span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;main after : &#123;:?&#125;&quot;</span>,arr);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">arr2</span> = [<span class="number">0</span>,<span class="number">20</span>,<span class="number">30</span>,];</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;main before : &#123;:?&#125;&quot;</span>,arr2);</span><br><span class="line">    <span class="title function_ invoke__">reference_trans</span>(&amp;<span class="keyword">mut</span> arr2);</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;main after: &#123;:?&#125;&quot;</span>,arr2);</span><br><span class="line"></span><br><span class="line">    <span class="title function_ invoke__">slice_base</span>();</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">arr_base</span>() &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//数组的初始化，[dataType;size],编译器会自己补充</span></span><br><span class="line">    <span class="comment">//let varname : [dataType;size] = [value1,value2,value3];</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">arr</span> = [<span class="number">10</span>,<span class="number">20</span>,<span class="number">30</span>,<span class="number">40</span>];</span><br><span class="line">    <span class="comment">//&#123;:?&#125;用于格式化字符串，打印其调试信息，使用&#123;&#125;会报错</span></span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;:?&#125;&quot;</span>,arr);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//输出4个10，[10,4]就是4个10</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">arr1</span> = [<span class="number">10</span>;<span class="number">4</span>];</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;:?&#125;&quot;</span>,arr1);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// xxx.len()取数组长度，打印数组长度</span></span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;arr len is &#123;:?&#125;&quot;</span>,arr.<span class="title function_ invoke__">len</span>());</span><br><span class="line"></span><br><span class="line">    <span class="comment">//遍历数组</span></span><br><span class="line">    <span class="keyword">for</span> <span class="variable">index</span> <span class="keyword">in</span> <span class="number">0</span>..<span class="number">4</span> &#123;</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;&#123;:?&#125;&quot;</span>,arr[index])</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">//迭代器（iterator） arr.iter(),能将数组的元素按顺序打印</span></span><br><span class="line">    <span class="keyword">for</span> <span class="variable">value</span> <span class="keyword">in</span> arr.<span class="title function_ invoke__">iter</span>() &#123;</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;&#123;:?&#125;&quot;</span>,value);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//也可以用下面这种写法，一行更比三行强（效果其实一样）</span></span><br><span class="line">    <span class="comment">//等于 arr.iter().for_each(|value| println!(&quot;&#123;:?&#125;&quot;,value));</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">//可变数组</span></span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">arr_mut</span> =[<span class="number">10</span>,<span class="number">20</span>,<span class="number">30</span>,<span class="number">40</span>];</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;before: &#123;:&#125;&quot;</span>,arr_mut);</span><br><span class="line">    arr_mut[<span class="number">0</span>] = <span class="number">0</span>;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;after: &#123;:?&#125;&quot;</span>,arr_mut);</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//值传递，相当于拷贝一份数据，原数据不变</span></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">value_trans</span>(<span class="keyword">mut</span> arr:[<span class="type">i32</span>;<span class="number">3</span>]) &#123;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;update before: &#123;:?&#125;&quot;</span>,arr);</span><br><span class="line">    <span class="keyword">for</span> <span class="variable">i</span> <span class="keyword">in</span> <span class="number">0</span>..<span class="number">3</span> &#123;</span><br><span class="line">        arr[i] = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;update after : &#123;:?&#125;&quot;</span>,arr);</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//引用传递，原数据会变,注意这里接收的是&amp;mut</span></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">reference_trans</span>(arr : &amp;<span class="keyword">mut</span>[<span class="type">i32</span>;<span class="number">3</span>]) &#123;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;update before : &#123;:?&#125;&quot;</span>,arr);</span><br><span class="line">    <span class="keyword">for</span> <span class="variable">i</span> <span class="keyword">in</span> <span class="number">0</span>..<span class="number">3</span> &#123;</span><br><span class="line">        arr[i] = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;update after : &#123;:?&#125;&quot;</span>,arr);</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-
-<h1 id="切片（Slice）："><a href="#切片（Slice）：" class="headerlink" title="切片（Slice）："></a>切片（Slice）：</h1><ol>
-<li>切片是一个轻量级的引用类型，它由两部分组成：指向数组第一个元素的指针和数组的长度。</li>
-<li>切片的类型通常写作 &amp;[T]，其中 T 是数组元素的类型。</li>
-</ol>
-<h2 id="切片的类型"><a href="#切片的类型" class="headerlink" title="切片的类型"></a>切片的类型</h2><ol>
-<li>不可变切片：<br>类型为 &amp;[T]，表示只读访问。</li>
-<li>可变切片：<br>类型为 &amp;mut [T]，表示可写访问。</li>
-</ol>
-<p>代码示例：</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">slice_base</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">a</span> = [<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">5</span>];</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">slice</span> = &amp;a[<span class="number">1</span>..<span class="number">3</span>];</span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">slice_2</span> = &amp;a[<span class="number">1</span>..<span class="number">4</span>];</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;:?&#125;&quot;</span>,slice)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-<h2 id="常用有关切片的函数有哪些："><a href="#常用有关切片的函数有哪些：" class="headerlink" title="常用有关切片的函数有哪些："></a>常用有关切片的函数有哪些：</h2><p><img src="/images/slice.png" alt="Pasted image 20241022213626.png"><br>官方文档提供了许多关于Slice的函数，链接 <a target="_blank" rel="noopener" href="https://doc.rust-lang.org/std/primitive.slice.html">https://doc.rust-lang.org/std/primitive.slice.html</a></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2490,7 +2474,7 @@
               
                 <a href="/archives/%20%7C%7C%20archive">
               
-                  <span class="site-state-item-count">47</span>
+                  <span class="site-state-item-count">48</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
