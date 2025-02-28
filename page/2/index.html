@@ -262,6 +262,170 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2025/02/13/Solana%20%E5%90%88%E7%BA%A6%E5%BC%80%E5%8F%91%20-%20DeFi%20-%20Dex%20%E5%BC%80%E5%8F%91%E5%9B%9B%EF%BC%9Acreator/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2025/02/13/Solana%20%E5%90%88%E7%BA%A6%E5%BC%80%E5%8F%91%20-%20DeFi%20-%20Dex%20%E5%BC%80%E5%8F%91%E5%9B%9B%EF%BC%9Acreator/" itemprop="url">Solana 合约开发 - DeFi - Dex 开发四：Creator</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2025-02-13T22:36:29+08:00">
+                2025-02-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Solana%E5%90%88%E7%BA%A6%E5%BC%80%E5%8F%91-DeFi-Dex/" itemprop="url" rel="index">
+                    <span itemprop="name">Solana合约开发-DeFi-Dex</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>在创建流动性池之前，我们需要先准备一些creator相关的账户。</p>
+<h1 id="合约代码："><a href="#合约代码：" class="headerlink" title="合约代码："></a>合约代码：</h1><p>anchor&#x2F;programs&#x2F;swap&#x2F;src&#x2F;accounts_all&#x2F;creator.rs</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> crate::states::*;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> anchor_lang::prelude::*;</span><br><span class="line"><span class="keyword">use</span> anchor_spl::&#123;</span><br><span class="line">    associated_token::AssociatedToken,</span><br><span class="line">    token::Mint <span class="keyword">as</span> TokenMint,</span><br><span class="line">    token::Token,</span><br><span class="line">    token_interface::&#123;Mint, TokenAccount, TokenInterface&#125;,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="meta">#[derive(Accounts)]</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">struct</span> <span class="title class_">InitCreator</span>&lt;<span class="symbol">&#x27;info</span>&gt; &#123;</span><br><span class="line">    <span class="meta">#[account(mut)]</span></span><br><span class="line">    <span class="keyword">pub</span> payer: Signer&lt;<span class="symbol">&#x27;info</span>&gt;,</span><br><span class="line"></span><br><span class="line">    <span class="comment">//creator自己的lp token vault</span></span><br><span class="line">    <span class="meta">#[account(</span></span><br><span class="line"><span class="meta">        init_if_needed,</span></span><br><span class="line"><span class="meta">        associated_token::mint = lp_token_mint,</span></span><br><span class="line"><span class="meta">        associated_token::authority = payer,</span></span><br><span class="line"><span class="meta">        payer = payer,</span></span><br><span class="line"><span class="meta">        token::token_program = token_program,</span></span><br><span class="line"><span class="meta">    )]</span></span><br><span class="line">    <span class="keyword">pub</span> creator_lp_token_vault: <span class="type">Box</span>&lt;InterfaceAccount&lt;<span class="symbol">&#x27;info</span>, TokenAccount&gt;&gt;,</span><br><span class="line"></span><br><span class="line">    <span class="meta">#[account(</span></span><br><span class="line"><span class="meta">        seeds = [</span></span><br><span class="line"><span class="meta">            LP_TOKEN_SEED.as_bytes(),</span></span><br><span class="line"><span class="meta">        ]</span>,</span><br><span class="line">        bump,</span><br><span class="line">    )]</span><br><span class="line">    <span class="keyword">pub</span> lp_token_mint: Account&lt;<span class="symbol">&#x27;info</span>, TokenMint&gt;,</span><br><span class="line"></span><br><span class="line">    <span class="comment">//用于接收创建流动性池时支付的费用,通过经济成本阻止垃圾创建池操作，PoolState在下一章节创建</span></span><br><span class="line">    <span class="meta">#[account(</span></span><br><span class="line"><span class="meta">        init_if_needed,</span></span><br><span class="line"><span class="meta">        payer = payer,</span></span><br><span class="line"><span class="meta">        seeds = [</span></span><br><span class="line"><span class="meta">            PoolState::CREATE_POOL_FEE_PREFIX.as_bytes(),</span></span><br><span class="line"><span class="meta">        ]</span>,</span><br><span class="line">        bump,</span><br><span class="line">        token::mint = token_wsol_mint,</span><br><span class="line">        token::authority = pool_lp_authority,</span><br><span class="line">    )]</span><br><span class="line">    <span class="keyword">pub</span> create_pool_fee: <span class="type">Box</span>&lt;InterfaceAccount&lt;<span class="symbol">&#x27;info</span>, TokenAccount&gt;&gt;,</span><br><span class="line"></span><br><span class="line">    <span class="keyword">pub</span> token_wsol_mint: <span class="type">Box</span>&lt;InterfaceAccount&lt;<span class="symbol">&#x27;info</span>, Mint&gt;&gt;,</span><br><span class="line"></span><br><span class="line">    <span class="meta">#[account(</span></span><br><span class="line"><span class="meta">        constraint = token_0_mint.key() &lt; token_1_mint.key(),</span></span><br><span class="line"><span class="meta">        mint::token_program = token_0_program,</span></span><br><span class="line"><span class="meta">    )]</span></span><br><span class="line">    <span class="keyword">pub</span> token_0_mint: <span class="type">Box</span>&lt;InterfaceAccount&lt;<span class="symbol">&#x27;info</span>, Mint&gt;&gt;,</span><br><span class="line"></span><br><span class="line">    <span class="meta">#[account(</span></span><br><span class="line"><span class="meta">        mint::token_program = token_1_program,</span></span><br><span class="line"><span class="meta">    )]</span></span><br><span class="line">    <span class="keyword">pub</span> token_1_mint: <span class="type">Box</span>&lt;InterfaceAccount&lt;<span class="symbol">&#x27;info</span>, Mint&gt;&gt;,</span><br><span class="line"></span><br><span class="line">    <span class="comment">/// CHECK: pool vault and lp mint authority</span></span><br><span class="line">    <span class="meta">#[account(</span></span><br><span class="line"><span class="meta">        seeds = [</span></span><br><span class="line"><span class="meta">            crate::AUTH_SEED.as_bytes(),</span></span><br><span class="line"><span class="meta">        ]</span>,</span><br><span class="line">        bump,</span><br><span class="line">    )]</span><br><span class="line">    <span class="keyword">pub</span> pool_lp_authority: UncheckedAccount&lt;<span class="symbol">&#x27;info</span>&gt;,</span><br><span class="line"></span><br><span class="line">    <span class="comment">/// CHECK: Token program for token_0</span></span><br><span class="line">    <span class="keyword">pub</span> token_0_program: Interface&lt;<span class="symbol">&#x27;info</span>, TokenInterface&gt;,</span><br><span class="line">    <span class="comment">/// CHECK: Token program for token_1</span></span><br><span class="line">    <span class="keyword">pub</span> token_1_program: Interface&lt;<span class="symbol">&#x27;info</span>, TokenInterface&gt;,</span><br><span class="line"></span><br><span class="line">    <span class="keyword">pub</span> system_program: Program&lt;<span class="symbol">&#x27;info</span>, System&gt;,</span><br><span class="line">    <span class="keyword">pub</span> token_program: Program&lt;<span class="symbol">&#x27;info</span>, Token&gt;,</span><br><span class="line">    <span class="keyword">pub</span> associated_token_program: Program&lt;<span class="symbol">&#x27;info</span>, AssociatedToken&gt;,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>anchor&#x2F;programs&#x2F;swap&#x2F;src&#x2F;instructions&#x2F;creator.rs</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> anchor_lang::prelude::*;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> crate::accounts_all::*;</span><br><span class="line"></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">init_creator</span>(ctx: Context&lt;InitCreator&gt;) <span class="punctuation">-&gt;</span> <span class="type">Result</span>&lt;()&gt; &#123;</span><br><span class="line">    <span class="title function_ invoke__">Ok</span>(())</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>lib.rs:</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//pub mod 里面添加</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">init_creator</span>(ctx: Context&lt;InitCreator&gt;) <span class="punctuation">-&gt;</span> <span class="type">Result</span>&lt;()&gt; &#123;</span><br><span class="line">        instructions::<span class="title function_ invoke__">init_creator</span>(ctx)</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>执行Anchor命令：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">anchor build &amp;&amp; anchor deploy</span><br></pre></td></tr></table></figure>
+
+<h1 id="前端TS代码："><a href="#前端TS代码：" class="headerlink" title="前端TS代码："></a>前端TS代码：</h1><p>anchor&#x2F;example&#x2F;api&#x2F;creator.ts</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> * <span class="keyword">as</span> anchor <span class="keyword">from</span> <span class="string">&#x27;@coral-xyz/anchor&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; program &#125; <span class="keyword">from</span> <span class="string">&quot;./wallet&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">async</span> <span class="keyword">function</span> <span class="title function_">init_creator</span>(<span class="params"></span></span><br><span class="line"><span class="params">    <span class="attr">wallet</span>: anchor.<span class="title class_">Wallet</span>,</span></span><br><span class="line"><span class="params">    <span class="attr">token0Mint</span>: anchor.web3.<span class="title class_">PublicKey</span>,</span></span><br><span class="line"><span class="params">    <span class="attr">token1Mint</span>: anchor.web3.<span class="title class_">PublicKey</span>,</span></span><br><span class="line"><span class="params">    <span class="attr">token0Program</span>: anchor.web3.<span class="title class_">PublicKey</span>,</span></span><br><span class="line"><span class="params">    <span class="attr">token1Program</span>: anchor.web3.<span class="title class_">PublicKey</span>,</span></span><br><span class="line"><span class="params">    <span class="attr">tokenWsolMint</span>: anchor.web3.<span class="title class_">PublicKey</span>,</span></span><br><span class="line"><span class="params"></span>)&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">await</span> program.<span class="property">methods</span>.<span class="title function_">initCreator</span>(</span><br><span class="line">    )</span><br><span class="line">        .<span class="title function_">accounts</span>(&#123;</span><br><span class="line">            <span class="attr">token0Mint</span>: token0Mint,</span><br><span class="line">            <span class="attr">token1Mint</span>: token1Mint,</span><br><span class="line">            <span class="attr">token0Program</span>: token0Program,</span><br><span class="line">            <span class="attr">token1Program</span>: token1Program,</span><br><span class="line">            <span class="attr">tokenWsolMint</span>: tokenWsolMint</span><br><span class="line">        &#125;)</span><br><span class="line">        .<span class="title function_">signers</span>([wallet.<span class="property">payer</span>])</span><br><span class="line">        .<span class="title function_">rpc</span>();</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>anchor&#x2F;example&#x2F;index.ts</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//初始化creator,这里使用devnet环境的program id和一些常见token的mint地址，这些地址都可以查得到</span></span><br><span class="line">  <span class="keyword">const</span> <span class="variable constant_">TOKEN_DEV_PROGRAM_ID</span> = <span class="keyword">new</span> <span class="title class_">PublicKey</span>(<span class="string">&#x27;TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA&#x27;</span>);</span><br><span class="line">  <span class="keyword">const</span> usdcDevTokenMint = <span class="keyword">new</span> <span class="title class_">PublicKey</span>(<span class="string">&#x27;4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU&#x27;</span>);</span><br><span class="line">  <span class="keyword">const</span> eurcDevTokenMint = <span class="keyword">new</span> <span class="title class_">PublicKey</span>(<span class="string">&#x27;HzwqbKZw8HxMN6bF2yFZNrht3c2iXXzpKcFu7uBEDKtr&#x27;</span>);</span><br><span class="line">  <span class="keyword">const</span> <span class="title class_">WsolDevTokenMint</span> = <span class="keyword">new</span> <span class="title class_">PublicKey</span>(<span class="string">&#x27;So11111111111111111111111111111111111111112&#x27;</span>);</span><br><span class="line">  <span class="keyword">const</span> creator = <span class="keyword">await</span> <span class="title function_">init_creator</span>(</span><br><span class="line">    defaultWallet,</span><br><span class="line">    usdcDevTokenMint,</span><br><span class="line">    eurcDevTokenMint,</span><br><span class="line">    <span class="variable constant_">TOKEN_DEV_PROGRAM_ID</span>,</span><br><span class="line">    <span class="variable constant_">TOKEN_DEV_PROGRAM_ID</span>,</span><br><span class="line">    <span class="title class_">WsolDevTokenMint</span>,</span><br><span class="line">  );</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(creator);</span><br></pre></td></tr></table></figure>
+
+<p>执行Anchor命令：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">anchor run api</span><br></pre></td></tr></table></figure>
+
+<p>本章节只是简单创建一些账号</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://example.com/2025/02/10/Solana-Dex-%E9%A1%B9%E7%9B%AE%E5%8E%9F%E7%94%9F%20Token/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1766,187 +1930,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2024/11/06/Rust-lesson-25/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2024/11/06/Rust-lesson-25/" itemprop="url">Rust lesson 25 - 并发</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-11-06T16:27:30+08:00">
-                2024-11-06
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Rust-%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
-                    <span itemprop="name">Rust 开发基础</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>并发、并行、进程、线程的概念以及多线程可能导致的问题，这里暂不赘述，请自行查找。</p>
-<p>可能会用到的库:</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> core::hash;</span><br><span class="line"><span class="keyword">use</span> std::&#123;thread, vec&#125;;</span><br><span class="line"><span class="keyword">use</span> std::time::Duration;</span><br><span class="line"><span class="keyword">use</span> std::sync::&#123;mpsc, Arc&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> serde::de::value;</span><br><span class="line"><span class="keyword">use</span> std::sync::Mutex;</span><br></pre></td></tr></table></figure>
-
-<h1 id="创建线程"><a href="#创建线程" class="headerlink" title="创建线程"></a>创建线程</h1><p>通过<code>thread::spawn</code>函数可以创建新线程。参数是一个闭包，返回值类型是<code>JoinHandle</code>。<br><code>JoinHandle</code>持有值的所有权，调用其join方法，可以等待其他线程完成。</p>
-<h2 id="代码示例："><a href="#代码示例：" class="headerlink" title="代码示例："></a>代码示例：</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">thread_study</span>() &#123;</span><br><span class="line"> <span class="comment">//可惜主线程打完4后就退出了，主线程退出，子线程没执行完也跟着退出,所以需要下面的handler</span></span><br><span class="line">    thread::<span class="title function_ invoke__">spawn</span>(|| &#123;</span><br><span class="line">        <span class="keyword">for</span> <span class="variable">i</span> <span class="keyword">in</span> <span class="number">1</span>..<span class="number">10</span> &#123;</span><br><span class="line">            <span class="built_in">println!</span>(<span class="string">&quot;hi number &#123;&#125; from the spawned thread!&quot;</span>, i);</span><br><span class="line">            thread::<span class="title function_ invoke__">sleep</span>(Duration::<span class="title function_ invoke__">from_millis</span>(<span class="number">1</span>));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;); </span><br><span class="line"></span><br><span class="line">	 <span class="comment">//所以要用handle</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">handler</span> = thread::<span class="title function_ invoke__">spawn</span>(|| &#123;</span><br><span class="line">        <span class="keyword">for</span> <span class="variable">i</span> <span class="keyword">in</span> <span class="number">1</span>..<span class="number">10</span> &#123;</span><br><span class="line">            <span class="built_in">println!</span>(<span class="string">&quot;hi number &#123;&#125; from the spawned thread!&quot;</span>, i);</span><br><span class="line">            thread::<span class="title function_ invoke__">sleep</span>(Duration::<span class="title function_ invoke__">from_millis</span>(<span class="number">1</span>));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;); </span><br><span class="line">    </span><br><span class="line">     <span class="comment">//主线程</span></span><br><span class="line">    <span class="keyword">for</span> <span class="variable">i</span> <span class="keyword">in</span> <span class="number">1</span>..<span class="number">5</span> &#123;</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;hi number &#123;&#125; from the main thread!&quot;</span>, i);</span><br><span class="line">        thread::<span class="title function_ invoke__">sleep</span>(Duration::<span class="title function_ invoke__">from_millis</span>(<span class="number">1</span>));</span><br><span class="line">    &#125; </span><br><span class="line"></span><br><span class="line">    <span class="comment">//有handler,主线程就会等待子线程退出后再退出</span></span><br><span class="line">    <span class="comment">//放最后，总执行时间为最长线程的执行时间</span></span><br><span class="line">    handler.<span class="title function_ invoke__">join</span>().<span class="title function_ invoke__">unwrap</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h1 id="使用move闭包："><a href="#使用move闭包：" class="headerlink" title="使用move闭包："></a>使用move闭包：</h1><p><code>move</code>闭包通常和<code>thread::spawn</code>函数一起使用，它允许你使用其它线程的数据。<br>创建线程时，把值的所有权从一个线程转移到另一个线程。</p>
-<h2 id="代码示例：-1"><a href="#代码示例：-1" class="headerlink" title="代码示例："></a>代码示例：</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">thread_study</span>() &#123;</span><br><span class="line">	<span class="keyword">let</span> <span class="variable">v</span> = <span class="built_in">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>];</span><br><span class="line">    <span class="comment">//move || &#123; ... &#125; 是一个闭包（closure），move会使v 的所有权会被移动到新线程中</span></span><br><span class="line">    <span class="comment">//如果不使用 move，闭包只会借用 v，而在多线程环境下，这会导致编译错误，因为编译器无法保证 v 的生命周期足够长，以确保在新线程中安全使用。</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">handle</span> = thread::<span class="title function_ invoke__">spawn</span>(<span class="keyword">move</span> || &#123;</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;Here&#x27;s a vector: &#123;:?&#125;&quot;</span>, v);</span><br><span class="line">    &#125;); </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h1 id="多线程通信："><a href="#多线程通信：" class="headerlink" title="多线程通信："></a>多线程通信：</h1><h2 id="消息传递-Channel"><a href="#消息传递-Channel" class="headerlink" title="消息传递 Channel:"></a>消息传递 <code>Channel</code>:</h2><p>线程通过彼此发送消息来进行通信。</p>
-<ol>
-<li><code>Channel</code> 包含发送端、接收端。</li>
-<li>调用发送端的方法，发送数据。</li>
-<li>接收端会检查和接收到达的数据</li>
-<li>如果发送端、接收端中任意一端被丢弃了，那么频道就关闭了。</li>
-</ol>
-<h3 id="创建Channel："><a href="#创建Channel：" class="headerlink" title="创建Channel："></a>创建<code>Channel</code>：</h3><ol>
-<li>使用<code>mpsc::channel</code>函数来创建（mpsc就是 multiple producer, single consumer,多个生产者，一个消费者）。返回一个tuple（元祖），里面元素分别是发送端和接收端。</li>
-<li>使用<code>mpsc::sync_channel</code>来创建带缓冲区的channel，入参为缓冲区大小，当缓冲区塞满时进行阻塞。</li>
-</ol>
-<h4 id="代码示例：-2"><a href="#代码示例：-2" class="headerlink" title="代码示例："></a>代码示例：</h4><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">thread_study</span>() &#123;</span><br><span class="line"><span class="keyword">let</span> (tx , rx) = mpsc::<span class="title function_ invoke__">channel</span>();</span><br><span class="line">    <span class="comment">//当有多个输入，就要用clone，因为tx的所有权只有一个</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">tx1</span> = mpsc::Sender::<span class="title function_ invoke__">clone</span>(&amp;tx);</span><br><span class="line"></span><br><span class="line">    thread::<span class="title function_ invoke__">spawn</span>(<span class="keyword">move</span> || &#123;</span><br><span class="line">        <span class="keyword">let</span> <span class="variable">vals</span> = <span class="built_in">vec!</span>[</span><br><span class="line">            <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;hi&quot;</span>),</span><br><span class="line">            <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;from&quot;</span>),</span><br><span class="line">            <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;the&quot;</span>),</span><br><span class="line">            <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;thread&quot;</span>)</span><br><span class="line">        ];</span><br><span class="line">        <span class="keyword">for</span> <span class="variable">val</span> <span class="keyword">in</span> vals &#123;</span><br><span class="line">            tx.<span class="title function_ invoke__">send</span>(val).<span class="title function_ invoke__">unwrap</span>();</span><br><span class="line">            thread::<span class="title function_ invoke__">sleep</span>(Duration::<span class="title function_ invoke__">from_secs</span>(<span class="number">1</span>));</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    thread::<span class="title function_ invoke__">spawn</span>(<span class="keyword">move</span> || &#123;</span><br><span class="line">        <span class="keyword">let</span> <span class="variable">vals</span> = <span class="built_in">vec!</span>[</span><br><span class="line">            <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;hi&quot;</span>),</span><br><span class="line">            <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;from&quot;</span>),</span><br><span class="line">            <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;the&quot;</span>),</span><br><span class="line">            <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;thread&quot;</span>)</span><br><span class="line">        ];</span><br><span class="line">        <span class="keyword">for</span> <span class="variable">val</span> <span class="keyword">in</span> vals &#123;</span><br><span class="line">            <span class="comment">//注意这里用了tx1</span></span><br><span class="line">            tx1.<span class="title function_ invoke__">send</span>(val).<span class="title function_ invoke__">unwrap</span>();</span><br><span class="line">            thread::<span class="title function_ invoke__">sleep</span>(Duration::<span class="title function_ invoke__">from_secs</span>(<span class="number">1</span>));</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> <span class="variable">received</span> <span class="keyword">in</span> rx &#123;</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;Got: &#123;&#125;&quot;</span>, received);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="共享内存："><a href="#共享内存：" class="headerlink" title="共享内存："></a>共享内存：</h2><p>共享内存并发类似多所有权，多个线程可以同时访问同一块内存。（Channel就不行）</p>
-<h3 id="Mutex："><a href="#Mutex：" class="headerlink" title="Mutex："></a>Mutex：</h3><p>使用<code>Mutex</code>来每次只允许一个线程来访问数据。想要访问数据，线程必须先获取互斥锁（lock), lock数据结构是mutex 的一部分，它能跟踪谁对数据拥有独占访问权。</p>
-<p><strong>Mutex的两条规则</strong>：</p>
-<ol>
-<li>在使用数据之前，必须先尝试获取锁。</li>
-<li>使用完mutex所保护的数据，必须对数据进行解锁。</li>
-</ol>
-<h4 id="使用："><a href="#使用：" class="headerlink" title="使用："></a>使用：</h4><ol>
-<li>通过<code>Mutex::new</code>来创建<code>Mutex&lt;T&gt;</code>，<code>Mutex&lt;T&gt;</code>是个智能指针</li>
-<li>访问数据前，通过lock方法来获取锁</li>
-</ol>
-<h5 id="代码示例：-3"><a href="#代码示例：-3" class="headerlink" title="代码示例："></a>代码示例：</h5><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">share_memory</span>()&#123;</span><br><span class="line"> <span class="comment">//Mutex::new(5) 创建一个新的互斥锁</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">m</span> = Mutex::<span class="title function_ invoke__">new</span>(<span class="number">5</span>);</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">//m.lock().unwrap() 获取互斥锁的锁定，并返回一个 MutexGuard。MutexGuard 是一个智能指针，实现了 Deref 和 Drop，可以用来访问和修改锁定的数据。</span></span><br><span class="line">        <span class="comment">//离开作用域还会自动解锁</span></span><br><span class="line">        <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">num</span> = m.<span class="title function_ invoke__">lock</span>().<span class="title function_ invoke__">unwrap</span>();</span><br><span class="line">        *num = <span class="number">6</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;m = &#123;:?&#125;&quot;</span>, m) &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="使用Arc来进行原子引用计数："><a href="#使用Arc来进行原子引用计数：" class="headerlink" title="使用Arc&lt;T&gt;来进行原子引用计数："></a>使用<code>Arc&lt;T&gt;</code>来进行原子引用计数：</h4><p>就是用来代替<code>RC&lt;T&gt;</code>的，具体看代码示例：</p>
-<h5 id="代码示例：-4"><a href="#代码示例：-4" class="headerlink" title="代码示例："></a>代码示例：</h5><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">share_memory</span>() &#123;</span><br><span class="line"><span class="comment">//Arc::new(Mutex::new(0)) 创建一个新的 Arc，其中包含一个 Mutex，初始值为 0</span></span><br><span class="line">    <span class="comment">//Arc 允许多个线程共享同一个 Mutex，而 Mutex 确保对共享数据的访问是线程安全的。</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">counter</span> = Arc::<span class="title function_ invoke__">new</span>(Mutex::<span class="title function_ invoke__">new</span>(<span class="number">0</span>));</span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">handles</span> = <span class="built_in">vec!</span>[];</span><br><span class="line"></span><br><span class="line">    <span class="comment">//循环创建 10 个线程</span></span><br><span class="line">    <span class="keyword">for</span> <span class="variable">_</span> <span class="keyword">in</span> <span class="number">0</span>..<span class="number">10</span> &#123;</span><br><span class="line">        <span class="comment">//RC只用于单线程场景，多线程要用Arc</span></span><br><span class="line">        <span class="comment">//使用 Arc::clone 克隆 counter，确保每个线程都有自己的 Arc 引用，指向同一个 Mutex</span></span><br><span class="line">        <span class="keyword">let</span> <span class="variable">thread_counter</span> = Arc::<span class="title function_ invoke__">clone</span>(&amp;counter);</span><br><span class="line">        <span class="keyword">let</span> <span class="variable">handle</span> = thread::<span class="title function_ invoke__">spawn</span>(<span class="keyword">move</span> || &#123;</span><br><span class="line">            <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">num</span> = thread_counter.<span class="title function_ invoke__">lock</span>().<span class="title function_ invoke__">unwrap</span>();</span><br><span class="line">            *num += <span class="number">1</span>;</span><br><span class="line">        &#125;);</span><br><span class="line">        handles.<span class="title function_ invoke__">push</span>(handle);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//for handle in handles 遍历所有线程句柄。</span></span><br><span class="line">    <span class="keyword">for</span> <span class="variable">handle</span> <span class="keyword">in</span> handles &#123;</span><br><span class="line">        handle.<span class="title function_ invoke__">join</span>().<span class="title function_ invoke__">unwrap</span>();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;Result: &#123;&#125;&quot;</span>,*counter.<span class="title function_ invoke__">lock</span>().<span class="title function_ invoke__">unwrap</span>());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1997,7 +1980,7 @@
               
                 <a href="/archives/%20%7C%7C%20archive">
               
-                  <span class="site-state-item-count">44</span>
+                  <span class="site-state-item-count">45</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

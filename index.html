@@ -262,6 +262,174 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2025/02/25/Solana%20%E5%90%88%E7%BA%A6%E5%BC%80%E5%8F%91%20-%20%E5%90%88%E7%BA%A6%E5%AE%89%E5%85%A8pub(crate)%E4%BD%BF%E7%94%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2025/02/25/Solana%20%E5%90%88%E7%BA%A6%E5%BC%80%E5%8F%91%20-%20%E5%90%88%E7%BA%A6%E5%AE%89%E5%85%A8pub(crate)%E4%BD%BF%E7%94%A8/" itemprop="url">Solana 合约开发 - 合约安全 pub(crate) 使用</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2025-02-25T22:45:34+08:00">
+                2025-02-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Solana%E5%90%88%E7%BA%A6%E5%BC%80%E5%8F%91/" itemprop="url" rel="index">
+                    <span itemprop="name">Solana合约开发</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="可见性修饰符以及含义："><a href="#可见性修饰符以及含义：" class="headerlink" title="可见性修饰符以及含义："></a>可见性修饰符以及含义：</h1><ol>
+<li><code>pub</code>: 对所有 crate 和模块可见（完全公开）。</li>
+<li><code>pub(crate)</code>: 仅对当前 crate 内的模块可见，也就是当前合约内可以调用，其他合约不行。</li>
+<li><code>pub(super)</code>: 仅对当前模块的父模块可见。</li>
+<li><code>pub(in path)</code>: 仅对指定路径内的模块可见（更细粒度的控制）。</li>
+</ol>
+<p>在 Solana 合约开发中，由于智能合约运行在区块链上，安全性是首要考虑因素。因此，合理使用 pub(crate) 可以有效隐藏内部逻辑，减少暴露给外部的风险。</p>
+<h1 id="Pub（crate）使用示例："><a href="#Pub（crate）使用示例：" class="headerlink" title="Pub（crate）使用示例："></a>Pub（crate）使用示例：</h1><h2 id="隐藏内部工具函数："><a href="#隐藏内部工具函数：" class="headerlink" title="隐藏内部工具函数："></a><strong>隐藏内部工具函数</strong>：</h2><p>智能合约通常包含一些辅助函数，用于验证数据、处理逻辑或计算结果。这些函数不需要暴露给外部，但需要在多个模块之间共享。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// src/utils.rs</span></span><br><span class="line"><span class="title function_ invoke__">pub</span>(<span class="keyword">crate</span>) <span class="keyword">fn</span> <span class="title function_">validate_account_size</span>(data: &amp;[<span class="type">u8</span>], expected_size: <span class="type">usize</span>) <span class="punctuation">-&gt;</span> <span class="type">bool</span> &#123;</span><br><span class="line">    data.<span class="title function_ invoke__">len</span>() == expected_size</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="title function_ invoke__">pub</span>(<span class="keyword">crate</span>) <span class="keyword">fn</span> <span class="title function_">calculate_fee</span>(amount: <span class="type">u64</span>, fee_rate: <span class="type">u64</span>) <span class="punctuation">-&gt;</span> <span class="type">u64</span> &#123;</span><br><span class="line">    amount * fee_rate / <span class="number">100</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="封装内部状态结构体"><a href="#封装内部状态结构体" class="headerlink" title="封装内部状态结构体:"></a>封装内部状态结构体:</h2><p>智能合约通常需要维护一些内部状态（如计数器、余额、配置）。这些状态结构体可能只在合约内部使用，不需要暴露给外部。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// src/state.rs</span></span><br><span class="line"><span class="meta">#[derive(Default)]</span></span><br><span class="line"><span class="title function_ invoke__">pub</span>(<span class="keyword">crate</span>) <span class="keyword">struct</span> <span class="title class_">InternalState</span> &#123;</span><br><span class="line">    <span class="title function_ invoke__">pub</span>(<span class="keyword">crate</span>) counter: <span class="type">u64</span>,</span><br><span class="line">    <span class="title function_ invoke__">pub</span>(<span class="keyword">crate</span>) balance: <span class="type">u64</span>,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">impl</span> <span class="title class_">InternalState</span> &#123;</span><br><span class="line">    <span class="title function_ invoke__">pub</span>(<span class="keyword">crate</span>) <span class="keyword">fn</span> <span class="title function_">increment_counter</span>(&amp;<span class="keyword">mut</span> <span class="keyword">self</span>) &#123;</span><br><span class="line">        <span class="keyword">self</span>.counter += <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="title function_ invoke__">pub</span>(<span class="keyword">crate</span>) <span class="keyword">fn</span> <span class="title function_">add_balance</span>(&amp;<span class="keyword">mut</span> <span class="keyword">self</span>, amount: <span class="type">u64</span>) &#123;</span><br><span class="line">        <span class="keyword">self</span>.balance += amount;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="共享常量和配置："><a href="#共享常量和配置：" class="headerlink" title="共享常量和配置："></a>共享常量和配置：</h2><p>智能合约可能需要一些全局常量或配置（如最大允许值、默认费率）。这些常量通常只在合约内部使用，不需要暴露给外部。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">impl</span> <span class="title class_">StakePool</span> &#123;</span><br><span class="line">    <span class="title function_ invoke__">pub</span>(<span class="keyword">crate</span>) <span class="keyword">const</span> SEED_PREFIX: &amp;<span class="symbol">&#x27;static</span> <span class="type">str</span> = <span class="string">&quot;stake_pool_v1&quot;</span>;</span><br><span class="line">    <span class="title function_ invoke__">pub</span>(<span class="keyword">crate</span>) <span class="keyword">const</span> LEN: <span class="type">usize</span> = <span class="number">194</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="限制公共接口："><a href="#限制公共接口：" class="headerlink" title="限制公共接口："></a>限制公共接口：</h2><p>Solana 合约的入口点函数（<code>process_instruction</code>）是唯一的公开接口，所有外部调用都必须通过它。其他所有内容都应该是私有的或受限制的。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// src/lib.rs</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#[program]</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">mod</span> swap &#123;</span><br><span class="line">    <span class="keyword">use</span> super::*;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">lp_token_stake</span>(ctx: Context&lt;LPTokenStake&gt;, index: <span class="type">u16</span>, amount: <span class="type">u64</span>) <span class="punctuation">-&gt;</span> <span class="type">Result</span>&lt;()&gt; &#123;</span><br><span class="line">        instructions::<span class="title function_ invoke__">lp_token_stake</span>(ctx, index, amount)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// instructions/stake.rs</span></span><br><span class="line"></span><br><span class="line"><span class="title function_ invoke__">pub</span>(<span class="keyword">crate</span>) <span class="keyword">fn</span> <span class="title function_">lp_token_stake</span>(ctx: Context&lt;LPTokenStake&gt;, index: <span class="type">u16</span>, amount: <span class="type">u64</span>) <span class="punctuation">-&gt;</span> <span class="type">Result</span>&lt;()&gt; &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">staker</span> = &amp;ctx.accounts.user;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">lp_mint</span> = &amp;ctx.accounts.lp_mint;</span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">stake_pool</span> = ctx.accounts.stake_pool.<span class="title function_ invoke__">load_mut</span>()?;</span><br><span class="line"></span><br><span class="line">    require!(amount &gt; <span class="number">0</span>, ErrorCode::InvalidAmount);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// ......</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h1><ol>
+<li><strong>最小化暴露</strong><br> 只有必要的部分才应该使用 pub 或 pub(crate)。<br> 对于内部逻辑，优先使用 pub(crate) 而不是 pub。</li>
+<li><strong>模块化设计</strong><br> 将功能划分为多个模块（如 instructions、state、utils），并通过 pub(crate) 控制模块间的可见性。<br> 避免将所有代码放在一个文件中，保持代码清晰且易于维护。</li>
+<li><strong>安全审计</strong><br> 定期审查代码，确保没有意外暴露的接口。<br> 使用工具（如 Clippy）检查未使用的 pub 或 pub(crate)。<br> <a target="_blank" rel="noopener" href="https://doc.rust-lang.org/clippy/usage.html">https://doc.rust-lang.org/clippy/usage.html</a></li>
+</ol>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://example.com/2025/02/24/Solana%20%E5%90%88%E7%BA%A6%E5%BC%80%E5%8F%91%20-%20Account%20&%20AccountInfo%20&%20InterfaceAccount%20&%20AccountLoader/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1933,170 +2101,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2025/02/13/Solana%20%E5%90%88%E7%BA%A6%E5%BC%80%E5%8F%91%20-%20DeFi%20-%20Dex%20%E5%BC%80%E5%8F%91%E5%9B%9B%EF%BC%9Acreator/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2025/02/13/Solana%20%E5%90%88%E7%BA%A6%E5%BC%80%E5%8F%91%20-%20DeFi%20-%20Dex%20%E5%BC%80%E5%8F%91%E5%9B%9B%EF%BC%9Acreator/" itemprop="url">Solana 合约开发 - DeFi - Dex 开发四：Creator</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2025-02-13T22:36:29+08:00">
-                2025-02-13
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Solana%E5%90%88%E7%BA%A6%E5%BC%80%E5%8F%91-DeFi-Dex/" itemprop="url" rel="index">
-                    <span itemprop="name">Solana合约开发-DeFi-Dex</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>在创建流动性池之前，我们需要先准备一些creator相关的账户。</p>
-<h1 id="合约代码："><a href="#合约代码：" class="headerlink" title="合约代码："></a>合约代码：</h1><p>anchor&#x2F;programs&#x2F;swap&#x2F;src&#x2F;accounts_all&#x2F;creator.rs</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> crate::states::*;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> anchor_lang::prelude::*;</span><br><span class="line"><span class="keyword">use</span> anchor_spl::&#123;</span><br><span class="line">    associated_token::AssociatedToken,</span><br><span class="line">    token::Mint <span class="keyword">as</span> TokenMint,</span><br><span class="line">    token::Token,</span><br><span class="line">    token_interface::&#123;Mint, TokenAccount, TokenInterface&#125;,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="meta">#[derive(Accounts)]</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">struct</span> <span class="title class_">InitCreator</span>&lt;<span class="symbol">&#x27;info</span>&gt; &#123;</span><br><span class="line">    <span class="meta">#[account(mut)]</span></span><br><span class="line">    <span class="keyword">pub</span> payer: Signer&lt;<span class="symbol">&#x27;info</span>&gt;,</span><br><span class="line"></span><br><span class="line">    <span class="comment">//creator自己的lp token vault</span></span><br><span class="line">    <span class="meta">#[account(</span></span><br><span class="line"><span class="meta">        init_if_needed,</span></span><br><span class="line"><span class="meta">        associated_token::mint = lp_token_mint,</span></span><br><span class="line"><span class="meta">        associated_token::authority = payer,</span></span><br><span class="line"><span class="meta">        payer = payer,</span></span><br><span class="line"><span class="meta">        token::token_program = token_program,</span></span><br><span class="line"><span class="meta">    )]</span></span><br><span class="line">    <span class="keyword">pub</span> creator_lp_token_vault: <span class="type">Box</span>&lt;InterfaceAccount&lt;<span class="symbol">&#x27;info</span>, TokenAccount&gt;&gt;,</span><br><span class="line"></span><br><span class="line">    <span class="meta">#[account(</span></span><br><span class="line"><span class="meta">        seeds = [</span></span><br><span class="line"><span class="meta">            LP_TOKEN_SEED.as_bytes(),</span></span><br><span class="line"><span class="meta">        ]</span>,</span><br><span class="line">        bump,</span><br><span class="line">    )]</span><br><span class="line">    <span class="keyword">pub</span> lp_token_mint: Account&lt;<span class="symbol">&#x27;info</span>, TokenMint&gt;,</span><br><span class="line"></span><br><span class="line">    <span class="comment">//用于接收创建流动性池时支付的费用,通过经济成本阻止垃圾创建池操作，PoolState在下一章节创建</span></span><br><span class="line">    <span class="meta">#[account(</span></span><br><span class="line"><span class="meta">        init_if_needed,</span></span><br><span class="line"><span class="meta">        payer = payer,</span></span><br><span class="line"><span class="meta">        seeds = [</span></span><br><span class="line"><span class="meta">            PoolState::CREATE_POOL_FEE_PREFIX.as_bytes(),</span></span><br><span class="line"><span class="meta">        ]</span>,</span><br><span class="line">        bump,</span><br><span class="line">        token::mint = token_wsol_mint,</span><br><span class="line">        token::authority = pool_lp_authority,</span><br><span class="line">    )]</span><br><span class="line">    <span class="keyword">pub</span> create_pool_fee: <span class="type">Box</span>&lt;InterfaceAccount&lt;<span class="symbol">&#x27;info</span>, TokenAccount&gt;&gt;,</span><br><span class="line"></span><br><span class="line">    <span class="keyword">pub</span> token_wsol_mint: <span class="type">Box</span>&lt;InterfaceAccount&lt;<span class="symbol">&#x27;info</span>, Mint&gt;&gt;,</span><br><span class="line"></span><br><span class="line">    <span class="meta">#[account(</span></span><br><span class="line"><span class="meta">        constraint = token_0_mint.key() &lt; token_1_mint.key(),</span></span><br><span class="line"><span class="meta">        mint::token_program = token_0_program,</span></span><br><span class="line"><span class="meta">    )]</span></span><br><span class="line">    <span class="keyword">pub</span> token_0_mint: <span class="type">Box</span>&lt;InterfaceAccount&lt;<span class="symbol">&#x27;info</span>, Mint&gt;&gt;,</span><br><span class="line"></span><br><span class="line">    <span class="meta">#[account(</span></span><br><span class="line"><span class="meta">        mint::token_program = token_1_program,</span></span><br><span class="line"><span class="meta">    )]</span></span><br><span class="line">    <span class="keyword">pub</span> token_1_mint: <span class="type">Box</span>&lt;InterfaceAccount&lt;<span class="symbol">&#x27;info</span>, Mint&gt;&gt;,</span><br><span class="line"></span><br><span class="line">    <span class="comment">/// CHECK: pool vault and lp mint authority</span></span><br><span class="line">    <span class="meta">#[account(</span></span><br><span class="line"><span class="meta">        seeds = [</span></span><br><span class="line"><span class="meta">            crate::AUTH_SEED.as_bytes(),</span></span><br><span class="line"><span class="meta">        ]</span>,</span><br><span class="line">        bump,</span><br><span class="line">    )]</span><br><span class="line">    <span class="keyword">pub</span> pool_lp_authority: UncheckedAccount&lt;<span class="symbol">&#x27;info</span>&gt;,</span><br><span class="line"></span><br><span class="line">    <span class="comment">/// CHECK: Token program for token_0</span></span><br><span class="line">    <span class="keyword">pub</span> token_0_program: Interface&lt;<span class="symbol">&#x27;info</span>, TokenInterface&gt;,</span><br><span class="line">    <span class="comment">/// CHECK: Token program for token_1</span></span><br><span class="line">    <span class="keyword">pub</span> token_1_program: Interface&lt;<span class="symbol">&#x27;info</span>, TokenInterface&gt;,</span><br><span class="line"></span><br><span class="line">    <span class="keyword">pub</span> system_program: Program&lt;<span class="symbol">&#x27;info</span>, System&gt;,</span><br><span class="line">    <span class="keyword">pub</span> token_program: Program&lt;<span class="symbol">&#x27;info</span>, Token&gt;,</span><br><span class="line">    <span class="keyword">pub</span> associated_token_program: Program&lt;<span class="symbol">&#x27;info</span>, AssociatedToken&gt;,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>anchor&#x2F;programs&#x2F;swap&#x2F;src&#x2F;instructions&#x2F;creator.rs</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> anchor_lang::prelude::*;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> crate::accounts_all::*;</span><br><span class="line"></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">init_creator</span>(ctx: Context&lt;InitCreator&gt;) <span class="punctuation">-&gt;</span> <span class="type">Result</span>&lt;()&gt; &#123;</span><br><span class="line">    <span class="title function_ invoke__">Ok</span>(())</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>lib.rs:</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//pub mod 里面添加</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">init_creator</span>(ctx: Context&lt;InitCreator&gt;) <span class="punctuation">-&gt;</span> <span class="type">Result</span>&lt;()&gt; &#123;</span><br><span class="line">        instructions::<span class="title function_ invoke__">init_creator</span>(ctx)</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<p>执行Anchor命令：</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">anchor build &amp;&amp; anchor deploy</span><br></pre></td></tr></table></figure>
-
-<h1 id="前端TS代码："><a href="#前端TS代码：" class="headerlink" title="前端TS代码："></a>前端TS代码：</h1><p>anchor&#x2F;example&#x2F;api&#x2F;creator.ts</p>
-<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> * <span class="keyword">as</span> anchor <span class="keyword">from</span> <span class="string">&#x27;@coral-xyz/anchor&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; program &#125; <span class="keyword">from</span> <span class="string">&quot;./wallet&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">async</span> <span class="keyword">function</span> <span class="title function_">init_creator</span>(<span class="params"></span></span><br><span class="line"><span class="params">    <span class="attr">wallet</span>: anchor.<span class="title class_">Wallet</span>,</span></span><br><span class="line"><span class="params">    <span class="attr">token0Mint</span>: anchor.web3.<span class="title class_">PublicKey</span>,</span></span><br><span class="line"><span class="params">    <span class="attr">token1Mint</span>: anchor.web3.<span class="title class_">PublicKey</span>,</span></span><br><span class="line"><span class="params">    <span class="attr">token0Program</span>: anchor.web3.<span class="title class_">PublicKey</span>,</span></span><br><span class="line"><span class="params">    <span class="attr">token1Program</span>: anchor.web3.<span class="title class_">PublicKey</span>,</span></span><br><span class="line"><span class="params">    <span class="attr">tokenWsolMint</span>: anchor.web3.<span class="title class_">PublicKey</span>,</span></span><br><span class="line"><span class="params"></span>)&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">await</span> program.<span class="property">methods</span>.<span class="title function_">initCreator</span>(</span><br><span class="line">    )</span><br><span class="line">        .<span class="title function_">accounts</span>(&#123;</span><br><span class="line">            <span class="attr">token0Mint</span>: token0Mint,</span><br><span class="line">            <span class="attr">token1Mint</span>: token1Mint,</span><br><span class="line">            <span class="attr">token0Program</span>: token0Program,</span><br><span class="line">            <span class="attr">token1Program</span>: token1Program,</span><br><span class="line">            <span class="attr">tokenWsolMint</span>: tokenWsolMint</span><br><span class="line">        &#125;)</span><br><span class="line">        .<span class="title function_">signers</span>([wallet.<span class="property">payer</span>])</span><br><span class="line">        .<span class="title function_">rpc</span>();</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p>anchor&#x2F;example&#x2F;index.ts</p>
-<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//初始化creator,这里使用devnet环境的program id和一些常见token的mint地址，这些地址都可以查得到</span></span><br><span class="line">  <span class="keyword">const</span> <span class="variable constant_">TOKEN_DEV_PROGRAM_ID</span> = <span class="keyword">new</span> <span class="title class_">PublicKey</span>(<span class="string">&#x27;TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA&#x27;</span>);</span><br><span class="line">  <span class="keyword">const</span> usdcDevTokenMint = <span class="keyword">new</span> <span class="title class_">PublicKey</span>(<span class="string">&#x27;4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU&#x27;</span>);</span><br><span class="line">  <span class="keyword">const</span> eurcDevTokenMint = <span class="keyword">new</span> <span class="title class_">PublicKey</span>(<span class="string">&#x27;HzwqbKZw8HxMN6bF2yFZNrht3c2iXXzpKcFu7uBEDKtr&#x27;</span>);</span><br><span class="line">  <span class="keyword">const</span> <span class="title class_">WsolDevTokenMint</span> = <span class="keyword">new</span> <span class="title class_">PublicKey</span>(<span class="string">&#x27;So11111111111111111111111111111111111111112&#x27;</span>);</span><br><span class="line">  <span class="keyword">const</span> creator = <span class="keyword">await</span> <span class="title function_">init_creator</span>(</span><br><span class="line">    defaultWallet,</span><br><span class="line">    usdcDevTokenMint,</span><br><span class="line">    eurcDevTokenMint,</span><br><span class="line">    <span class="variable constant_">TOKEN_DEV_PROGRAM_ID</span>,</span><br><span class="line">    <span class="variable constant_">TOKEN_DEV_PROGRAM_ID</span>,</span><br><span class="line">    <span class="title class_">WsolDevTokenMint</span>,</span><br><span class="line">  );</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(creator);</span><br></pre></td></tr></table></figure>
-
-<p>执行Anchor命令：</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">anchor run api</span><br></pre></td></tr></table></figure>
-
-<p>本章节只是简单创建一些账号</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2147,7 +2151,7 @@
               
                 <a href="/archives/%20%7C%7C%20archive">
               
-                  <span class="site-state-item-count">44</span>
+                  <span class="site-state-item-count">45</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Rust,Solana,Anchor," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="可见性修饰符以及含义： pub: 对所有 crate 和模块可见（完全公开）。 pub(crate): 仅对当前 crate 内的模块可见，也就是当前合约内可以调用，其他合约不行。 pub(super): 仅对当前模块的父模块可见。 pub(in path): 仅对指定路径内的模块可见（更细粒度的控制）。  在 Solana 合约开发中，由于智能合约运行在区块链上，安全性是首要考虑因素。因此，合理">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Solana 合约开发 - 合约安全 pub(crate) 使用">
+<meta property="og:url" content="http://example.com/2025/02/25/Solana%20%E5%90%88%E7%BA%A6%E5%BC%80%E5%8F%91%20-%20%E5%90%88%E7%BA%A6%E5%AE%89%E5%85%A8pub(crate)%E4%BD%BF%E7%94%A8/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="可见性修饰符以及含义： pub: 对所有 crate 和模块可见（完全公开）。 pub(crate): 仅对当前 crate 内的模块可见，也就是当前合约内可以调用，其他合约不行。 pub(super): 仅对当前模块的父模块可见。 pub(in path): 仅对指定路径内的模块可见（更细粒度的控制）。  在 Solana 合约开发中，由于智能合约运行在区块链上，安全性是首要考虑因素。因此，合理">
+<meta property="og:locale">
+<meta property="article:published_time" content="2025-02-25T14:45:34.290Z">
+<meta property="article:modified_time" content="2025-02-28T08:31:07.517Z">
+<meta property="article:author" content="QsunOu">
+<meta property="article:tag" content="Rust">
+<meta property="article:tag" content="Solana">
+<meta property="article:tag" content="Anchor">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://example.com/2025/02/25/Solana 合约开发 - 合约安全pub(crate)使用/"/>
+
+
+
+
+
+  <title>Solana 合约开发 - 合约安全 pub(crate) 使用 | Hexo</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hexo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2025/02/25/Solana%20%E5%90%88%E7%BA%A6%E5%BC%80%E5%8F%91%20-%20%E5%90%88%E7%BA%A6%E5%AE%89%E5%85%A8pub(crate)%E4%BD%BF%E7%94%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Solana 合约开发 - 合约安全 pub(crate) 使用</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2025-02-25T22:45:34+08:00">
+                2025-02-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Solana%E5%90%88%E7%BA%A6%E5%BC%80%E5%8F%91/" itemprop="url" rel="index">
+                    <span itemprop="name">Solana合约开发</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="可见性修饰符以及含义："><a href="#可见性修饰符以及含义：" class="headerlink" title="可见性修饰符以及含义："></a>可见性修饰符以及含义：</h1><ol>
+<li><code>pub</code>: 对所有 crate 和模块可见（完全公开）。</li>
+<li><code>pub(crate)</code>: 仅对当前 crate 内的模块可见，也就是当前合约内可以调用，其他合约不行。</li>
+<li><code>pub(super)</code>: 仅对当前模块的父模块可见。</li>
+<li><code>pub(in path)</code>: 仅对指定路径内的模块可见（更细粒度的控制）。</li>
+</ol>
+<p>在 Solana 合约开发中，由于智能合约运行在区块链上，安全性是首要考虑因素。因此，合理使用 pub(crate) 可以有效隐藏内部逻辑，减少暴露给外部的风险。</p>
+<h1 id="Pub（crate）使用示例："><a href="#Pub（crate）使用示例：" class="headerlink" title="Pub（crate）使用示例："></a>Pub（crate）使用示例：</h1><h2 id="隐藏内部工具函数："><a href="#隐藏内部工具函数：" class="headerlink" title="隐藏内部工具函数："></a><strong>隐藏内部工具函数</strong>：</h2><p>智能合约通常包含一些辅助函数，用于验证数据、处理逻辑或计算结果。这些函数不需要暴露给外部，但需要在多个模块之间共享。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// src/utils.rs</span></span><br><span class="line"><span class="title function_ invoke__">pub</span>(<span class="keyword">crate</span>) <span class="keyword">fn</span> <span class="title function_">validate_account_size</span>(data: &amp;[<span class="type">u8</span>], expected_size: <span class="type">usize</span>) <span class="punctuation">-&gt;</span> <span class="type">bool</span> &#123;</span><br><span class="line">    data.<span class="title function_ invoke__">len</span>() == expected_size</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="title function_ invoke__">pub</span>(<span class="keyword">crate</span>) <span class="keyword">fn</span> <span class="title function_">calculate_fee</span>(amount: <span class="type">u64</span>, fee_rate: <span class="type">u64</span>) <span class="punctuation">-&gt;</span> <span class="type">u64</span> &#123;</span><br><span class="line">    amount * fee_rate / <span class="number">100</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="封装内部状态结构体"><a href="#封装内部状态结构体" class="headerlink" title="封装内部状态结构体:"></a>封装内部状态结构体:</h2><p>智能合约通常需要维护一些内部状态（如计数器、余额、配置）。这些状态结构体可能只在合约内部使用，不需要暴露给外部。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// src/state.rs</span></span><br><span class="line"><span class="meta">#[derive(Default)]</span></span><br><span class="line"><span class="title function_ invoke__">pub</span>(<span class="keyword">crate</span>) <span class="keyword">struct</span> <span class="title class_">InternalState</span> &#123;</span><br><span class="line">    <span class="title function_ invoke__">pub</span>(<span class="keyword">crate</span>) counter: <span class="type">u64</span>,</span><br><span class="line">    <span class="title function_ invoke__">pub</span>(<span class="keyword">crate</span>) balance: <span class="type">u64</span>,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">impl</span> <span class="title class_">InternalState</span> &#123;</span><br><span class="line">    <span class="title function_ invoke__">pub</span>(<span class="keyword">crate</span>) <span class="keyword">fn</span> <span class="title function_">increment_counter</span>(&amp;<span class="keyword">mut</span> <span class="keyword">self</span>) &#123;</span><br><span class="line">        <span class="keyword">self</span>.counter += <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="title function_ invoke__">pub</span>(<span class="keyword">crate</span>) <span class="keyword">fn</span> <span class="title function_">add_balance</span>(&amp;<span class="keyword">mut</span> <span class="keyword">self</span>, amount: <span class="type">u64</span>) &#123;</span><br><span class="line">        <span class="keyword">self</span>.balance += amount;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="共享常量和配置："><a href="#共享常量和配置：" class="headerlink" title="共享常量和配置："></a>共享常量和配置：</h2><p>智能合约可能需要一些全局常量或配置（如最大允许值、默认费率）。这些常量通常只在合约内部使用，不需要暴露给外部。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">impl</span> <span class="title class_">StakePool</span> &#123;</span><br><span class="line">    <span class="title function_ invoke__">pub</span>(<span class="keyword">crate</span>) <span class="keyword">const</span> SEED_PREFIX: &amp;<span class="symbol">&#x27;static</span> <span class="type">str</span> = <span class="string">&quot;stake_pool_v1&quot;</span>;</span><br><span class="line">    <span class="title function_ invoke__">pub</span>(<span class="keyword">crate</span>) <span class="keyword">const</span> LEN: <span class="type">usize</span> = <span class="number">194</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="限制公共接口："><a href="#限制公共接口：" class="headerlink" title="限制公共接口："></a>限制公共接口：</h2><p>Solana 合约的入口点函数（<code>process_instruction</code>）是唯一的公开接口，所有外部调用都必须通过它。其他所有内容都应该是私有的或受限制的。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// src/lib.rs</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#[program]</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">mod</span> swap &#123;</span><br><span class="line">    <span class="keyword">use</span> super::*;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">lp_token_stake</span>(ctx: Context&lt;LPTokenStake&gt;, index: <span class="type">u16</span>, amount: <span class="type">u64</span>) <span class="punctuation">-&gt;</span> <span class="type">Result</span>&lt;()&gt; &#123;</span><br><span class="line">        instructions::<span class="title function_ invoke__">lp_token_stake</span>(ctx, index, amount)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// instructions/stake.rs</span></span><br><span class="line"></span><br><span class="line"><span class="title function_ invoke__">pub</span>(<span class="keyword">crate</span>) <span class="keyword">fn</span> <span class="title function_">lp_token_stake</span>(ctx: Context&lt;LPTokenStake&gt;, index: <span class="type">u16</span>, amount: <span class="type">u64</span>) <span class="punctuation">-&gt;</span> <span class="type">Result</span>&lt;()&gt; &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">staker</span> = &amp;ctx.accounts.user;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">lp_mint</span> = &amp;ctx.accounts.lp_mint;</span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">stake_pool</span> = ctx.accounts.stake_pool.<span class="title function_ invoke__">load_mut</span>()?;</span><br><span class="line"></span><br><span class="line">    require!(amount &gt; <span class="number">0</span>, ErrorCode::InvalidAmount);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// ......</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h1><ol>
+<li><strong>最小化暴露</strong><br> 只有必要的部分才应该使用 pub 或 pub(crate)。<br> 对于内部逻辑，优先使用 pub(crate) 而不是 pub。</li>
+<li><strong>模块化设计</strong><br> 将功能划分为多个模块（如 instructions、state、utils），并通过 pub(crate) 控制模块间的可见性。<br> 避免将所有代码放在一个文件中，保持代码清晰且易于维护。</li>
+<li><strong>安全审计</strong><br> 定期审查代码，确保没有意外暴露的接口。<br> 使用工具（如 Clippy）检查未使用的 pub 或 pub(crate)。<br> <a target="_blank" rel="noopener" href="https://doc.rust-lang.org/clippy/usage.html">https://doc.rust-lang.org/clippy/usage.html</a></li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Rust/" rel="tag"># Rust</a>
+          
+            <a href="/tags/Solana/" rel="tag"># Solana</a>
+          
+            <a href="/tags/Anchor/" rel="tag"># Anchor</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2025/02/24/Solana%20%E5%90%88%E7%BA%A6%E5%BC%80%E5%8F%91%20-%20Account%20&%20AccountInfo%20&%20InterfaceAccount%20&%20AccountLoader/" rel="next" title="Solana 合约开发 - Account & AccountInfo & InterfaceAccount & AccountLoader 区别">
+                <i class="fa fa-chevron-left"></i> Solana 合约开发 - Account & AccountInfo & InterfaceAccount & AccountLoader 区别
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%20%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">45</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="qsunou@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%AF%E8%A7%81%E6%80%A7%E4%BF%AE%E9%A5%B0%E7%AC%A6%E4%BB%A5%E5%8F%8A%E5%90%AB%E4%B9%89%EF%BC%9A"><span class="nav-number">1.</span> <span class="nav-text">可见性修饰符以及含义：</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Pub%EF%BC%88crate%EF%BC%89%E4%BD%BF%E7%94%A8%E7%A4%BA%E4%BE%8B%EF%BC%9A"><span class="nav-number">2.</span> <span class="nav-text">Pub（crate）使用示例：</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9A%90%E8%97%8F%E5%86%85%E9%83%A8%E5%B7%A5%E5%85%B7%E5%87%BD%E6%95%B0%EF%BC%9A"><span class="nav-number">2.1.</span> <span class="nav-text">隐藏内部工具函数：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%81%E8%A3%85%E5%86%85%E9%83%A8%E7%8A%B6%E6%80%81%E7%BB%93%E6%9E%84%E4%BD%93"><span class="nav-number">2.2.</span> <span class="nav-text">封装内部状态结构体:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B1%E4%BA%AB%E5%B8%B8%E9%87%8F%E5%92%8C%E9%85%8D%E7%BD%AE%EF%BC%9A"><span class="nav-number">2.3.</span> <span class="nav-text">共享常量和配置：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%99%90%E5%88%B6%E5%85%AC%E5%85%B1%E6%8E%A5%E5%8F%A3%EF%BC%9A"><span class="nav-number">2.4.</span> <span class="nav-text">限制公共接口：</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93%EF%BC%9A"><span class="nav-number">3.</span> <span class="nav-text">总结：</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">QsunOu</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
