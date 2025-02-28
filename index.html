@@ -262,6 +262,186 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2025/02/28/Solana%20%E5%90%88%E7%BA%A6%E5%BC%80%E5%8F%91%20-%20%E5%90%88%E7%BA%A6%E5%AE%89%E5%85%A8%20solana%E9%87%8D%E5%85%A5%E6%94%BB%E5%87%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2025/02/28/Solana%20%E5%90%88%E7%BA%A6%E5%BC%80%E5%8F%91%20-%20%E5%90%88%E7%BA%A6%E5%AE%89%E5%85%A8%20solana%E9%87%8D%E5%85%A5%E6%94%BB%E5%87%BB/" itemprop="url">Solana 合约开发 - 合约安全 Solana重入攻击</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2025-02-28T21:52:35+08:00">
+                2025-02-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Solana%E5%90%88%E7%BA%A6%E5%BC%80%E5%8F%91/" itemprop="url" rel="index">
+                    <span itemprop="name">Solana合约开发</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>在智能合约中，当一个合约调用另一个合约（或外部程序）时，如果当前合约的状态尚未完全更新，而外部程序又反过来调用当前合约的函数，就可能发生重入攻击。</p>
+<ul>
+<li><strong>状态未锁定</strong> ：在合约执行逻辑的过程中，账户余额或其他关键状态未及时更新。</li>
+<li><strong>外部调用风险</strong> ：攻击者通过恶意合约反复调用目标合约的函数，绕过正常的逻辑检查。</li>
+</ul>
+<h1 id="Solana重入攻击示例："><a href="#Solana重入攻击示例：" class="headerlink" title="Solana重入攻击示例："></a>Solana重入攻击示例：</h1><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">withdraw</span>(accounts: &amp;[AccountInfo]) <span class="punctuation">-&gt;</span> ProgramResult &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">user</span> = &amp;accounts[<span class="number">0</span>];</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">vault</span> = &amp;accounts[<span class="number">1</span>];</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 检查用户是否有足够的余额</span></span><br><span class="line">    <span class="keyword">if</span> **vault.lamports.<span class="title function_ invoke__">borrow</span>() &lt; <span class="number">10</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="title function_ invoke__">Err</span>(ProgramError::InsufficientFunds);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 调用外部程序向用户转账</span></span><br><span class="line">    <span class="title function_ invoke__">invoke</span>(</span><br><span class="line">        &amp;<span class="title function_ invoke__">transfer_instruction</span>(user.key, <span class="number">10</span>),</span><br><span class="line">        accounts,</span><br><span class="line">    )?;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 更新状态：减少金库余额</span></span><br><span class="line">    **vault.lamports.<span class="title function_ invoke__">borrow_mut</span>() -= <span class="number">10</span>;</span><br><span class="line"></span><br><span class="line">    <span class="title function_ invoke__">Ok</span>(())</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="问题"><a href="#问题" class="headerlink" title="问题:"></a><strong>问题</strong>:</h2><p>在这个逻辑中：</p>
+<ol>
+<li>合约首先检查金库余额是否足够。</li>
+<li>然后调用外部程序向用户转账。</li>
+<li>最后更新金库余额。</li>
+</ol>
+<p> <strong>攻击者的操作</strong><br>攻击者可以创建一个恶意合约，在 <code>invoke</code> 调用外部程序时再次调用 <code>withdraw</code> 函数：</p>
+<ol>
+<li>攻击者调用 <code>withdraw</code> 函数。</li>
+<li>合约检查金库余额（此时余额足够）。</li>
+<li>合约调用外部程序（例如转账给用户）。</li>
+<li>在外部程序执行期间，恶意合约再次调用 <code>withdraw</code> 函数。</li>
+<li>第二次调用时，由于金库余额尚未更新，攻击者可以再次提取资金。</li>
+<li>最终，攻击者可能提取远超其应得的资金，相当于N*10。</li>
+<li>但金库才更新了一次10，状态不一致。</li>
+</ol>
+<h1 id="解决方法："><a href="#解决方法：" class="headerlink" title="解决方法："></a>解决方法：</h1><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">withdraw</span>(accounts: &amp;[AccountInfo]) <span class="punctuation">-&gt;</span> ProgramResult &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">user</span> = &amp;accounts[<span class="number">0</span>];</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">vault</span> = &amp;accounts[<span class="number">1</span>];</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 检查金库余额是否足够</span></span><br><span class="line">    <span class="keyword">if</span> **vault.lamports.<span class="title function_ invoke__">borrow</span>() &lt; <span class="number">10</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="title function_ invoke__">Err</span>(ProgramError::InsufficientFunds);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 更新状态：减少金库余额</span></span><br><span class="line">    **vault.lamports.<span class="title function_ invoke__">borrow_mut</span>() -= <span class="number">10</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 调用外部程序向用户转账</span></span><br><span class="line">    <span class="title function_ invoke__">invoke</span>(</span><br><span class="line">        &amp;<span class="title function_ invoke__">transfer_instruction</span>(user.key, <span class="number">10</span>),</span><br><span class="line">        accounts,</span><br><span class="line">    )?;</span><br><span class="line"></span><br><span class="line">    <span class="title function_ invoke__">Ok</span>(())</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="执行流程"><a href="#执行流程" class="headerlink" title="执行流程"></a><strong>执行流程</strong></h2><ol>
+<li>攻击者调用 <code>withdraw</code> 函数。</li>
+<li>合约检查金库余额（此时余额足够）。</li>
+<li>合约立即更新金库余额（减少余额）。</li>
+<li>合约调用外部程序（例如转账给用户）。</li>
+<li>如果攻击者的恶意合约再次调用 <code>withdraw</code>：<ul>
+<li>不断进行新的调用会发现金库余额不足，无法继续提取资金。</li>
+</ul>
+</li>
+<li>最终，每次提取资金都会对应一次金库余额的更新。</li>
+</ol>
+<h1 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h1><ol>
+<li>第一种情况的根本原因是<strong>状态更新发生在外部调用之后</strong> ，导致攻击者可以利用时间窗口进行多次提取。</li>
+<li>第二种情况通过<strong>先更新状态，再调用外部程序</strong> ，确保每次提取都对应一次状态更新，从而避免了漏洞。</li>
+</ol>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://example.com/2025/02/28/Solana%20%E5%90%88%E7%BA%A6%E5%BC%80%E5%8F%91%20-%20%E5%90%88%E7%BA%A6%E5%AE%89%E5%85%A8%20%E5%AE%89%E5%85%A8%E6%95%B0%E5%AD%A6%E8%BF%90%E7%AE%97%E4%BD%BF%E7%94%A8/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1922,171 +2102,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2025/02/15/Solana%20%E5%90%88%E7%BA%A6%E5%BC%80%E5%8F%91%20-%20DeFi%20-%20Dex%20%E5%BC%80%E5%8F%91%E5%85%AD%EF%BC%9APyth%20Network/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2025/02/15/Solana%20%E5%90%88%E7%BA%A6%E5%BC%80%E5%8F%91%20-%20DeFi%20-%20Dex%20%E5%BC%80%E5%8F%91%E5%85%AD%EF%BC%9APyth%20Network/" itemprop="url">Solana 合约开发 - DeFi - Dex 开发六：Pyth Network</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2025-02-15T22:42:15+08:00">
-                2025-02-15
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Solana%E5%90%88%E7%BA%A6%E5%BC%80%E5%8F%91-DeFi-Dex/" itemprop="url" rel="index">
-                    <span itemprop="name">Solana合约开发-DeFi-Dex</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>本章节介绍如何获取 Pyth Network上的代币价格。</p>
-<h1 id="先来介绍一下概念："><a href="#先来介绍一下概念：" class="headerlink" title="先来介绍一下概念："></a>先来介绍一下概念：</h1><h2 id="什么是预言机？"><a href="#什么是预言机？" class="headerlink" title="什么是预言机？"></a>什么是预言机？</h2><p>预言机是一种软件或硬件机制，用于将外部数据（如市场价格、天气信息、支付状态等）传递到区块链上的智能合约中，同时确保这些数据的真实性和可靠性。由于区块链本身是孤立的系统，无法直接访问外部数据或服务，因此需要通过预言机来获取和验证链外信息，不过使用预言机会增加费用。</p>
-<p><strong>核心功能</strong>：从外部来源获取数据，并将其传输到区块链上供智能合约使用。<br><strong>应用场景</strong>：主要用于去中心化金融（DeFi）、供应链管理、物联网（IoT）、预测市场等领域。</p>
-<h2 id="常见预言机项目："><a href="#常见预言机项目：" class="headerlink" title="常见预言机项目："></a>常见预言机项目：</h2><p>(1) Chainlink<br>特点：去中心化的预言机网络，支持多种区块链平台。<br>应用：广泛应用于 DeFi 协议中，提供资产价格、利率等数据。</p>
-<p>(2) Band Protocol<br>特点：专注于跨链数据查询，支持多链环境。<br>应用：为开发者提供灵活的数据服务。</p>
-<p>(3) Pyth Network<br>特点：高性能的价格预言机，专为高频交易设计。<br>应用：在 Solana 和其他高性能区块链上广泛使用。</p>
-<h2 id="什么是Pyth-Network"><a href="#什么是Pyth-Network" class="headerlink" title="什么是Pyth Network?"></a>什么是<code>Pyth Network</code>?</h2><p>Pyth Network 是一个去中心化的金融数据网络，专注于为区块链和智能合约提供高质量的链下（off-chain）价格数据。它旨在解决传统预言机（Oracle）系统的局限性，为去中心化金融（DeFi）生态系统提供快速、准确且可靠的价格信息。与传统的预言机相比，Pyth Network 提供了更高的更新频率和更低的延迟。</p>
-<h1 id="获取价格合约代码："><a href="#获取价格合约代码：" class="headerlink" title="获取价格合约代码："></a>获取价格合约代码：</h1><p>anchor&#x2F;programs&#x2F;swap&#x2F;src&#x2F;accounts_all&#x2F;pyth_oracle.rs</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> crate::states::*;</span><br><span class="line"><span class="keyword">use</span> anchor_lang::prelude::*;</span><br><span class="line"><span class="keyword">use</span> pyth_solana_receiver_sdk::price_update::PriceUpdateV2;</span><br><span class="line"></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">const</span> PYTH_PRICE_PREFIX_SEED: &amp;<span class="type">str</span> = <span class="string">&quot;pyth_price_account&quot;</span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">#[derive(Accounts)]</span></span><br><span class="line"><span class="meta">#[instruction()]</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">struct</span> <span class="title class_">GetPythPrice</span>&lt;<span class="symbol">&#x27;info</span>&gt; &#123;</span><br><span class="line">    </span><br><span class="line">    <span class="meta">#[account(</span></span><br><span class="line"><span class="meta">        init_if_needed,</span></span><br><span class="line"><span class="meta">        space = 8 + PriceAccount::INIT_SPACE,</span></span><br><span class="line"><span class="meta">        payer = payer,</span></span><br><span class="line"><span class="meta">        seeds = [</span></span><br><span class="line"><span class="meta">            PYTH_PRICE_PREFIX_SEED.as_bytes(),</span></span><br><span class="line"><span class="meta">            authority.key().as_ref(),           </span></span><br><span class="line"><span class="meta">        ]</span>,</span><br><span class="line">        bump,</span><br><span class="line">    )]</span><br><span class="line">    <span class="keyword">pub</span> price_account: <span class="type">Box</span>&lt;Account&lt;<span class="symbol">&#x27;info</span>, PriceAccount&gt;&gt;,</span><br><span class="line"></span><br><span class="line">    </span><br><span class="line"></span><br><span class="line">    <span class="meta">#[account(mut)]</span></span><br><span class="line">    <span class="keyword">pub</span> payer: Signer&lt;<span class="symbol">&#x27;info</span>&gt;,</span><br><span class="line">    <span class="comment">// Add this account to any instruction Context that needs price data.</span></span><br><span class="line">    <span class="keyword">pub</span> price_update: Account&lt;<span class="symbol">&#x27;info</span>, PriceUpdateV2&gt;,</span><br><span class="line">    <span class="keyword">pub</span> authority: Signer&lt;<span class="symbol">&#x27;info</span>&gt;,</span><br><span class="line">    <span class="keyword">pub</span> system_program: Program&lt;<span class="symbol">&#x27;info</span>, System&gt;,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>anchor&#x2F;programs&#x2F;swap&#x2F;src&#x2F;instructions&#x2F;pyth_oracle.rs</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> crate::accounts_all::*;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> anchor_lang::prelude::*;</span><br><span class="line"><span class="keyword">use</span> anchor_lang::solana_program::clock;</span><br><span class="line"><span class="keyword">use</span> pyth_solana_receiver_sdk::price_update::get_feed_id_from_hex;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> std::<span class="type">u8</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">get_oracle_price</span>(ctx: Context&lt;GetPythPrice&gt;, feed_id: <span class="type">String</span>) <span class="punctuation">-&gt;</span> <span class="type">Result</span>&lt;()&gt; &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">price_update</span> = &amp;<span class="keyword">mut</span> ctx.accounts.price_update;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">price_account</span> = &amp;<span class="keyword">mut</span> ctx.accounts.price_account;</span><br><span class="line">    <span class="comment">// let pyth_config = &amp;mut ctx.accounts.pyth_config;</span></span><br><span class="line">    <span class="comment">// pyth_config.init_feed_id(feed_id);</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">feed_id</span> = &amp;feed_id;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">block_timestamp</span> = clock::Clock::<span class="title function_ invoke__">get</span>()?;</span><br><span class="line">    <span class="comment">// get_price_no_older_than will fail if the price update is more than 30 seconds old</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">maximum_age</span>: <span class="type">u64</span> = <span class="number">60</span>;</span><br><span class="line">    <span class="comment">// get_price_no_older_than will fail if the price update is for a different price feed.</span></span><br><span class="line">    <span class="comment">// This string is the id of the SOL/USD feed. See https://pyth.network/developers/price-feed-ids for all available IDs.</span></span><br><span class="line">    <span class="comment">// Sample output:</span></span><br><span class="line">    <span class="comment">// The price is (7160106530699 ± 5129162301) * 10^-8</span></span><br><span class="line">    <span class="comment">/// A Pyth price.</span></span><br><span class="line">    <span class="comment">/// The actual price is `(price ± conf)* 10^exponent`. `publish_time` may be used to check the recency of the price.</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">feed_id</span>: [<span class="type">u8</span>; <span class="number">32</span>] = <span class="title function_ invoke__">get_feed_id_from_hex</span>(feed_id)?;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">price</span> = price_update.<span class="title function_ invoke__">get_price_no_older_than</span>(&amp;block_timestamp, maximum_age, &amp;feed_id)?;</span><br><span class="line"></span><br><span class="line">    price_account.price = price.price;</span><br><span class="line">    price_account.conf = price.conf;</span><br><span class="line">    price_account.exponent = price.exponent;</span><br><span class="line">    price_account.last_updated = block_timestamp.unix_timestamp;</span><br><span class="line">    msg!(</span><br><span class="line">        <span class="string">&quot;The price is (&#123;&#125; ± &#123;&#125;) * 10^&#123;&#125;&quot;</span>,</span><br><span class="line">        price.price,</span><br><span class="line">        price.conf,</span><br><span class="line">        price.exponent</span><br><span class="line">    );</span><br><span class="line">    <span class="title function_ invoke__">Ok</span>(())</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-<p>anchor&#x2F;programs&#x2F;swap&#x2F;src&#x2F;lib.rs</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">get_pyth_oracle_price</span>(ctx: Context&lt;GetPythPrice&gt;, feed_id: <span class="type">String</span>) <span class="punctuation">-&gt;</span> <span class="type">Result</span>&lt;()&gt; &#123;</span><br><span class="line">        instructions::<span class="title function_ invoke__">get_oracle_price</span>(ctx, feed_id)</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-
-<h1 id="前端测试代码："><a href="#前端测试代码：" class="headerlink" title="前端测试代码："></a>前端测试代码：</h1><p>anchor&#x2F;example&#x2F;index.ts</p>
-<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//获取Pyth预言机价格,这里以获取SOL/USD价格为例，Feed ID可通过以下链接获取：https://www.pyth.network/developers/price-feed-ids#stable   </span></span><br><span class="line">  <span class="keyword">const</span> feed_id = <span class="string">&#x27;0xef0d8b6fda2ceba41da15d4095d1da392a0d2f8ed0c6c7bc0f4cfac8c280b56d&#x27;</span>;</span><br><span class="line">  <span class="keyword">const</span> pyth_price = <span class="keyword">await</span> <span class="title function_">getPythOraclePrice</span>(defaultWallet, feed_id);</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;pyth_price is&#x27;</span>, pyth_price);</span><br></pre></td></tr></table></figure>
-
-<p>anchor&#x2F;example&#x2F;api&#x2F;pyth.ts</p>
-<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> * <span class="keyword">as</span> anchor <span class="keyword">from</span> <span class="string">&#x27;@coral-xyz/anchor&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; program, connection, provider &#125; <span class="keyword">from</span> <span class="string">&#x27;./wallet&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">async</span> <span class="keyword">function</span> <span class="title function_">getPythOraclePrice</span>(<span class="params"><span class="attr">wallet</span>: anchor.<span class="title class_">Wallet</span>, <span class="attr">feed_id</span>: <span class="built_in">string</span></span>) &#123;</span><br><span class="line">  <span class="keyword">await</span> program.<span class="property">methods</span></span><br><span class="line">    .<span class="title function_">getPythOraclePrice</span>(feed_id)</span><br><span class="line">    .<span class="title function_">accounts</span>(&#123;</span><br><span class="line">      <span class="attr">payer</span>: wallet.<span class="property">publicKey</span>,</span><br><span class="line">      <span class="attr">priceUpdate</span>: <span class="string">&#x27;7UVimffxr9ow1uXYxsr4LHAcV58mLzhmwaeKvJ1pjLiE&#x27;</span>,</span><br><span class="line">    &#125;)</span><br><span class="line">    .<span class="title function_">signers</span>([wallet.<span class="property">payer</span>])</span><br><span class="line">    .<span class="title function_">rpc</span>();</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> [priceAccountPda] = anchor.<span class="property">web3</span>.<span class="property">PublicKey</span>.<span class="title function_">findProgramAddressSync</span>(</span><br><span class="line">    [<span class="title class_">Buffer</span>.<span class="title function_">from</span>(<span class="string">&#x27;pyth_price_account&#x27;</span>), wallet.<span class="property">publicKey</span>.<span class="title function_">toBuffer</span>()],</span><br><span class="line">    program.<span class="property">programId</span>,</span><br><span class="line">  );</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;priceAccount Pda is:&#x27;</span>, priceAccountPda.<span class="title function_">toString</span>());</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> accountInfo = <span class="keyword">await</span> program.<span class="property">account</span>.<span class="property">priceAccount</span>.<span class="title function_">getAccountInfo</span>(priceAccountPda);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (!accountInfo) &#123;</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">Error</span>(<span class="string">&#x27;Failed to fetch account info&#x27;</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> data = accountInfo.<span class="property">data</span>;</span><br><span class="line">  <span class="keyword">const</span> price = data.<span class="title function_">readBigInt64LE</span>(<span class="number">0</span>); <span class="comment">// 价格存储在数据的起始位置</span></span><br><span class="line">  <span class="keyword">const</span> conf = data.<span class="title function_">readBigUInt64LE</span>(<span class="number">8</span>); <span class="comment">// 置信区间紧接其后</span></span><br><span class="line">  <span class="keyword">const</span> exponent = data.<span class="title function_">readInt32LE</span>(<span class="number">16</span>); <span class="comment">// 指数值</span></span><br><span class="line">  <span class="keyword">const</span> lastUpdated = data.<span class="title function_">readBigInt64LE</span>(<span class="number">20</span>); <span class="comment">// 上次更新时间</span></span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">`Price: <span class="subst">$&#123;price&#125;</span> ± <span class="subst">$&#123;conf&#125;</span> * 10^<span class="subst">$&#123;exponent&#125;</span>, Last Updated: <span class="subst">$&#123;lastUpdated&#125;</span>`</span>);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> [price, conf, exponent, lastUpdated];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2137,7 +2152,7 @@
               
                 <a href="/archives/%20%7C%7C%20archive">
               
-                  <span class="site-state-item-count">46</span>
+                  <span class="site-state-item-count">47</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
