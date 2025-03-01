@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Rust,Solana,Anchor," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="大概介绍：共识机制（后面还会详细介绍）： Proof of History (PoH): PoH 是一种创新的时间记录机制，通过加密散列函数生成一个可验证的时间顺序，使得区块链中的事件可以按时间线性顺序排列。这减少了节点之间的时间同步需求，使得节点能够迅速达成共识，而无需等待整个网络确认，这是重点。 Proof of Stake (PoS): 验证者需要抵押一定数量的 SOL 代币，持有更多代币的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Solana 合约开发 - Solana 基础原理-共识机制">
+<meta property="og:url" content="http://example.com/2025/02/28/Solana%20%E5%90%88%E7%BA%A6%E5%BC%80%E5%8F%91%20-%20Solana%20%E5%9F%BA%E7%A1%80%E5%8E%9F%E7%90%86-%E5%85%B1%E8%AF%86%E6%9C%BA%E5%88%B6/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="大概介绍：共识机制（后面还会详细介绍）： Proof of History (PoH): PoH 是一种创新的时间记录机制，通过加密散列函数生成一个可验证的时间顺序，使得区块链中的事件可以按时间线性顺序排列。这减少了节点之间的时间同步需求，使得节点能够迅速达成共识，而无需等待整个网络确认，这是重点。 Proof of Stake (PoS): 验证者需要抵押一定数量的 SOL 代币，持有更多代币的">
+<meta property="og:locale">
+<meta property="article:published_time" content="2025-02-28T15:04:23.750Z">
+<meta property="article:modified_time" content="2025-03-01T15:32:03.694Z">
+<meta property="article:author" content="QsunOu">
+<meta property="article:tag" content="Rust">
+<meta property="article:tag" content="Solana">
+<meta property="article:tag" content="Anchor">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://example.com/2025/02/28/Solana 合约开发 - Solana 基础原理-共识机制/"/>
+
+
+
+
+
+  <title>Solana 合约开发 - Solana 基础原理-共识机制 | Hexo</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hexo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2025/02/28/Solana%20%E5%90%88%E7%BA%A6%E5%BC%80%E5%8F%91%20-%20Solana%20%E5%9F%BA%E7%A1%80%E5%8E%9F%E7%90%86-%E5%85%B1%E8%AF%86%E6%9C%BA%E5%88%B6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Solana 合约开发 - Solana 基础原理-共识机制</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2025-02-28T23:04:23+08:00">
+                2025-02-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Solana%E5%90%88%E7%BA%A6%E5%BC%80%E5%8F%91/" itemprop="url" rel="index">
+                    <span itemprop="name">Solana合约开发</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="大概介绍："><a href="#大概介绍：" class="headerlink" title="大概介绍："></a>大概介绍：</h1><h2 id="共识机制（后面还会详细介绍）："><a href="#共识机制（后面还会详细介绍）：" class="headerlink" title="共识机制（后面还会详细介绍）："></a>共识机制（后面还会详细介绍）：</h2><ul>
+<li><strong>Proof of History (PoH)</strong>: PoH 是一种创新的时间记录机制，通过加密散列函数生成一个可验证的时间顺序，使得区块链中的事件可以按时间线性顺序排列。这减少了节点之间的时间同步需求，使得节点能够迅速达成共识，而无需等待整个网络确认，这是重点。</li>
+<li><strong>Proof of Stake (PoS)</strong>: 验证者需要抵押一定数量的 SOL 代币，持有更多代币的验证者有更高的概率被选中生成区块。PoS 提供了经济激励，确保验证者行为诚实。</li>
+<li><strong>PoH</strong> 确保区块的时间戳和顺序，<strong>PoS</strong> 则确保网络的安全性和抗攻击性，两者结合使得网络能够达到<strong>每秒数千笔</strong>交易处理速度</li>
+</ul>
+<h2 id="交易处理能力："><a href="#交易处理能力：" class="headerlink" title="交易处理能力："></a>交易处理能力：</h2><ul>
+<li><strong>并行处理</strong>: 通过将交易分解为多个子集，利用不同的验证节点并行处理，提高了吞吐量。Solana 的架构支持高达每秒数千笔交易，平均出块时间为 400 毫秒，平均每秒 2000+ 笔交易，在高负载时保持较低的交易费用。</li>
+<li><strong>低延迟和低费用</strong>: Solana 的架构设计使其能够快速确认交易，通常在一秒以内完成。即使在高负载下，交易费用仍保持低廉，适合需要高频交易的应用。</li>
+</ul>
+<h2 id="交易费用（gas费用）："><a href="#交易费用（gas费用）：" class="headerlink" title="交易费用（gas费用）："></a>交易费用（gas费用）：</h2><p><strong>Solana</strong>它的交易费用是根据交易的复杂度和大小动态计算的，这意味着，交易费用会根据交易的执行成本而变化，而不是根据网络上的交易量变化。Solana 的平均交易费用通常低于 0.01 美元，平均为 0.00025 美元，这使得进行小额交易更具成本效益。</p>
+<h2 id="智能合约："><a href="#智能合约：" class="headerlink" title="智能合约："></a>智能合约：</h2><p><strong>Solana</strong>中一切皆账户，它的智能合约（Solana 中称之为<strong>程序</strong>program，后续也统一使用“程序”这一术语）也是账户，但细分为<strong>可执行账户</strong>和<strong>数据账户</strong>，前者存储程序的代码，用来执行特定的逻辑，后者存储状态，即程序运行时的数据。这种分离的模式，使得程序的升级更加简单，因为程序本身无状态，可以直接升级为新的代码逻辑。</p>
+<h2 id="账户："><a href="#账户：" class="headerlink" title="账户："></a>账户：</h2><p><strong>Solana</strong>中一切皆账户，它的账户就像一个容器（或者电脑中的文件夹），可以包含程序代码、状态数据以及账户元数据。按照功能可划分为<strong>可执行账户</strong>和<strong>数据账户</strong>，前者为存储程序代码的账户，也称为程序账户。后者包括<strong>普通用户账户</strong>和其他非程序账户，这些账户存储了用户的余额、交易历史和其他相关数据，但它们本身不包含程序代码。</p>
+<h1 id="共识机制："><a href="#共识机制：" class="headerlink" title="共识机制："></a>共识机制：</h1><h2 id="先讲讲传统共识机制"><a href="#先讲讲传统共识机制" class="headerlink" title="先讲讲传统共识机制"></a>先讲讲传统共识机制</h2><p>分布式区块链网络中的每个节点都有自己的内部时钟，它按照这个本地系统时钟运行。当发生交易时，节点将根据这个本地系统时钟为交易添加时间戳。</p>
+<p>最终确认或拒绝交易的时间戳也将根据这个本地系统区块进行。在传统的共识机制（例如工作量证明 PoW 和权益证明 PoS）中，所有的节点需要相互沟通，以协调彼此的本地时钟，以确保它们在处理交易时对时间的理解是一致的。节点之间的通信有助于建立一个共同的时间基准，以确保整个网络对时间的认知是一致的，从而协调交易的顺序和确认。</p>
+<p>对于一个分布式区块链，有成千上万个节点分布在全球各地，节点之间的本地系统时钟存在差异是不可避免的，导致交易的时间戳在不同节点之间不一致。当节点需要就发生了哪些交易以及这些交易在区块中的顺序达成共识时，这就成为一个问题。<strong>这被称为时间戳同步问题，当网络通过增加节点数量来增强去中心化时，这个问题会变得更加严重和复杂。</strong></p>
+<p>最终，这为恶意攻击创造了一条可能的路径。时间上的差异使恶意行为者能够广播类似于真实时间戳的虚假交易，试图掌控网络。为防止对交易的操纵，需要花费大量的时间和处理能力来验证时间戳的准确性。这有可能导致区块确认的延迟，甚至区块被拒绝（因为节点可能投票认为区块无效，原因是具有不同的时间戳）。</p>
+<h2 id="什么是PoH（历史证明）？"><a href="#什么是PoH（历史证明）？" class="headerlink" title="什么是PoH（历史证明）？"></a>什么是PoH（历史证明）？</h2><p><strong>Proof of History (PoH)</strong> ，PoH 是一种“时间戳机制”，它通过连续的哈希计算生成一个不可篡改的时间链，为每个事件提供唯一的时间标记。</p>
+<ul>
+<li>每个哈希值都依赖于前一个哈希值，形成一个“时间序列”。</li>
+<li>这个时间序列可以被任何节点独立验证，而无需额外的通信。</li>
+</ul>
+<h3 id="工作原理："><a href="#工作原理：" class="headerlink" title="工作原理："></a>工作原理：</h3><p>PoH 的实现基于 <strong>SHA-256 哈希函数</strong> ，具体过程如下：</p>
+<ol>
+<li><p><strong>初始化</strong> :</p>
+<ul>
+<li>选择一个初始值（称为“种子”）。</li>
+<li>开始对这个种子进行 SHA-256 哈希计算。</li>
+</ul>
+</li>
+<li><p><strong>连续哈希</strong> :</p>
+<ul>
+<li>将当前的哈希值作为输入，计算下一个哈希值。</li>
+<li>不断重复这一过程，生成一个连续的哈希链。</li>
+</ul>
+</li>
+<li><p><strong>记录事件</strong> :</p>
+<ul>
+<li>当某个事件发生时（例如接收到一笔交易），将该事件的数据插入到当前的哈希值中。</li>
+<li>继续哈希计算，生成新的哈希值。</li>
+</ul>
+</li>
+<li><p><strong>验证</strong> :</p>
+<ul>
+<li>其他节点可以通过重新计算哈希链来验证事件的顺序和时间。</li>
+</ul>
+</li>
+</ol>
+<h3 id="举个例子："><a href="#举个例子：" class="headerlink" title="举个例子："></a>举个例子：</h3><p>假设我们有一个简单的哈希链，初始值为 <code>H0</code>，原本它的生成过程是这样：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">H0 = SHA256(&quot;seed&quot;)</span><br><span class="line">H1 = SHA256(H0)</span><br><span class="line">H2 = SHA256(H1)</span><br><span class="line">H3 = SHA256(H2)</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<p>如果在生成 <code>H2</code> 时发生了一笔交易 <code>T1</code>，我们可以将 <code>T1</code> 的数据插入到 <code>H2</code> 中，相当于顺序+交易：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">H2_with_T1 = SHA256(H1 + T1)</span><br></pre></td></tr></table></figure>
+
+<p>然后继续生成后续的哈希值：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">H3 = SHA256(H2_with_T1)</span><br><span class="line">H4 = SHA256(H3)</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<h3 id="PoH的优势"><a href="#PoH的优势" class="headerlink" title="PoH的优势"></a>PoH的优势</h3><ol>
+<li><p>全局时间顺序<br>PoH 提供了一个全局的时间参考，所有节点都可以独立验证事件的顺序，而无需额外的通信。</p>
+</li>
+<li><p>减少通信开销<br>传统区块链需要通过消息传递来确认事件顺序，而 PoH 通过哈希链直接提供了时间顺序，显著减少了节点之间的通信需求。</p>
+</li>
+<li><p>提高效率<br>由于节点不需要等待共识完成，交易可以更快地被打包和处理。</p>
+</li>
+</ol>
+<h2 id="什么是PoS？"><a href="#什么是PoS？" class="headerlink" title="什么是PoS？"></a>什么是PoS？</h2><p>先来了解下在 Solana的系统架构中最重要的两种角色：<strong>Leader</strong>（出块者）和 <strong>Validator</strong>（验证者）。两者实际上都是质押了 SOL 代币的全节点，只是在不同的出块周期内，Leader 会由不同的全节点来充当，而没有当选 Leader 的全节点会成为 Validator。 所以在选择验证者方面， Solana 采用的是 PoS（权益证明）机制，验证者是通过抵押一定数量的代币来参与网络交易的验证的，持有更多代币的验证者有更大的机会被选中生成新的区块。</p>
+<h3 id="工作原理"><a href="#工作原理" class="headerlink" title="工作原理"></a>工作原理</h3><ol>
+<li><p>用户发起交易后，会被客户端直接转发给 Leader 节点，或者先被普通节点接收，再立刻转发给 Leader；</p>
+</li>
+<li><p>出块者 Leader 接收网络内全部的待处理交易，一边执行，一边给交易指令排序，制成交易序列（类似区块）。每隔一段时间，Leader 会把排好的交易序列发送给 Validator 验证节点；</p>
+</li>
+<li><p>Validator 按照交易序列（区块）给定的顺序执行交易，产生相应的状态信息State（执行交易会改变节点的状态，比如改变某些账户的余额）；</p>
+</li>
+<li><p>每发送 N 个交易序列，Leader 会定期公开本地的状态 State，Validator会将其与自己的 State 作对比，给出 肯定&#x2F;否定 的投票。</p>
+</li>
+<li><p>如果在规定时间内，Leader收集到占全网 2&#x2F;3 质押权重的节点们给出的肯定票，则此前发布的交易序列和状态 State 就被敲定，“检查点”通过，相当于区块完成最终确认 Finality；</p>
+</li>
+<li><p>一般而言，给出肯定票的 Validator 节点与出块者 Leader 所执行的交易、执行后的状态都是相同的，数据会同步。</p>
+</li>
+</ol>
+<h2 id="结合两个流程，大概就是："><a href="#结合两个流程，大概就是：" class="headerlink" title="结合两个流程，大概就是："></a>结合两个流程，大概就是：</h2><p><strong>1. PoH 生成器启动</strong></p>
+<ul>
+<li>假设当前的 PoH 生成器（通常是当前的 leader 节点）开始工作。</li>
+</ul>
+<p><strong>2. PoH 序列生成</strong></p>
+<p>PoH 生成器开始连续进行哈希操作</p>
+<p><strong>3. 交易到达</strong></p>
+<p><strong>4. 交易嵌入 PoH</strong></p>
+<p>PoH 生成器将 T1 嵌入到 PoH 序列中</p>
+<p><strong>5. 继续生成 PoH 和处理交易</strong></p>
+<ul>
+<li>更多的交易陆续到达并被嵌入 PoH 序列</li>
+</ul>
+<p><strong>6. 形成区块</strong></p>
+<ul>
+<li>假设每 200 个 PoH 条目形成一个区块</li>
+<li>当达到 Index 200 时，当前的 PoH 序列和所有嵌入的交易被打包成一个区块</li>
+</ul>
+<p><strong>7. 区块广播和验证</strong></p>
+<ul>
+<li>Leader 节点将这个区块广播给其他验证者节点</li>
+<li>验证者接收到区块后，可以并行验证 PoH 序列：<ul>
+<li>验证者 1 检查 Index 0-66</li>
+<li>验证者 2 检查 Index 67-133</li>
+<li>验证者 3 检查 Index 134-200</li>
+</ul>
+</li>
+</ul>
+<p><strong>8. 共识和确认</strong></p>
+<ul>
+<li>验证者快速确认 PoH 序列的正确性</li>
+<li>他们也验证嵌入的交易（T1, T2, T3 等）是否有效</li>
+<li>一旦大多数验证者确认，区块被添加到链上</li>
+</ul>
+<p><strong>9. Leader 轮换</strong></p>
+<ul>
+<li>基于 PoH 序列，网络预先知道下一个 leader 是谁</li>
+<li>例如，如果每 1000 个 PoH 条目轮换一次 leader，那么在 Index 1000 时，新的 leader 接管 PoH 生成</li>
+</ul>
+<p><strong>10. 时间估算</strong></p>
+<ul>
+<li>假设每次哈希操作平均需要 0.1 毫秒</li>
+<li>那么 200 个 PoH 条目（一个区块）大约代表 20 毫秒的真实时间</li>
+<li>网络可以据此估算交易的确切时间戳</li>
+</ul>
+<h2 id="领导者（Leader）选举"><a href="#领导者（Leader）选举" class="headerlink" title="领导者（Leader）选举"></a>领导者（Leader）选举</h2><p>在 Solana 的共识协议中，有 Epoch（纪元）和Slot（间隔）两大时间单位。每个 Slot 约为0.4<del>0.8秒，相当于一个区块的时间间隔。而每个Epoch周期包含43.2万个Slot（区块），长达2</del>4天。每过4个 Slot（出块周期），Leader节点就会进行一次变更。</p>
+<p>Solana 使用一种称为 Tower BFT（一种改进的实用拜占庭容错算法）的共识机制，结合 Proof of Stake (PoS) 和 Proof of History (PoH) 来选择和轮换 leader。</p>
+<ol>
+<li><strong>Leader 调度</strong>:<ul>
+<li>Solana 网络预先确定一个 leader 调度表，通常覆盖未来几天的时间。</li>
+<li>这个调度是基于验证者的质押量（stake）按比例分配的。</li>
+</ul>
+</li>
+<li><strong>Leader 轮换</strong>:<ul>
+<li>Leader 角色在验证者之间频繁轮换，通常每 400 毫秒（一个 “slot”）就会切换。</li>
+<li>在一个 “epoch”（大约 2-3 天）内，每个验证者都有机会成为 leader。</li>
+</ul>
+</li>
+<li><strong>单一 Leader</strong>:<ul>
+<li>在任何给定的时刻，<strong>只有一个节点作为 leader</strong>。</li>
+<li>Leader 负责生成 PoH 序列和打包交易到区块。</li>
+</ul>
+</li>
+<li><strong>Leader 的职责</strong>:<ul>
+<li>生成 PoH 序列</li>
+<li>接收交易并将其打包到区块</li>
+<li>广播区块给其他验证者</li>
+</ul>
+</li>
+</ol>
+<p>在每个新的Epoch周期开始时，Solana网络会按照各节点的质押权重进行抽选，组成一个出块者Leader轮换名单，“钦定”了未来不同时刻的出块者。也就是说出块者会提前获知他们成为出块者。 具体而言，究竟如何指定 Leader 会考虑诸多因素，比如：</p>
+<ol>
+<li><p><strong>质押的代币数量：</strong> 在 PoS 中，质押的代币数量是一个关键的考虑因素。Validator 通常倾向于选择质押数量较大的节点，因为这增加了节点被选中为区块生产者的机会。这也有助于确保网络由具有足够利益参与的节点维护。</p>
+</li>
+<li><p><strong>节点的性能：</strong> Validator 的节点性能是另一个关键因素。高性能的节点能够更快速地验证和打包交易，有助于维持网络的高吞吐量。Validator 可能会选择性能较好的节点以提高整个网络的效率。</p>
+</li>
+<li><p><strong>网络延迟：</strong> Validator 可能会考虑节点之间的网络延迟。选择网络延迟较低的节点有助于减少区块的传播时间，从而提高网络的实时性。</p>
+</li>
+<li><p><strong>节点的可用性：</strong> Validator 会关注节点的可用性，确保它们能够稳定运行而不容易出现故障。可靠的节点能够为网络提供更稳定的服务。</p>
+</li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Rust/" rel="tag"># Rust</a>
+          
+            <a href="/tags/Solana/" rel="tag"># Solana</a>
+          
+            <a href="/tags/Anchor/" rel="tag"># Anchor</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2025/02/28/Solana%20%E5%90%88%E7%BA%A6%E5%BC%80%E5%8F%91%20-%20DeFi%20-%20Dex%20%E5%BC%80%E5%8F%91%E5%8D%81%E4%BA%8C%EF%BC%9AETF%20%E5%88%9B%E5%BB%BA/" rel="next" title="Solana 合约开发 - DeFi - Dex 开发十二：ETF 创建">
+                <i class="fa fa-chevron-left"></i> Solana 合约开发 - DeFi - Dex 开发十二：ETF 创建
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%20%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">49</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="qsunou@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%A4%A7%E6%A6%82%E4%BB%8B%E7%BB%8D%EF%BC%9A"><span class="nav-number">1.</span> <span class="nav-text">大概介绍：</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B1%E8%AF%86%E6%9C%BA%E5%88%B6%EF%BC%88%E5%90%8E%E9%9D%A2%E8%BF%98%E4%BC%9A%E8%AF%A6%E7%BB%86%E4%BB%8B%E7%BB%8D%EF%BC%89%EF%BC%9A"><span class="nav-number">1.1.</span> <span class="nav-text">共识机制（后面还会详细介绍）：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%A4%E6%98%93%E5%A4%84%E7%90%86%E8%83%BD%E5%8A%9B%EF%BC%9A"><span class="nav-number">1.2.</span> <span class="nav-text">交易处理能力：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%A4%E6%98%93%E8%B4%B9%E7%94%A8%EF%BC%88gas%E8%B4%B9%E7%94%A8%EF%BC%89%EF%BC%9A"><span class="nav-number">1.3.</span> <span class="nav-text">交易费用（gas费用）：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%EF%BC%9A"><span class="nav-number">1.4.</span> <span class="nav-text">智能合约：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B4%A6%E6%88%B7%EF%BC%9A"><span class="nav-number">1.5.</span> <span class="nav-text">账户：</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%B1%E8%AF%86%E6%9C%BA%E5%88%B6%EF%BC%9A"><span class="nav-number">2.</span> <span class="nav-text">共识机制：</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%88%E8%AE%B2%E8%AE%B2%E4%BC%A0%E7%BB%9F%E5%85%B1%E8%AF%86%E6%9C%BA%E5%88%B6"><span class="nav-number">2.1.</span> <span class="nav-text">先讲讲传统共识机制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFPoH%EF%BC%88%E5%8E%86%E5%8F%B2%E8%AF%81%E6%98%8E%EF%BC%89%EF%BC%9F"><span class="nav-number">2.2.</span> <span class="nav-text">什么是PoH（历史证明）？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86%EF%BC%9A"><span class="nav-number">2.2.1.</span> <span class="nav-text">工作原理：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BE%E4%B8%AA%E4%BE%8B%E5%AD%90%EF%BC%9A"><span class="nav-number">2.2.2.</span> <span class="nav-text">举个例子：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#PoH%E7%9A%84%E4%BC%98%E5%8A%BF"><span class="nav-number">2.2.3.</span> <span class="nav-text">PoH的优势</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFPoS%EF%BC%9F"><span class="nav-number">2.3.</span> <span class="nav-text">什么是PoS？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86"><span class="nav-number">2.3.1.</span> <span class="nav-text">工作原理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%93%E5%90%88%E4%B8%A4%E4%B8%AA%E6%B5%81%E7%A8%8B%EF%BC%8C%E5%A4%A7%E6%A6%82%E5%B0%B1%E6%98%AF%EF%BC%9A"><span class="nav-number">2.4.</span> <span class="nav-text">结合两个流程，大概就是：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A2%86%E5%AF%BC%E8%80%85%EF%BC%88Leader%EF%BC%89%E9%80%89%E4%B8%BE"><span class="nav-number">2.5.</span> <span class="nav-text">领导者（Leader）选举</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">QsunOu</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
