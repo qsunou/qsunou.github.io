@@ -262,6 +262,233 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2025/02/23/Solana%20%E5%90%88%E7%BA%A6%E5%BC%80%E5%8F%91%20-%20to_owned()%E4%B8%8Eto_clone()%E7%9A%84%E5%AF%B9%E6%AF%94/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2025/02/23/Solana%20%E5%90%88%E7%BA%A6%E5%BC%80%E5%8F%91%20-%20to_owned()%E4%B8%8Eto_clone()%E7%9A%84%E5%AF%B9%E6%AF%94/" itemprop="url">Solana 合约开发 - to_owned()与to_clone()的对比</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2025-02-23T23:12:59+08:00">
+                2025-02-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Solana%E5%90%88%E7%BA%A6%E5%BC%80%E5%8F%91/" itemprop="url" rel="index">
+                    <span itemprop="name">Solana合约开发</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="使用to-owned-和使用引用对比："><a href="#使用to-owned-和使用引用对比：" class="headerlink" title="使用to_owned()和使用引用对比："></a>使用to_owned()和使用引用对比：</h1><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="variable">accounts</span> = ctx</span><br><span class="line">    .remaining_accounts</span><br><span class="line">    .<span class="title function_ invoke__">iter</span>()</span><br><span class="line">    .<span class="title function_ invoke__">map</span>(|x| (x.<span class="title function_ invoke__">key</span>(), x.<span class="title function_ invoke__">to_owned</span>()))</span><br><span class="line">    .collect::&lt;HashMap&lt;_, _&gt;&gt;();</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p><strong><code>所有权转移</code></strong> ：<br>x.to_owned() 会创建一个 AccountInfo 的深拷贝（即完全独立的副本），并将这个副本存储到 HashMap 中。<br>这意味着 accounts 拥有这些 AccountInfo 的所有权，而不是借用它们。</p>
+</li>
+<li><p><strong><code>生命周期</code></strong> ：<br>因为 accounts 存储的是深拷贝的数据，它的生命周期与 ctx.remaining_accounts 无关。<br>它可以独立存在，即使 ctx.remaining_accounts 被释放或超出作用域，accounts 仍然有效。</p>
+</li>
+<li><p><strong><code>内存开销</code></strong> ：<br>由于每个 AccountInfo 都被深拷贝，这会导致额外的内存分配和性能开销。</p>
+</li>
+<li><p><strong><code>适用场景</code></strong> ：<br>如果你需要在函数外部返回 accounts(例如<code>fn xxx() -&gt; HashMap&lt;Pubkey, AccountInfo&gt;</code>)，或者长时间持有这些数据，这种方法是合适的。<br>但要注意，Solana 程序中通常不建议频繁深拷贝数据，因为这会增加计算和内存开销。</p>
+</li>
+</ul>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="variable">accounts_map</span>: HashMap&lt;&amp;Pubkey, &amp;AccountInfo&lt;<span class="symbol">&#x27;info</span>&gt;&gt; = ctx</span><br><span class="line">    .remaining_accounts</span><br><span class="line">    .<span class="title function_ invoke__">iter</span>()</span><br><span class="line">    .<span class="title function_ invoke__">map</span>(|acc| (acc.key, acc))</span><br><span class="line">    .<span class="title function_ invoke__">collect</span>();</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p><strong><code>借用而非拥有</code></strong> ：<br>这里没有调用 to_owned()，而是直接借用 ctx.remaining_accounts 中的 AccountInfo 引用。<br>accounts_map 中存储的是对 ctx.remaining_accounts 中元素的引用（&amp;AccountInfo&lt;’info&gt;），而不是独立的副本。</p>
+</li>
+<li><p><strong><code>生命周期绑定</code></strong> ：<br>accounts_map 的生命周期与 ctx.remaining_accounts 绑定。<br>如果 ctx.remaining_accounts 被释放或超出作用域，accounts_map 中的引用也会失效。<br>这是因为 accounts_map 中的引用依赖于 ctx.remaining_accounts 的生命周期。</p>
+</li>
+<li><p><strong><code>内存开销</code></strong> ：<br>由于只是存储引用，不会产生额外的内存分配，性能更高。</p>
+</li>
+<li><p><strong><code>适用场景</code></strong> ：<br>如果你只需要在当前函数的作用域内使用 accounts_map，并且不需要长期持有这些数据，这种方法更高效。<br>这是 Solana 程序中推荐的方式，因为它避免了不必要的深拷贝。</p>
+</li>
+</ul>
+<h1 id="使用to-owned-和clone-对比："><a href="#使用to-owned-和clone-对比：" class="headerlink" title="使用to_owned()和clone()对比："></a>使用to_owned()和clone()对比：</h1><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="variable">pool_input_vault_info</span> = accounts   <span class="comment">//HashMap&lt;&amp;Pubkey, &amp;AccountInfo&lt;&#x27;info&gt;&gt;</span></span><br><span class="line">	.<span class="title function_ invoke__">get</span>(&amp;pool_input_vault_key) <span class="comment">//Option&lt;&amp;&amp;AccountInfo&lt;&#x27;info&gt;&gt;</span></span><br><span class="line">    .<span class="title function_ invoke__">ok_or</span>(ErrorCode::InvalidAccounts)? <span class="comment">// &amp;&amp;AccountInfo</span></span><br><span class="line">    .<span class="title function_ invoke__">to_owned</span>(); <span class="comment">// &amp;AccountInfo</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>**<code>定义</code>**：to_owned() 是一个特定于某些类型的方法，通常用于将借用的数据（如引用）转换为拥有所有权的数据。</p>
+</li>
+<li><p>**<code>行为</code>**：<br><code>to_owned()</code> 通常用于从借用类型（如 &amp;str 或 &amp;AccountInfo）创建拥有所有权的类型（如 String 或 AccountInfo）。<br>它不会递归地复制所有子对象，而是根据具体类型的行为来决定如何复制数据。<br>对于字符串切片 &amp;str，to_owned() 返回一个 String；对于 &amp;AccountInfo，它返回一个 AccountInfo。</p>
+</li>
+<li><p>**<code>适用场景</code>**：<br>当你有一个借用的数据（如引用），并且你需要拥有该数据的所有权时。<br>当你需要避免双重引用的问题，或者当你需要确保后续代码可以安全地使用该数据时。</p>
+</li>
+<li><p>**<code>性能考虑</code>**：<br>to_owned() 通常比 clone() 更高效，因为它只复制必要的部分，而不是递归地复制整个对象树。<br>对于简单的类型（如字符串或基本数据结构），to_owned() 的性能开销较小。</p>
+</li>
+</ul>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="variable">pool_input_vault_info</span> = accounts</span><br><span class="line">    .<span class="title function_ invoke__">get</span>(&amp;pool_input_vault_key)</span><br><span class="line">    .<span class="title function_ invoke__">ok_or</span>(ErrorCode::InvalidAccounts)?</span><br><span class="line">    .<span class="title function_ invoke__">clone</span>();</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>**<code>定义</code>**：clone() 是一个 trait 方法，属于 Clone trait。它用于创建一个类型的新实例，该实例是原始实例的深度副本。</p>
+</li>
+<li><p>**<code>行为</code>**：<br>clone() 会递归地复制整个对象及其所有子对象。<br>对于实现了 Clone trait 的类型，clone() 可以用于任何类型的对象，包括复杂的数据结构（如 Vec<T>、HashMap&lt;K, V&gt; 等）。<br>如果类型中的字段也实现了 Clone，则这些字段也会被递归复制。</p>
+</li>
+<li><p>**<code>适用场景</code>**：<br>当你需要完全复制一个复杂的对象，并且不希望两个对象共享任何内部数据时。<br>当你需要确保两个变量拥有独立的状态时。</p>
+</li>
+<li><p>**<code>性能考虑</code>**：<br>clone() 可能会导致较高的性能开销，因为它需要递归地复制所有子对象。对于大型或复杂的数据结构，这可能会导致显著的性能下降。</p>
+</li>
+</ul>
+<p>在上面两段代码中<br>to_owned()：<br>适用于你只需要将引用转换为拥有所有权的对象，而不需要递归复制整个对象树的情况。<br>在代码中，accounts 是一个 HashMap&lt;&amp;Pubkey, &amp;AccountInfo&lt;’info&gt;&gt;，因此 to_owned() 可以将 &amp;&amp;AccountInfo&lt;’info&gt; 转换为 &amp;AccountInfo&lt;’info&gt;，从而避免双重引用问题。</p>
+<h2 id="双重引用问题："><a href="#双重引用问题：" class="headerlink" title="双重引用问题："></a>双重引用问题：</h2><p>在 Rust 中，双重引用（double reference）是指你有一个指向另一个引用的引用。例如，&amp;AccountInfo&lt;’info&gt; 是一个对 AccountInfo&lt;’info&gt; 的引用。</p>
+<h3 id="双重引用问题的背景"><a href="#双重引用问题的背景" class="headerlink" title="双重引用问题的背景"></a>双重引用问题的背景</h3><p>在之前的代码中，accounts 是一个 HashMap&lt;&amp;Pubkey, &amp;AccountInfo&lt;’info&gt;&gt;，即键是 Pubkey 的引用，值是 AccountInfo&lt;’info&gt; 的引用。当你从 accounts 中获取某个账户信息时，返回的是 Option&lt;&amp;&amp;AccountInfo&lt;’info&gt;&gt;，即对 AccountInfo&lt;’info&gt; 的引用的引用。</p>
+<p>如果你直接在这个引用上使用 .clone()，它只会复制这个引用，而不是内部的 AccountInfo&lt;’info&gt; 对象。这会导致双重引用的问题，即你最终会得到的还是 &amp;&amp;AccountInfo&lt;’info&gt;，而不是你期望的 &amp;AccountInfo&lt;’info&gt;。</p>
+<h2 id="如何避免双重引用问题"><a href="#如何避免双重引用问题" class="headerlink" title="如何避免双重引用问题"></a>如何避免双重引用问题</h2><p>为了避免双重引用问题，你可以使用以下几种方法：</p>
+<ul>
+<li><p>**<code>使用 .to_owned()</code>**：<br><code>.to_owned()</code> 用于将借用的数据转换为拥有所有权的数据。对于 &amp;AccountInfo&lt;’info&gt;，它会创建一个新的 AccountInfo&lt;’info&gt; 实例，从而避免了双重引用问题。</p>
+</li>
+<li><p>**<code>解引用并克隆</code>**：<br>你可以先解引用，然后克隆内部的数据。例如，<code>*accounts.get(&amp;key).ok_or(ErrorCode::InvalidAccounts).clone()?</code>，但这通常不如 .to_owned() 简洁和高效。</p>
+</li>
+<li><p>**<code>直接解引用</code>**：<br>如果你只需要读取数据而不需要修改或复制整个对象，可以直接解引用并使用该数据。例如，<code>*accounts.get(&amp;key).ok_or(ErrorCode::InvalidAccounts)?</code>。</p>
+</li>
+</ul>
+<h2 id="为什么to-owned-更高效？"><a href="#为什么to-owned-更高效？" class="headerlink" title="为什么to_owned()更高效？"></a>为什么to_owned()更高效？</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 创建一个包含 Borrowed 数据的 OuterData</span></span><br><span class="line"><span class="keyword">let</span> <span class="variable">original</span> = OuterData &#123;</span><br><span class="line">    name: <span class="string">&quot;outer&quot;</span>.<span class="title function_ invoke__">to_string</span>(),</span><br><span class="line">    inner: InnerData &#123;</span><br><span class="line">        value: Cow::<span class="title function_ invoke__">Borrowed</span>(<span class="string">&quot;hello&quot;</span>),</span><br><span class="line">    &#125;,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">此时内存布局：</span><br><span class="line">original.name → <span class="string">&quot;outer&quot;</span> (堆内存)</span><br><span class="line">original.inner.value → <span class="string">&quot;hello&quot;</span> (静态内存，Borrowed)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>使用<code>clone()</code>:</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="variable">cloned</span> = original.<span class="title function_ invoke__">clone</span>();</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>clone()</code> 会递归克隆所有字段：<ul>
+<li>name: String：深拷贝堆内存中的字符串（分配新堆内存）。</li>
+<li>inner: InnerData：调用 InnerData 的 clone()：</li>
+<li>value: Cow::Borrowed(“hello”) → 仍然指向原始静态内存。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>使用<code>to_owned()</code>:</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="variable">owned</span> = original.<span class="title function_ invoke__">to_owned</span>();</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>to_owned()</code> 会按需复制 ：<ul>
+<li>name: String：已经是拥有所有权的类型，直接转移所有权（原堆内存，无需复制）。</li>
+<li>inner.value: Cow::Borrowed → 转换为 Cow::Owned，复制数据到堆内存。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>总结：<br><code>clone()</code> 是“傻瓜式”深拷贝 ：不管数据是否已拥有，都会递归复制。<br><code>to_owned()</code> 是“智能”所有权转换 ：仅复制必要的借用数据，最大化复用已有资源。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://example.com/2025/02/16/Solana%20%E5%90%88%E7%BA%A6%E5%BC%80%E5%8F%91%20-%20DeFi%20-%20Dex%20%E5%BC%80%E5%8F%91%E5%8D%81%E4%B8%80%EF%BC%9ALP%20Token%20Stake&Unstake%EF%BC%88%E5%8D%95%E4%B8%80%E5%A5%96%E5%8A%B1%E6%B1%A0%EF%BC%89/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1795,176 +2022,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2025/02/09/Solana-Dex-Admin/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2025/02/09/Solana-Dex-Admin/" itemprop="url">Solana 合约开发 - DeFi - Dex 开发二：Admin</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2025-02-09T17:14:12+08:00">
-                2025-02-09
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Solana%E5%90%88%E7%BA%A6%E5%BC%80%E5%8F%91-DeFi-Dex/" itemprop="url" rel="index">
-                    <span itemprop="name">Solana合约开发-DeFi-Dex</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>本章节介绍如何创建 <code>Admin</code>,<code>Admin</code>或管理员角色通常是指具有特殊权限的账户，用于执行关键操作和维护系统的正常运行。这些操作可能包括但不限于参数调整、紧急情况处理、安全更新等,接下来通过代码一起学习。</p>
-<h1 id="合约代码："><a href="#合约代码：" class="headerlink" title="合约代码："></a>合约代码：</h1><p>&#96;anchor&#x2F;programs&#x2F;swap&#x2F;src&#x2F;states&#x2F;admin.rs:</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> anchor_lang::prelude::*;</span><br><span class="line"><span class="keyword">use</span> anchor_spl::token::&#123;<span class="keyword">self</span>, Token, TokenAccount&#125;;</span><br><span class="line"></span><br><span class="line"><span class="meta">#[account]</span></span><br><span class="line"><span class="meta">#[derive(InitSpace, Debug)]</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">struct</span> <span class="title class_">Admin</span> &#123;</span><br><span class="line">    <span class="keyword">pub</span> authority: Pubkey,</span><br><span class="line">    <span class="keyword">pub</span> permissions: <span class="type">u8</span>,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">impl</span> <span class="title class_">Admin</span> &#123;</span><br><span class="line">	<span class="comment">//通过设置哪位为1来控制权限</span></span><br><span class="line">    <span class="keyword">pub</span> <span class="keyword">const</span> PERMISSION_UPDATE_PERMISSIONS: <span class="type">u8</span> = <span class="number">1</span> &lt;&lt; <span class="number">0</span>; <span class="comment">// 00000001</span></span><br><span class="line">    <span class="keyword">pub</span> <span class="keyword">const</span> PERMISSION_ADD_POOL: <span class="type">u8</span> = <span class="number">1</span> &lt;&lt; <span class="number">1</span>; <span class="comment">// 00000010</span></span><br><span class="line">    <span class="keyword">pub</span> <span class="keyword">const</span> PERMISSION_REMOVE_POOL: <span class="type">u8</span> = <span class="number">1</span> &lt;&lt; <span class="number">2</span>; <span class="comment">// 00000100</span></span><br><span class="line">    <span class="keyword">pub</span> <span class="keyword">const</span> PERMISSION_UPDATE_Config: <span class="type">u8</span> = <span class="number">1</span> &lt;&lt; <span class="number">3</span>; <span class="comment">// 00001000</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">pub</span> <span class="keyword">const</span> ADMIN_SEED_PREFIX: &amp;<span class="type">str</span> = <span class="string">&quot;admin_v1&quot;</span>;</span><br><span class="line">    </span><br><span class="line"></span><br><span class="line">    <span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">init</span>(&amp;<span class="keyword">mut</span> <span class="keyword">self</span>, authority: Pubkey, permissions: <span class="type">u8</span>) <span class="punctuation">-&gt;</span> <span class="type">Result</span>&lt;()&gt; &#123;</span><br><span class="line">        <span class="keyword">self</span>.authority = authority;</span><br><span class="line">        <span class="keyword">self</span>.permissions = permissions;</span><br><span class="line">        <span class="title function_ invoke__">Ok</span>(())</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">has_permission</span>(&amp;<span class="keyword">self</span>, permission: <span class="type">u8</span>) <span class="punctuation">-&gt;</span> <span class="type">bool</span> &#123;</span><br><span class="line">        <span class="keyword">self</span>.permissions &amp; permission != <span class="number">0</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-<p>&#96;anchor&#x2F;programs&#x2F;swap&#x2F;src&#x2F;accounts_all&#x2F;admin.rs</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">use</span> anchor_lang::prelude::*;</span><br><span class="line"><span class="keyword">use</span> crate::states::*;</span><br><span class="line"></span><br><span class="line"><span class="meta">#[derive(Accounts)]</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">struct</span> <span class="title class_">InitAdmin</span>&lt;<span class="symbol">&#x27;info</span>&gt; &#123;</span><br><span class="line">    <span class="meta">#[account(</span></span><br><span class="line"><span class="meta">        init_if_needed,</span></span><br><span class="line"><span class="meta">        payer = authority,</span></span><br><span class="line"><span class="meta">        space = 8 + Admin::INIT_SPACE,</span></span><br><span class="line"><span class="meta">        seeds = [</span></span><br><span class="line"><span class="meta">            Admin::ADMIN_SEED_PREFIX.as_bytes(),</span></span><br><span class="line"><span class="meta">            authority.key().as_ref(),</span></span><br><span class="line"><span class="meta">        ]</span>, </span><br><span class="line">        bump,</span><br><span class="line">        </span><br><span class="line">    )]</span><br><span class="line">    <span class="keyword">pub</span> admin: <span class="type">Box</span>&lt;Account&lt;<span class="symbol">&#x27;info</span>, Admin&gt;&gt;,</span><br><span class="line"></span><br><span class="line">    <span class="meta">#[account(mut)]</span></span><br><span class="line">    <span class="keyword">pub</span> authority: Signer&lt;<span class="symbol">&#x27;info</span>&gt;,</span><br><span class="line">    <span class="keyword">pub</span> system_program: Program&lt;<span class="symbol">&#x27;info</span>, System&gt;,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">#[derive(Accounts)]</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">struct</span> <span class="title class_">UpdatePermissions</span>&lt;<span class="symbol">&#x27;info</span>&gt; &#123;</span><br><span class="line">    <span class="meta">#[account(</span></span><br><span class="line"><span class="meta">        mut, </span></span><br><span class="line"><span class="meta">    )]</span></span><br><span class="line">    <span class="keyword">pub</span> admin: <span class="type">Box</span>&lt;Account&lt;<span class="symbol">&#x27;info</span>, Admin&gt;&gt;,</span><br><span class="line"></span><br><span class="line">    <span class="meta">#[account(mut)]</span></span><br><span class="line">    <span class="keyword">pub</span> authority: Signer&lt;<span class="symbol">&#x27;info</span>&gt;,</span><br><span class="line">    <span class="keyword">pub</span> system_program: Program&lt;<span class="symbol">&#x27;info</span>, System&gt;,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">#[derive(Accounts)]</span></span><br><span class="line"><span class="meta">#[instruction(index: u16)]</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">struct</span> <span class="title class_">UpdateAmmConfig</span>&lt;<span class="symbol">&#x27;info</span>&gt; &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">#[account(mut)]</span></span><br><span class="line">    <span class="keyword">pub</span> owner: Signer&lt;<span class="symbol">&#x27;info</span>&gt;,</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 讲下Box，使用 Box 可以让你在堆上分配这些数据，而不是直接在栈上，从而避免栈溢出等问题，当然不用Box也不是不行。</span></span><br><span class="line">	<span class="meta">#[account(</span></span><br><span class="line"><span class="meta">        mut, </span></span><br><span class="line"><span class="meta">        seeds = [</span></span><br><span class="line"><span class="meta">            Admin::ADMIN_SEED_PREFIX.as_bytes(),</span></span><br><span class="line"><span class="meta">            owner.key().as_ref(),          </span></span><br><span class="line"><span class="meta">        ]</span>, </span><br><span class="line">        bump,</span><br><span class="line">    )]</span><br><span class="line">    <span class="keyword">pub</span> admin: <span class="type">Box</span>&lt;Account&lt;<span class="symbol">&#x27;info</span>, Admin&gt;&gt;,</span><br><span class="line">    </span><br><span class="line">   </span><br><span class="line">    </span><br><span class="line">    <span class="meta">#[account(</span></span><br><span class="line"><span class="meta">        mut,</span></span><br><span class="line"><span class="meta">        seeds = [</span></span><br><span class="line"><span class="meta">            AmmConfig::CONFIG_PREFIX_SEED.as_bytes(),</span></span><br><span class="line"><span class="meta">            &amp;index.to_be_bytes()</span></span><br><span class="line"><span class="meta">        ]</span>,</span><br><span class="line">        bump,</span><br><span class="line">    )]</span><br><span class="line">    <span class="keyword">pub</span> config: AccountLoader&lt;<span class="symbol">&#x27;info</span>, AmmConfig&gt;,</span><br><span class="line"></span><br><span class="line">    <span class="comment">/// CHECK: pool vault and lp mint authority</span></span><br><span class="line">    <span class="meta">#[account(</span></span><br><span class="line"><span class="meta">        init,</span></span><br><span class="line"><span class="meta">        payer = owner,</span></span><br><span class="line"><span class="meta">        space = AUTHORITY_SPACE,</span></span><br><span class="line"><span class="meta">        seeds = [</span></span><br><span class="line"><span class="meta">            crate::AUTH_SEED.as_bytes(),</span></span><br><span class="line"><span class="meta">        ]</span>,</span><br><span class="line">        bump,</span><br><span class="line">    )]</span><br><span class="line">    <span class="keyword">pub</span> authority: UncheckedAccount&lt;<span class="symbol">&#x27;info</span>&gt;,</span><br><span class="line"></span><br><span class="line">    <span class="keyword">pub</span> system_program: Program&lt;<span class="symbol">&#x27;info</span>, System&gt;,</span><br><span class="line"></span><br><span class="line">    </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> std::cell::RefMut;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> crate::accounts_all::*;</span><br><span class="line"><span class="keyword">use</span> crate::calculate::*;</span><br><span class="line"><span class="keyword">use</span> crate::error::ErrorCode;</span><br><span class="line"><span class="keyword">use</span> crate::states::AmmConfig;</span><br><span class="line"><span class="keyword">use</span> crate::states::*;</span><br><span class="line"><span class="keyword">use</span> anchor_lang::prelude::*;</span><br><span class="line"></span><br><span class="line"><span class="meta">#[derive(AnchorSerialize, AnchorDeserialize, Clone, PartialEq, Eq)]</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">enum</span> <span class="title class_">ConfigValue</span> &#123;</span><br><span class="line">    <span class="title function_ invoke__">Bool</span>(<span class="type">bool</span>),</span><br><span class="line">    <span class="title function_ invoke__">U64</span>(<span class="type">u64</span>),</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 初始化管理员</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">init_admin</span>(ctx: Context&lt;InitAdmin&gt;, permissions: <span class="type">u8</span>) <span class="punctuation">-&gt;</span> <span class="type">Result</span>&lt;()&gt; &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">admin</span> = &amp;<span class="keyword">mut</span> ctx.accounts.admin;</span><br><span class="line">    <span class="keyword">if</span> admin.authority != Pubkey::<span class="title function_ invoke__">default</span>() &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="title function_ invoke__">Err</span>(error!(ErrorCode::AlreadyInitialized));</span><br><span class="line">    &#125;</span><br><span class="line">    admin.<span class="title function_ invoke__">init</span>(*ctx.accounts.authority.key, permissions)?;</span><br><span class="line">    <span class="title function_ invoke__">Ok</span>(())</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 更新管理员权限</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">update_admin_permissions</span>(</span><br><span class="line">    ctx: Context&lt;UpdatePermissions&gt;,</span><br><span class="line">    new_permissions: <span class="type">u8</span>,</span><br><span class="line">) <span class="punctuation">-&gt;</span> <span class="type">Result</span>&lt;()&gt; &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">admin</span> = &amp;<span class="keyword">mut</span> ctx.accounts.admin;</span><br><span class="line">    <span class="comment">//判断权限</span></span><br><span class="line">    <span class="keyword">if</span> !admin.<span class="title function_ invoke__">has_permission</span>(<span class="number">1</span> &lt;&lt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="title function_ invoke__">Err</span>(error!(ErrorCode::Unauthorized));</span><br><span class="line">    &#125;</span><br><span class="line">    admin.permissions = new_permissions;</span><br><span class="line">    <span class="title function_ invoke__">Ok</span>(())</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//更新AMM配置</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">update_amm_config</span>(ctx: Context&lt;UpdateAmmConfig&gt;, num: <span class="type">u8</span>, value: <span class="type">u64</span>) <span class="punctuation">-&gt;</span> <span class="type">Result</span>&lt;()&gt; &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">admin</span> = &amp;ctx.accounts.admin;</span><br><span class="line">    <span class="comment">//判断权限</span></span><br><span class="line">    <span class="keyword">if</span> !admin.<span class="title function_ invoke__">has_permission</span>(<span class="number">1</span> &lt;&lt; <span class="number">3</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="title function_ invoke__">Err</span>(error!(ErrorCode::Unauthorized));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">amm_config</span> = ctx.accounts.config.<span class="title function_ invoke__">load_mut</span>()?;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">match_num</span> = <span class="title function_ invoke__">Some</span>(num);</span><br><span class="line">    <span class="keyword">match</span> match_num &#123;</span><br><span class="line">        <span class="title function_ invoke__">Some</span>(<span class="number">0</span>) =&gt; <span class="title function_ invoke__">update_amm_trade_fee_rate</span>(&amp;<span class="keyword">mut</span> amm_config, value),</span><br><span class="line">        <span class="title function_ invoke__">Some</span>(<span class="number">1</span>) =&gt; <span class="title function_ invoke__">update_amm_protocol_fee_rate</span>(&amp;<span class="keyword">mut</span> amm_config, value),</span><br><span class="line">        <span class="title function_ invoke__">Some</span>(<span class="number">2</span>) =&gt; <span class="title function_ invoke__">update_amm_fund_fee_rate</span>(&amp;<span class="keyword">mut</span> amm_config, value),</span><br><span class="line">        <span class="title function_ invoke__">Some</span>(<span class="number">3</span>) =&gt; &#123;</span><br><span class="line">            <span class="keyword">let</span> <span class="variable">new_procotol_owner</span> = *ctx.remaining_accounts.<span class="title function_ invoke__">iter</span>().<span class="title function_ invoke__">next</span>().<span class="title function_ invoke__">unwrap</span>().key;</span><br><span class="line">            <span class="title function_ invoke__">set_amm_new_protocol_owner</span>(&amp;<span class="keyword">mut</span> amm_config, new_procotol_owner)?;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="title function_ invoke__">Some</span>(<span class="number">4</span>) =&gt; &#123;</span><br><span class="line">            <span class="keyword">let</span> <span class="variable">new_fund_owner</span> = *ctx.remaining_accounts.<span class="title function_ invoke__">iter</span>().<span class="title function_ invoke__">next</span>().<span class="title function_ invoke__">unwrap</span>().key;</span><br><span class="line">            <span class="title function_ invoke__">set_amm_new_fund_owner</span>(&amp;<span class="keyword">mut</span> amm_config, new_fund_owner)?;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="title function_ invoke__">Some</span>(<span class="number">5</span>) =&gt; amm_config.create_pool_fee = value,</span><br><span class="line">        _ =&gt; <span class="keyword">return</span> err!(ErrorCode::InvalidInput),</span><br><span class="line">        <span class="comment">//以此类推，以后还能继续扩展下去</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="title function_ invoke__">Ok</span>(())</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">update_amm_protocol_fee_rate</span>(amm_config: &amp;<span class="keyword">mut</span> RefMut&lt;AmmConfig&gt;, protocol_fee_rate: <span class="type">u64</span>) &#123;</span><br><span class="line">    <span class="built_in">assert!</span>(protocol_fee_rate &lt;= FEE_RATE_VALUE);</span><br><span class="line">    <span class="built_in">assert!</span>(protocol_fee_rate + amm_config.fund_fee_rate &lt;= FEE_RATE_VALUE);</span><br><span class="line">    amm_config.protocol_fee_rate = protocol_fee_rate;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">update_amm_trade_fee_rate</span>(amm_config: &amp;<span class="keyword">mut</span> RefMut&lt;AmmConfig&gt;, trade_fee_rate: <span class="type">u64</span>) &#123;</span><br><span class="line">    <span class="built_in">assert!</span>(trade_fee_rate &lt; FEE_RATE_VALUE);</span><br><span class="line">    amm_config.trade_fee_rate = trade_fee_rate;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">update_amm_fund_fee_rate</span>(amm_config: &amp;<span class="keyword">mut</span> RefMut&lt;AmmConfig&gt;, fund_fee_rate: <span class="type">u64</span>) &#123;</span><br><span class="line">    <span class="built_in">assert!</span>(fund_fee_rate &lt;= FEE_RATE_VALUE);</span><br><span class="line">    <span class="built_in">assert!</span>(fund_fee_rate + amm_config.protocol_fee_rate &lt;= FEE_RATE_VALUE);</span><br><span class="line">    amm_config.fund_fee_rate = fund_fee_rate;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">set_amm_new_protocol_owner</span>(amm_config: &amp;<span class="keyword">mut</span> RefMut&lt;AmmConfig&gt;, new_owner: Pubkey) <span class="punctuation">-&gt;</span> <span class="type">Result</span>&lt;()&gt; &#123;</span><br><span class="line">    require_keys_neq!(new_owner, Pubkey::<span class="title function_ invoke__">default</span>());</span><br><span class="line">    amm_config.protocol_owner = new_owner;</span><br><span class="line">    <span class="title function_ invoke__">Ok</span>(())</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">set_amm_new_fund_owner</span>(</span><br><span class="line">    amm_config: &amp;<span class="keyword">mut</span> RefMut&lt;AmmConfig&gt;,</span><br><span class="line">    new_fund_owner: Pubkey,</span><br><span class="line">) <span class="punctuation">-&gt;</span> <span class="type">Result</span>&lt;()&gt; &#123;</span><br><span class="line"></span><br><span class="line">    require_keys_neq!(new_fund_owner, Pubkey::<span class="title function_ invoke__">default</span>());</span><br><span class="line">    amm_config.fund_owner = new_fund_owner;</span><br><span class="line">    <span class="title function_ invoke__">Ok</span>(())</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>定义了一些错误提示：<br>anchor&#x2F;programs&#x2F;swap&#x2F;src&#x2F;error.rs：</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> anchor_lang::prelude::*;</span><br><span class="line"></span><br><span class="line"><span class="meta">#[error_code]</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">enum</span> <span class="title class_">ErrorCode</span> &#123;</span><br><span class="line">    <span class="meta">#[msg(<span class="string">&quot;Not approved&quot;</span>)]</span></span><br><span class="line">    NotApproved,</span><br><span class="line"></span><br><span class="line">    <span class="meta">#[msg(<span class="string">&quot;Input account owner is not the program address&quot;</span>)]</span></span><br><span class="line">    InvalidOwner,</span><br><span class="line"></span><br><span class="line">    <span class="meta">#[msg(<span class="string">&quot;Input token account empty,please provide more token&quot;</span>)]</span></span><br><span class="line">    EmptySupply,</span><br><span class="line"></span><br><span class="line">    <span class="meta">#[msg(<span class="string">&quot;InvalidInput&quot;</span>)]</span></span><br><span class="line">    InvalidInput,</span><br><span class="line"></span><br><span class="line">    <span class="meta">#[msg(<span class="string">&quot;Address of the provided lp token mint is incorrect&quot;</span>)]</span></span><br><span class="line">    IncorrectLpMint,</span><br><span class="line"></span><br><span class="line">    <span class="meta">#[msg(<span class="string">&quot;Exceeds desired slippage limit&quot;</span>)]</span></span><br><span class="line">    ExceededSlippage,</span><br><span class="line"></span><br><span class="line">    <span class="meta">#[msg(<span class="string">&quot;Given pool token amount results in zero trading tokens&quot;</span>)]</span></span><br><span class="line">    ZeroTradingTokens,</span><br><span class="line"></span><br><span class="line">    <span class="meta">#[msg(<span class="string">&quot;Not support token_2022 mint extension&quot;</span>)]</span></span><br><span class="line">    NotSupportMint,</span><br><span class="line"></span><br><span class="line">    <span class="meta">#[msg(<span class="string">&quot;invaild vault&quot;</span>)]</span></span><br><span class="line">    InvalidVault,</span><br><span class="line"></span><br><span class="line">    <span class="meta">#[msg(<span class="string">&quot;Init lp amount is too less(Because 100 amount lp will be locked)&quot;</span>)]</span></span><br><span class="line">    InitLpAmountTooLess,</span><br><span class="line"></span><br><span class="line">    <span class="meta">#[msg(<span class="string">&quot;Unauthorized access&quot;</span>)]</span></span><br><span class="line">    Unauthorized,</span><br><span class="line"></span><br><span class="line">    <span class="meta">#[msg(<span class="string">&quot;The Admin account already initialized&quot;</span>)]</span></span><br><span class="line">    AlreadyInitialized,</span><br><span class="line"></span><br><span class="line">    <span class="meta">#[msg(<span class="string">&quot;AMM ouput price is too low than oracle price&quot;</span>)]</span></span><br><span class="line">    InvalidArgument,</span><br><span class="line"></span><br><span class="line">    <span class="meta">#[msg(<span class="string">&quot;PDA is invalid&quot;</span>)]</span></span><br><span class="line">    InvalidPDA,</span><br><span class="line"></span><br><span class="line">    <span class="meta">#[msg(<span class="string">&quot;Lack of necessary accounts&quot;</span>)]</span></span><br><span class="line">    InvalidAccounts,</span><br><span class="line"></span><br><span class="line">    <span class="meta">#[msg(<span class="string">&quot;Insufficient balance&quot;</span>)]</span></span><br><span class="line">    InsufficientBalance,</span><br><span class="line"></span><br><span class="line">    <span class="meta">#[msg(<span class="string">&quot;No Price Available&quot;</span>)]</span></span><br><span class="line">    NoPriceAvailable,</span><br><span class="line"></span><br><span class="line">    <span class="meta">#[msg(<span class="string">&quot;Calculation Overflow&quot;</span>)]</span></span><br><span class="line">    CalculationOverflow,</span><br><span class="line"></span><br><span class="line">    <span class="meta">#[msg(<span class="string">&quot;Invaild Token&quot;</span>)]</span></span><br><span class="line">    InvalidToken,</span><br><span class="line"></span><br><span class="line">    <span class="meta">#[msg(<span class="string">&quot;Invaild PoolState&quot;</span>)]</span></span><br><span class="line">    InvalidPoolState,</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 新增错误代码</span></span><br><span class="line">    <span class="meta">#[msg(<span class="string">&quot;Invalid seeds provided for PDA&quot;</span>)]</span></span><br><span class="line">    InvalidSeeds,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>执行Anchor命令：</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">anchor build &amp;&amp; anchor deploy</span><br></pre></td></tr></table></figure>
-
-<h1 id="前端TS测试代码："><a href="#前端TS测试代码：" class="headerlink" title="前端TS测试代码："></a>前端TS测试代码：</h1><p>获取本地钱包：<br><code>anchor/example/api/wallet.ts</code>:</p>
-<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> * <span class="keyword">as</span> anchor <span class="keyword">from</span> <span class="string">&quot;@coral-xyz/anchor&quot;</span></span><br><span class="line"><span class="keyword">import</span> &#123; <span class="title class_">Program</span>&#125; <span class="keyword">from</span> <span class="string">&quot;@coral-xyz/anchor&quot;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; swap &#125; <span class="keyword">from</span> <span class="string">&quot;../../target/types/swap&quot;</span>;</span><br><span class="line">  </span><br><span class="line"><span class="keyword">const</span> provider = anchor.<span class="property">AnchorProvider</span>.<span class="title function_">env</span>();</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;provider:&quot;</span>, provider.<span class="property">wallet</span>.<span class="property">publicKey</span>.<span class="title function_">toBase58</span>());</span><br><span class="line">anchor.<span class="title function_">setProvider</span>(provider);</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> program = anchor.<span class="property">workspace</span>.<span class="property">swap</span> <span class="keyword">as</span> <span class="title class_">Program</span>&lt;swap&gt; ;</span><br><span class="line"><span class="keyword">const</span> wallet = provider.<span class="property">wallet</span> <span class="keyword">as</span> anchor.<span class="property">Wallet</span>;</span><br><span class="line"><span class="keyword">const</span> connection = provider.<span class="property">connection</span>;</span><br><span class="line"><span class="keyword">export</span> &#123; program, provider,connection&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">//定义并导出 useDefaultWallet 函数。</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">function</span> <span class="title function_">useDefaultWallet</span>(<span class="params"></span>) &#123;</span><br><span class="line">	<span class="keyword">return</span> anchor.<span class="property">Wallet</span>.<span class="title function_">local</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>编写测试方法：<br>&#96;anchor&#x2F;example&#x2F;api&#x2F;admin.ts</p>
-<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> * <span class="keyword">as</span> anchor <span class="keyword">from</span> <span class="string">&#x27;@coral-xyz/anchor&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; program &#125; <span class="keyword">from</span> <span class="string">&#x27;./wallet&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//初始化Admin</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">async</span> <span class="keyword">function</span> <span class="title function_">initAdmin</span>(<span class="params"><span class="attr">wallet</span>: anchor.<span class="title class_">Wallet</span>, <span class="attr">permission</span>: <span class="built_in">number</span></span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> [adminPda] = anchor.<span class="property">web3</span>.<span class="property">PublicKey</span>.<span class="title function_">findProgramAddressSync</span>(</span><br><span class="line">    [<span class="title class_">Buffer</span>.<span class="title function_">from</span>(<span class="string">&#x27;admin_v1&#x27;</span>), wallet.<span class="property">publicKey</span>.<span class="title function_">toBuffer</span>()],</span><br><span class="line">    program.<span class="property">programId</span>,</span><br><span class="line">  );</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;admin Pda is:&#x27;</span>, adminPda.<span class="title function_">toString</span>());</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> [</span><br><span class="line">    adminPda,</span><br><span class="line">    <span class="keyword">await</span> program.<span class="property">methods</span></span><br><span class="line">      .<span class="title function_">initAdmin</span>(permission)</span><br><span class="line">      .<span class="title function_">accounts</span>(&#123;</span><br><span class="line">        <span class="attr">authority</span>: wallet.<span class="property">publicKey</span>,</span><br><span class="line">      &#125;)</span><br><span class="line">      .<span class="title function_">signers</span>([wallet.<span class="property">payer</span>])</span><br><span class="line">      .<span class="title function_">rpc</span>(),</span><br><span class="line">  ];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//获取Admin数据</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">async</span> <span class="keyword">function</span> <span class="title function_">getAdmin</span>(<span class="params"><span class="attr">wallet</span>: anchor.<span class="title class_">Wallet</span></span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> [adminPda] = anchor.<span class="property">web3</span>.<span class="property">PublicKey</span>.<span class="title function_">findProgramAddressSync</span>(</span><br><span class="line">    [<span class="title class_">Buffer</span>.<span class="title function_">from</span>(<span class="string">&#x27;admin_v1&#x27;</span>), wallet.<span class="property">publicKey</span>.<span class="title function_">toBuffer</span>()],</span><br><span class="line">    program.<span class="property">programId</span>,</span><br><span class="line">  );</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">await</span> program.<span class="property">account</span>.<span class="property">admin</span>.<span class="title function_">fetch</span>(adminPda);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//更新Admin权限</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">async</span> <span class="keyword">function</span> <span class="title function_">updateAdmin</span>(<span class="params"><span class="attr">wallet</span>: anchor.<span class="title class_">Wallet</span>, <span class="attr">permission</span>: <span class="built_in">number</span></span>) &#123;</span><br><span class="line">	<span class="keyword">const</span> [adminPda] = anchor.<span class="property">web3</span>.<span class="property">PublicKey</span>.<span class="title function_">findProgramAddressSync</span>(</span><br><span class="line">	    [<span class="title class_">Buffer</span>.<span class="title function_">from</span>(<span class="string">&#x27;admin_v1&#x27;</span>), wallet.<span class="property">publicKey</span>.<span class="title function_">toBuffer</span>()],</span><br><span class="line">	    program.<span class="property">programId</span>,</span><br><span class="line">	  );</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">await</span> program.<span class="property">methods</span></span><br><span class="line">    .<span class="title function_">updateAdminPermissions</span>(permission)</span><br><span class="line">    .<span class="title function_">accounts</span>(&#123;</span><br><span class="line">      <span class="attr">authority</span>: wallet.<span class="property">publicKey</span>,</span><br><span class="line">      <span class="attr">admin</span>: adminPda,</span><br><span class="line">    &#125;)</span><br><span class="line">    .<span class="title function_">signers</span>([wallet.<span class="property">payer</span>])</span><br><span class="line">    .<span class="title function_">rpc</span>();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//至于更新 AmmConfig，则在上一节 Config 的代码中</span></span><br></pre></td></tr></table></figure>
-
-
-<p>调用测试方法：<br><code>anchor/example/index.ts</code></p>
-<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> * <span class="keyword">as</span> anchor <span class="keyword">from</span> <span class="string">&#x27;@coral-xyz/anchor&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; connection, program, provider, useDefaultWallet &#125; <span class="keyword">from</span> <span class="string">&#x27;./api/wallet&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; initAdmin, updateAdmin, getAdmin &#125; <span class="keyword">from</span> <span class="string">&#x27;./api/admin&#x27;</span>;</span><br><span class="line"></span><br><span class="line">(<span class="title function_">async</span> () =&gt; &#123;</span><br><span class="line">	<span class="comment">// 获取默认钱包</span></span><br><span class="line">	<span class="keyword">const</span> defaultWallet = <span class="title function_">useDefaultWallet</span>();</span><br><span class="line"></span><br><span class="line">	<span class="comment">//初始化管理员</span></span><br><span class="line">  <span class="keyword">const</span> [init_admin] = <span class="keyword">await</span> <span class="title function_">initAdmin</span>(defaultWallet, <span class="number">1</span>);</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(init_admin);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 获取管理员对象信息</span></span><br><span class="line">  <span class="keyword">const</span> admin = <span class="keyword">await</span> <span class="title function_">getAdmin</span>(defaultWallet);</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;admin is&#x27;</span>, admin);</span><br><span class="line"></span><br><span class="line">  <span class="comment">//更新管理员权限</span></span><br><span class="line">  <span class="keyword">const</span> update_admin = <span class="keyword">await</span> <span class="title function_">updateAdmin</span>(defaultWallet, <span class="number">8</span>);</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(update_admin);</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-
-<p>执行Anchor命令：</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">anchor run api</span><br></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2015,7 +2072,7 @@
               
                 <a href="/archives/%20%7C%7C%20archive">
               
-                  <span class="site-state-item-count">52</span>
+                  <span class="site-state-item-count">53</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2026,7 +2083,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-count">8</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -2037,7 +2094,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-count">11</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

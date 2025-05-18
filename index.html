@@ -262,6 +262,153 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2025/05/17/%E6%A0%88%E5%9F%BA%E7%A1%80/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2025/05/17/%E6%A0%88%E5%9F%BA%E7%A1%80/" itemprop="url">栈基础</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2025-05-17T23:43:57+08:00">
+                2025-05-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%AE%97%E6%B3%95-Rust-Go-Ts/" itemprop="url" rel="index">
+                    <span itemprop="name">算法(Rust\Go\Ts)</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="题目："><a href="#题目：" class="headerlink" title="题目："></a>题目：</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">// 请你实现一个栈。栈的核心特性：LIFO（后进先出），最后压入栈的数据，最先弹出。</span><br><span class="line">// 操作：</span><br><span class="line">// push(x) 将 x 压入栈中,保证x为int型整数</span><br><span class="line">// pop() 输出栈顶，并让栈顶出栈</span><br><span class="line">// top() 输出栈顶,栈顶不出栈</span><br><span class="line"></span><br><span class="line">// 输入描述：</span><br><span class="line">// 第一行为一个正整数 n ，代表操作次数。(1 ≤ n ≤ 1000)</span><br><span class="line">// 接下来的n ，每行为一个字符串，代表一个操作。保证操作是题目描述中三种中的一种。</span><br><span class="line"></span><br><span class="line">// 输出描述：</span><br><span class="line">// 如果操作为push，则不输出任何东西。</span><br><span class="line">// 如果为另外两种，若栈为空，则输出 &quot;error“</span><br><span class="line">// 否则按对应操作输出。</span><br><span class="line"></span><br><span class="line">// 示例：</span><br><span class="line">// 输入：</span><br><span class="line">// 6</span><br><span class="line">// push 1</span><br><span class="line">// pop</span><br><span class="line">// top</span><br><span class="line">// push 2</span><br><span class="line">// push 3</span><br><span class="line">// pop</span><br><span class="line"></span><br><span class="line">// 输出：</span><br><span class="line">// 1</span><br><span class="line">// error</span><br><span class="line">// 3</span><br></pre></td></tr></table></figure>
+
+<h1 id="Rust实现："><a href="#Rust实现：" class="headerlink" title="Rust实现："></a>Rust实现：</h1><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> std::io::&#123;<span class="keyword">self</span>, *&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">stack</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">stdin</span> = io::<span class="title function_ invoke__">stdin</span>();</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">reader</span> = stdin.<span class="title function_ invoke__">lock</span>();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">stack</span>: <span class="type">Vec</span>&lt;<span class="type">i32</span>&gt; = <span class="type">Vec</span>::<span class="title function_ invoke__">new</span>();</span><br><span class="line"></span><br><span class="line">    <span class="comment">//reader.lines()：这是从标准输入中一行一行地读取内容。</span></span><br><span class="line">    <span class="comment">// enumerate() 给每行加上索引 i，方便判断第一行是否是操作次数。</span></span><br><span class="line">    <span class="comment">// 举例输入是</span></span><br><span class="line">    <span class="comment">// 6</span></span><br><span class="line">    <span class="comment">// push 1</span></span><br><span class="line">    <span class="comment">// pop</span></span><br><span class="line">    <span class="comment">// top</span></span><br><span class="line">    <span class="comment">// i是0， line 是&quot;6&quot;，也就是6次操作</span></span><br><span class="line">    <span class="comment">// i是1， line 是&quot;push 1&quot;</span></span><br><span class="line">    <span class="comment">// i是2， line 是&quot;pop&quot;</span></span><br><span class="line">    <span class="comment">// i是3， line 是&quot;top&quot;</span></span><br><span class="line">    <span class="keyword">for</span> (i, line) <span class="keyword">in</span> reader.<span class="title function_ invoke__">lines</span>().<span class="title function_ invoke__">enumerate</span>() &#123;</span><br><span class="line">        <span class="keyword">let</span> <span class="variable">line</span> = line.<span class="title function_ invoke__">expect</span>(<span class="string">&quot;Failed to read line&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> i == <span class="number">0</span> &#123;</span><br><span class="line">            <span class="keyword">continue</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// line.trim()：去掉首尾空白字符。</span></span><br><span class="line">        <span class="comment">// split_whitespace()：根据空白符（空格、制表符等）分割字符串。</span></span><br><span class="line">        <span class="comment">// collect()：将迭代器转换成 Vec&lt;&amp;str&gt; 类型。</span></span><br><span class="line">        <span class="keyword">let</span> <span class="variable">parts</span>: <span class="type">Vec</span>&lt;&amp;<span class="type">str</span>&gt; = line.<span class="title function_ invoke__">trim</span>().<span class="title function_ invoke__">split_whitespace</span>().<span class="title function_ invoke__">collect</span>();</span><br><span class="line"></span><br><span class="line">        <span class="comment">//parts[0]根据第一个单词匹配指令：push、pop、top</span></span><br><span class="line">        <span class="keyword">match</span> parts[<span class="number">0</span>] &#123;</span><br><span class="line">            <span class="string">&quot;push&quot;</span> =&gt; &#123;</span><br><span class="line">                <span class="comment">//如果只有 &quot;push&quot; 没有数字，打印错误。</span></span><br><span class="line">                <span class="keyword">if</span> parts.<span class="title function_ invoke__">len</span>() &lt; <span class="number">2</span> &#123;</span><br><span class="line">                    <span class="keyword">continue</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="comment">//parts[1].parse::&lt;i32&gt;()：将第二个词转为 i32 整数。</span></span><br><span class="line">                <span class="keyword">let</span> <span class="variable">x</span> = parts[<span class="number">1</span>].parse::&lt;<span class="type">i32</span>&gt;().<span class="title function_ invoke__">expect</span>(<span class="string">&quot;Please input valid integer&quot;</span>);</span><br><span class="line">                stack.<span class="title function_ invoke__">push</span>(x);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="string">&quot;pop&quot;</span> =&gt; &#123;</span><br><span class="line">                <span class="keyword">if</span> stack.<span class="title function_ invoke__">is_empty</span>() &#123;</span><br><span class="line">                    <span class="built_in">println!</span>(<span class="string">&quot;error&quot;</span>);</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    <span class="keyword">let</span> <span class="variable">top</span> = stack.<span class="title function_ invoke__">pop</span>().<span class="title function_ invoke__">unwrap</span>();</span><br><span class="line">                    <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>, top);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="string">&quot;top&quot;</span> =&gt; &#123;</span><br><span class="line">                <span class="keyword">if</span> stack.<span class="title function_ invoke__">is_empty</span>() &#123;</span><br><span class="line">                    <span class="built_in">println!</span>(<span class="string">&quot;error&quot;</span>);</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    <span class="comment">//stack.last()：获取栈顶元素引用（不弹出）</span></span><br><span class="line">                    <span class="keyword">let</span> <span class="variable">top</span> = stack.<span class="title function_ invoke__">last</span>().<span class="title function_ invoke__">unwrap</span>();</span><br><span class="line">                    <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>, top);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            _ =&gt; &#123;</span><br><span class="line">                <span class="built_in">println!</span>(<span class="string">&quot;error&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="Go实现："><a href="#Go实现：" class="headerlink" title="Go实现："></a>Go实现：</h1><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;bufio&quot;</span></span><br><span class="line">	<span class="string">&quot;fmt&quot;</span></span><br><span class="line">	<span class="string">&quot;os&quot;</span></span><br><span class="line">	<span class="string">&quot;strconv&quot;</span></span><br><span class="line">	<span class="string">&quot;strings&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> stack []<span class="type">int</span></span><br><span class="line"></span><br><span class="line">	scanner := bufio.NewScanner(os.Stdin)</span><br><span class="line"></span><br><span class="line">	firstLine := <span class="literal">true</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> scanner.Scan() &#123;</span><br><span class="line">		line := strings.TrimSpace(scanner.Text())</span><br><span class="line">		<span class="keyword">if</span> firstLine &#123;</span><br><span class="line">			firstLine = <span class="literal">false</span></span><br><span class="line">			<span class="keyword">continue</span></span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		parts := strings.Split(line, <span class="string">&quot; &quot;</span>)</span><br><span class="line"></span><br><span class="line">		<span class="keyword">switch</span> parts[<span class="number">0</span>] &#123;</span><br><span class="line">		<span class="keyword">case</span> <span class="string">&quot;push&quot;</span>:</span><br><span class="line">			<span class="keyword">if</span> <span class="built_in">len</span>(parts) &lt; <span class="number">2</span> &#123;</span><br><span class="line">				fmt.Println(<span class="string">&quot;Error: push command requires a value&quot;</span>)</span><br><span class="line">				<span class="keyword">continue</span></span><br><span class="line">			&#125;</span><br><span class="line">			x, err := strconv.Atoi(parts[<span class="number">1</span>])</span><br><span class="line">			<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">				fmt.Println(<span class="string">&quot;Error: invalid value for push command&quot;</span>)</span><br><span class="line">				<span class="keyword">continue</span></span><br><span class="line">			&#125;</span><br><span class="line">			stack = <span class="built_in">append</span>(stack, x)</span><br><span class="line"></span><br><span class="line">		<span class="keyword">case</span> <span class="string">&quot;pop&quot;</span>:</span><br><span class="line">			<span class="keyword">if</span> <span class="built_in">len</span>(stack) == <span class="number">0</span> &#123;</span><br><span class="line">				fmt.Println(<span class="string">&quot;error&quot;</span>)</span><br><span class="line">			&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">			<span class="comment">//stack[:len(stack)-1]：Go 中切片操作，表示取从开始到倒数第二个元素（不包含最后一个）。</span></span><br><span class="line">			<span class="comment">//通过赋值 stack = ...，实现了“移除最后一个元素”的效果。因为go没pop方法		</span></span><br><span class="line">				top := stack[<span class="built_in">len</span>(stack)<span class="number">-1</span>]</span><br><span class="line">				stack = stack[:<span class="built_in">len</span>(stack)<span class="number">-1</span>]</span><br><span class="line">				fmt.Println(top)</span><br><span class="line">			&#125;</span><br><span class="line">		<span class="keyword">case</span> <span class="string">&quot;top&quot;</span>:</span><br><span class="line">			<span class="keyword">if</span> <span class="built_in">len</span>(stack) == <span class="number">0</span> &#123;</span><br><span class="line">				fmt.Println(<span class="string">&quot;error&quot;</span>)</span><br><span class="line">			&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">				fmt.Println(stack[<span class="built_in">len</span>(stack)<span class="number">-1</span>])</span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">default</span>:</span><br><span class="line">			<span class="keyword">break</span></span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="TypeScript实现"><a href="#TypeScript实现" class="headerlink" title="TypeScript实现"></a>TypeScript实现</h1><figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> * <span class="keyword">as</span> readline <span class="keyword">from</span> <span class="string">&quot;readline&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="attr">stack</span>: <span class="built_in">number</span>[] = [];</span><br><span class="line"></span><br><span class="line"><span class="comment">//readline.createInterface(...)：Node.js 提供的方法，用于创建一个逐行读取输入的接口。</span></span><br><span class="line"><span class="comment">//terminal: false：告诉 Node.js 输入/输出是否是面向终端的。设为 false 表示我们只是处理文本流，不需要特殊处理 Ctrl+C、Ctrl+D 等行为。</span></span><br><span class="line"><span class="keyword">const</span> rl = readline.<span class="title function_">createInterface</span>(&#123;</span><br><span class="line">  <span class="attr">input</span>: process.<span class="property">stdin</span>,</span><br><span class="line">  <span class="attr">output</span>: process.<span class="property">stdout</span>,</span><br><span class="line">  <span class="attr">terminal</span>: <span class="literal">false</span>,</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">//用来跳过第一行输入</span></span><br><span class="line"><span class="keyword">let</span> isFirstLine = <span class="literal">true</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//rl.on(&quot;line&quot;, ...) 监听输入流的每一行数据</span></span><br><span class="line"><span class="comment">//(line: string) =&gt; &#123; ... &#125;：回调函数，每次读取到一行文本时执行，line 是这一行的内容。</span></span><br><span class="line"><span class="comment">//isFirstLine = false;return;即：标记第一行已处理，并跳过后续逻辑。</span></span><br><span class="line">rl.<span class="title function_">on</span>(<span class="string">&quot;line&quot;</span>, <span class="function">(<span class="params"><span class="attr">line</span>: <span class="built_in">string</span></span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">if</span> (isFirstLine) &#123;</span><br><span class="line">    isFirstLine = <span class="literal">false</span>;</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">//\s+按任意空白符分割字符串。例如 &quot; push 123&quot; → [&quot;push&quot;, &quot;123&quot;]</span></span><br><span class="line">  <span class="keyword">const</span> parts = line.<span class="title function_">trim</span>().<span class="title function_">split</span>(<span class="regexp">/\s+/</span>);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">switch</span> (parts[<span class="number">0</span>]) &#123;</span><br><span class="line">    <span class="keyword">case</span> <span class="string">&quot;push&quot;</span>:</span><br><span class="line">      <span class="keyword">if</span> (parts.<span class="property">length</span> &lt; <span class="number">2</span>) &#123;</span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;Error: push command requires a value&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="comment">//parseInt(str, radix),JavaScript 内置函数，用于将字符串解析为整数。第二个参数 radix 表示进制，这里指定为 10</span></span><br><span class="line">      <span class="keyword">const</span> x = <span class="built_in">parseInt</span>(parts[<span class="number">1</span>], <span class="number">10</span>);</span><br><span class="line">      <span class="keyword">if</span> (<span class="built_in">isNaN</span>(x)) &#123;</span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;Error: push command requires a number&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      stack.<span class="title function_">push</span>(x);</span><br><span class="line">      <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="string">&quot;pop&quot;</span>:</span><br><span class="line">      <span class="keyword">if</span> (stack.<span class="property">length</span> === <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;error&quot;</span>);</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(stack.<span class="title function_">pop</span>());</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="string">&quot;top&quot;</span>:</span><br><span class="line">      <span class="keyword">if</span> (stack.<span class="property">length</span> === <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;error&quot;</span>);</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(stack[stack.<span class="property">length</span> - <span class="number">1</span>]);</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">break</span>;</span><br><span class="line">    <span class="attr">default</span>:</span><br><span class="line">      <span class="keyword">break</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://example.com/2025/05/17/web3.js%E7%B4%A2%E5%BC%95Solana%E9%93%BE%E4%B8%8A%E6%95%B0%E6%8D%AE%E6%A1%88%E4%BE%8B%E5%8F%82%E8%80%83/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1974,233 +2121,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2025/02/23/Solana%20%E5%90%88%E7%BA%A6%E5%BC%80%E5%8F%91%20-%20to_owned()%E4%B8%8Eto_clone()%E7%9A%84%E5%AF%B9%E6%AF%94/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2025/02/23/Solana%20%E5%90%88%E7%BA%A6%E5%BC%80%E5%8F%91%20-%20to_owned()%E4%B8%8Eto_clone()%E7%9A%84%E5%AF%B9%E6%AF%94/" itemprop="url">Solana 合约开发 - to_owned()与to_clone()的对比</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2025-02-23T23:12:59+08:00">
-                2025-02-23
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Solana%E5%90%88%E7%BA%A6%E5%BC%80%E5%8F%91/" itemprop="url" rel="index">
-                    <span itemprop="name">Solana合约开发</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="使用to-owned-和使用引用对比："><a href="#使用to-owned-和使用引用对比：" class="headerlink" title="使用to_owned()和使用引用对比："></a>使用to_owned()和使用引用对比：</h1><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="variable">accounts</span> = ctx</span><br><span class="line">    .remaining_accounts</span><br><span class="line">    .<span class="title function_ invoke__">iter</span>()</span><br><span class="line">    .<span class="title function_ invoke__">map</span>(|x| (x.<span class="title function_ invoke__">key</span>(), x.<span class="title function_ invoke__">to_owned</span>()))</span><br><span class="line">    .collect::&lt;HashMap&lt;_, _&gt;&gt;();</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><p><strong><code>所有权转移</code></strong> ：<br>x.to_owned() 会创建一个 AccountInfo 的深拷贝（即完全独立的副本），并将这个副本存储到 HashMap 中。<br>这意味着 accounts 拥有这些 AccountInfo 的所有权，而不是借用它们。</p>
-</li>
-<li><p><strong><code>生命周期</code></strong> ：<br>因为 accounts 存储的是深拷贝的数据，它的生命周期与 ctx.remaining_accounts 无关。<br>它可以独立存在，即使 ctx.remaining_accounts 被释放或超出作用域，accounts 仍然有效。</p>
-</li>
-<li><p><strong><code>内存开销</code></strong> ：<br>由于每个 AccountInfo 都被深拷贝，这会导致额外的内存分配和性能开销。</p>
-</li>
-<li><p><strong><code>适用场景</code></strong> ：<br>如果你需要在函数外部返回 accounts(例如<code>fn xxx() -&gt; HashMap&lt;Pubkey, AccountInfo&gt;</code>)，或者长时间持有这些数据，这种方法是合适的。<br>但要注意，Solana 程序中通常不建议频繁深拷贝数据，因为这会增加计算和内存开销。</p>
-</li>
-</ul>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="variable">accounts_map</span>: HashMap&lt;&amp;Pubkey, &amp;AccountInfo&lt;<span class="symbol">&#x27;info</span>&gt;&gt; = ctx</span><br><span class="line">    .remaining_accounts</span><br><span class="line">    .<span class="title function_ invoke__">iter</span>()</span><br><span class="line">    .<span class="title function_ invoke__">map</span>(|acc| (acc.key, acc))</span><br><span class="line">    .<span class="title function_ invoke__">collect</span>();</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><p><strong><code>借用而非拥有</code></strong> ：<br>这里没有调用 to_owned()，而是直接借用 ctx.remaining_accounts 中的 AccountInfo 引用。<br>accounts_map 中存储的是对 ctx.remaining_accounts 中元素的引用（&amp;AccountInfo&lt;’info&gt;），而不是独立的副本。</p>
-</li>
-<li><p><strong><code>生命周期绑定</code></strong> ：<br>accounts_map 的生命周期与 ctx.remaining_accounts 绑定。<br>如果 ctx.remaining_accounts 被释放或超出作用域，accounts_map 中的引用也会失效。<br>这是因为 accounts_map 中的引用依赖于 ctx.remaining_accounts 的生命周期。</p>
-</li>
-<li><p><strong><code>内存开销</code></strong> ：<br>由于只是存储引用，不会产生额外的内存分配，性能更高。</p>
-</li>
-<li><p><strong><code>适用场景</code></strong> ：<br>如果你只需要在当前函数的作用域内使用 accounts_map，并且不需要长期持有这些数据，这种方法更高效。<br>这是 Solana 程序中推荐的方式，因为它避免了不必要的深拷贝。</p>
-</li>
-</ul>
-<h1 id="使用to-owned-和clone-对比："><a href="#使用to-owned-和clone-对比：" class="headerlink" title="使用to_owned()和clone()对比："></a>使用to_owned()和clone()对比：</h1><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="variable">pool_input_vault_info</span> = accounts   <span class="comment">//HashMap&lt;&amp;Pubkey, &amp;AccountInfo&lt;&#x27;info&gt;&gt;</span></span><br><span class="line">	.<span class="title function_ invoke__">get</span>(&amp;pool_input_vault_key) <span class="comment">//Option&lt;&amp;&amp;AccountInfo&lt;&#x27;info&gt;&gt;</span></span><br><span class="line">    .<span class="title function_ invoke__">ok_or</span>(ErrorCode::InvalidAccounts)? <span class="comment">// &amp;&amp;AccountInfo</span></span><br><span class="line">    .<span class="title function_ invoke__">to_owned</span>(); <span class="comment">// &amp;AccountInfo</span></span><br></pre></td></tr></table></figure>
-<ul>
-<li><p>**<code>定义</code>**：to_owned() 是一个特定于某些类型的方法，通常用于将借用的数据（如引用）转换为拥有所有权的数据。</p>
-</li>
-<li><p>**<code>行为</code>**：<br><code>to_owned()</code> 通常用于从借用类型（如 &amp;str 或 &amp;AccountInfo）创建拥有所有权的类型（如 String 或 AccountInfo）。<br>它不会递归地复制所有子对象，而是根据具体类型的行为来决定如何复制数据。<br>对于字符串切片 &amp;str，to_owned() 返回一个 String；对于 &amp;AccountInfo，它返回一个 AccountInfo。</p>
-</li>
-<li><p>**<code>适用场景</code>**：<br>当你有一个借用的数据（如引用），并且你需要拥有该数据的所有权时。<br>当你需要避免双重引用的问题，或者当你需要确保后续代码可以安全地使用该数据时。</p>
-</li>
-<li><p>**<code>性能考虑</code>**：<br>to_owned() 通常比 clone() 更高效，因为它只复制必要的部分，而不是递归地复制整个对象树。<br>对于简单的类型（如字符串或基本数据结构），to_owned() 的性能开销较小。</p>
-</li>
-</ul>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="variable">pool_input_vault_info</span> = accounts</span><br><span class="line">    .<span class="title function_ invoke__">get</span>(&amp;pool_input_vault_key)</span><br><span class="line">    .<span class="title function_ invoke__">ok_or</span>(ErrorCode::InvalidAccounts)?</span><br><span class="line">    .<span class="title function_ invoke__">clone</span>();</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><p>**<code>定义</code>**：clone() 是一个 trait 方法，属于 Clone trait。它用于创建一个类型的新实例，该实例是原始实例的深度副本。</p>
-</li>
-<li><p>**<code>行为</code>**：<br>clone() 会递归地复制整个对象及其所有子对象。<br>对于实现了 Clone trait 的类型，clone() 可以用于任何类型的对象，包括复杂的数据结构（如 Vec<T>、HashMap&lt;K, V&gt; 等）。<br>如果类型中的字段也实现了 Clone，则这些字段也会被递归复制。</p>
-</li>
-<li><p>**<code>适用场景</code>**：<br>当你需要完全复制一个复杂的对象，并且不希望两个对象共享任何内部数据时。<br>当你需要确保两个变量拥有独立的状态时。</p>
-</li>
-<li><p>**<code>性能考虑</code>**：<br>clone() 可能会导致较高的性能开销，因为它需要递归地复制所有子对象。对于大型或复杂的数据结构，这可能会导致显著的性能下降。</p>
-</li>
-</ul>
-<p>在上面两段代码中<br>to_owned()：<br>适用于你只需要将引用转换为拥有所有权的对象，而不需要递归复制整个对象树的情况。<br>在代码中，accounts 是一个 HashMap&lt;&amp;Pubkey, &amp;AccountInfo&lt;’info&gt;&gt;，因此 to_owned() 可以将 &amp;&amp;AccountInfo&lt;’info&gt; 转换为 &amp;AccountInfo&lt;’info&gt;，从而避免双重引用问题。</p>
-<h2 id="双重引用问题："><a href="#双重引用问题：" class="headerlink" title="双重引用问题："></a>双重引用问题：</h2><p>在 Rust 中，双重引用（double reference）是指你有一个指向另一个引用的引用。例如，&amp;AccountInfo&lt;’info&gt; 是一个对 AccountInfo&lt;’info&gt; 的引用。</p>
-<h3 id="双重引用问题的背景"><a href="#双重引用问题的背景" class="headerlink" title="双重引用问题的背景"></a>双重引用问题的背景</h3><p>在之前的代码中，accounts 是一个 HashMap&lt;&amp;Pubkey, &amp;AccountInfo&lt;’info&gt;&gt;，即键是 Pubkey 的引用，值是 AccountInfo&lt;’info&gt; 的引用。当你从 accounts 中获取某个账户信息时，返回的是 Option&lt;&amp;&amp;AccountInfo&lt;’info&gt;&gt;，即对 AccountInfo&lt;’info&gt; 的引用的引用。</p>
-<p>如果你直接在这个引用上使用 .clone()，它只会复制这个引用，而不是内部的 AccountInfo&lt;’info&gt; 对象。这会导致双重引用的问题，即你最终会得到的还是 &amp;&amp;AccountInfo&lt;’info&gt;，而不是你期望的 &amp;AccountInfo&lt;’info&gt;。</p>
-<h2 id="如何避免双重引用问题"><a href="#如何避免双重引用问题" class="headerlink" title="如何避免双重引用问题"></a>如何避免双重引用问题</h2><p>为了避免双重引用问题，你可以使用以下几种方法：</p>
-<ul>
-<li><p>**<code>使用 .to_owned()</code>**：<br><code>.to_owned()</code> 用于将借用的数据转换为拥有所有权的数据。对于 &amp;AccountInfo&lt;’info&gt;，它会创建一个新的 AccountInfo&lt;’info&gt; 实例，从而避免了双重引用问题。</p>
-</li>
-<li><p>**<code>解引用并克隆</code>**：<br>你可以先解引用，然后克隆内部的数据。例如，<code>*accounts.get(&amp;key).ok_or(ErrorCode::InvalidAccounts).clone()?</code>，但这通常不如 .to_owned() 简洁和高效。</p>
-</li>
-<li><p>**<code>直接解引用</code>**：<br>如果你只需要读取数据而不需要修改或复制整个对象，可以直接解引用并使用该数据。例如，<code>*accounts.get(&amp;key).ok_or(ErrorCode::InvalidAccounts)?</code>。</p>
-</li>
-</ul>
-<h2 id="为什么to-owned-更高效？"><a href="#为什么to-owned-更高效？" class="headerlink" title="为什么to_owned()更高效？"></a>为什么to_owned()更高效？</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 创建一个包含 Borrowed 数据的 OuterData</span></span><br><span class="line"><span class="keyword">let</span> <span class="variable">original</span> = OuterData &#123;</span><br><span class="line">    name: <span class="string">&quot;outer&quot;</span>.<span class="title function_ invoke__">to_string</span>(),</span><br><span class="line">    inner: InnerData &#123;</span><br><span class="line">        value: Cow::<span class="title function_ invoke__">Borrowed</span>(<span class="string">&quot;hello&quot;</span>),</span><br><span class="line">    &#125;,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">此时内存布局：</span><br><span class="line">original.name → <span class="string">&quot;outer&quot;</span> (堆内存)</span><br><span class="line">original.inner.value → <span class="string">&quot;hello&quot;</span> (静态内存，Borrowed)</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><p>使用<code>clone()</code>:</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="variable">cloned</span> = original.<span class="title function_ invoke__">clone</span>();</span><br></pre></td></tr></table></figure>
-<ul>
-<li><code>clone()</code> 会递归克隆所有字段：<ul>
-<li>name: String：深拷贝堆内存中的字符串（分配新堆内存）。</li>
-<li>inner: InnerData：调用 InnerData 的 clone()：</li>
-<li>value: Cow::Borrowed(“hello”) → 仍然指向原始静态内存。</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>使用<code>to_owned()</code>:</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="variable">owned</span> = original.<span class="title function_ invoke__">to_owned</span>();</span><br></pre></td></tr></table></figure>
-<ul>
-<li><code>to_owned()</code> 会按需复制 ：<ul>
-<li>name: String：已经是拥有所有权的类型，直接转移所有权（原堆内存，无需复制）。</li>
-<li>inner.value: Cow::Borrowed → 转换为 Cow::Owned，复制数据到堆内存。</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<p>总结：<br><code>clone()</code> 是“傻瓜式”深拷贝 ：不管数据是否已拥有，都会递归复制。<br><code>to_owned()</code> 是“智能”所有权转换 ：仅复制必要的借用数据，最大化复用已有资源。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2251,7 +2171,7 @@
               
                 <a href="/archives/%20%7C%7C%20archive">
               
-                  <span class="site-state-item-count">52</span>
+                  <span class="site-state-item-count">53</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2262,7 +2182,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-count">8</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -2273,7 +2193,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-count">11</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
