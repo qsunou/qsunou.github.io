@@ -262,6 +262,497 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/11/06/Rust-lesson-25/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2024/11/06/Rust-lesson-25/" itemprop="url">Rust lesson 25 - 并发</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-11-06T16:27:30+08:00">
+                2024-11-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Rust-%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
+                    <span itemprop="name">Rust 开发基础</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>并发、并行、进程、线程的概念以及多线程可能导致的问题，这里暂不赘述，请自行查找。</p>
+<p>可能会用到的库:</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> core::hash;</span><br><span class="line"><span class="keyword">use</span> std::&#123;thread, vec&#125;;</span><br><span class="line"><span class="keyword">use</span> std::time::Duration;</span><br><span class="line"><span class="keyword">use</span> std::sync::&#123;mpsc, Arc&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> serde::de::value;</span><br><span class="line"><span class="keyword">use</span> std::sync::Mutex;</span><br></pre></td></tr></table></figure>
+
+<h1 id="创建线程"><a href="#创建线程" class="headerlink" title="创建线程"></a>创建线程</h1><p>通过<code>thread::spawn</code>函数可以创建新线程。参数是一个闭包，返回值类型是<code>JoinHandle</code>。<br><code>JoinHandle</code>持有值的所有权，调用其join方法，可以等待其他线程完成。</p>
+<h2 id="代码示例："><a href="#代码示例：" class="headerlink" title="代码示例："></a>代码示例：</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">thread_study</span>() &#123;</span><br><span class="line"> <span class="comment">//可惜主线程打完4后就退出了，主线程退出，子线程没执行完也跟着退出,所以需要下面的handler</span></span><br><span class="line">    thread::<span class="title function_ invoke__">spawn</span>(|| &#123;</span><br><span class="line">        <span class="keyword">for</span> <span class="variable">i</span> <span class="keyword">in</span> <span class="number">1</span>..<span class="number">10</span> &#123;</span><br><span class="line">            <span class="built_in">println!</span>(<span class="string">&quot;hi number &#123;&#125; from the spawned thread!&quot;</span>, i);</span><br><span class="line">            thread::<span class="title function_ invoke__">sleep</span>(Duration::<span class="title function_ invoke__">from_millis</span>(<span class="number">1</span>));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;); </span><br><span class="line"></span><br><span class="line">	 <span class="comment">//所以要用handle</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">handler</span> = thread::<span class="title function_ invoke__">spawn</span>(|| &#123;</span><br><span class="line">        <span class="keyword">for</span> <span class="variable">i</span> <span class="keyword">in</span> <span class="number">1</span>..<span class="number">10</span> &#123;</span><br><span class="line">            <span class="built_in">println!</span>(<span class="string">&quot;hi number &#123;&#125; from the spawned thread!&quot;</span>, i);</span><br><span class="line">            thread::<span class="title function_ invoke__">sleep</span>(Duration::<span class="title function_ invoke__">from_millis</span>(<span class="number">1</span>));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;); </span><br><span class="line">    </span><br><span class="line">     <span class="comment">//主线程</span></span><br><span class="line">    <span class="keyword">for</span> <span class="variable">i</span> <span class="keyword">in</span> <span class="number">1</span>..<span class="number">5</span> &#123;</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;hi number &#123;&#125; from the main thread!&quot;</span>, i);</span><br><span class="line">        thread::<span class="title function_ invoke__">sleep</span>(Duration::<span class="title function_ invoke__">from_millis</span>(<span class="number">1</span>));</span><br><span class="line">    &#125; </span><br><span class="line"></span><br><span class="line">    <span class="comment">//有handler,主线程就会等待子线程退出后再退出</span></span><br><span class="line">    <span class="comment">//放最后，总执行时间为最长线程的执行时间</span></span><br><span class="line">    handler.<span class="title function_ invoke__">join</span>().<span class="title function_ invoke__">unwrap</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="使用move闭包："><a href="#使用move闭包：" class="headerlink" title="使用move闭包："></a>使用move闭包：</h1><p><code>move</code>闭包通常和<code>thread::spawn</code>函数一起使用，它允许你使用其它线程的数据。<br>创建线程时，把值的所有权从一个线程转移到另一个线程。</p>
+<h2 id="代码示例：-1"><a href="#代码示例：-1" class="headerlink" title="代码示例："></a>代码示例：</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">thread_study</span>() &#123;</span><br><span class="line">	<span class="keyword">let</span> <span class="variable">v</span> = <span class="built_in">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>];</span><br><span class="line">    <span class="comment">//move || &#123; ... &#125; 是一个闭包（closure），move会使v 的所有权会被移动到新线程中</span></span><br><span class="line">    <span class="comment">//如果不使用 move，闭包只会借用 v，而在多线程环境下，这会导致编译错误，因为编译器无法保证 v 的生命周期足够长，以确保在新线程中安全使用。</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">handle</span> = thread::<span class="title function_ invoke__">spawn</span>(<span class="keyword">move</span> || &#123;</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;Here&#x27;s a vector: &#123;:?&#125;&quot;</span>, v);</span><br><span class="line">    &#125;); </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="多线程通信："><a href="#多线程通信：" class="headerlink" title="多线程通信："></a>多线程通信：</h1><h2 id="消息传递-Channel"><a href="#消息传递-Channel" class="headerlink" title="消息传递 Channel:"></a>消息传递 <code>Channel</code>:</h2><p>线程通过彼此发送消息来进行通信。</p>
+<ol>
+<li><code>Channel</code> 包含发送端、接收端。</li>
+<li>调用发送端的方法，发送数据。</li>
+<li>接收端会检查和接收到达的数据</li>
+<li>如果发送端、接收端中任意一端被丢弃了，那么频道就关闭了。</li>
+</ol>
+<h3 id="创建Channel："><a href="#创建Channel：" class="headerlink" title="创建Channel："></a>创建<code>Channel</code>：</h3><ol>
+<li>使用<code>mpsc::channel</code>函数来创建（mpsc就是 multiple producer, single consumer,多个生产者，一个消费者）。返回一个tuple（元祖），里面元素分别是发送端和接收端。</li>
+<li>使用<code>mpsc::sync_channel</code>来创建带缓冲区的channel，入参为缓冲区大小，当缓冲区塞满时进行阻塞。</li>
+</ol>
+<h4 id="代码示例：-2"><a href="#代码示例：-2" class="headerlink" title="代码示例："></a>代码示例：</h4><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">thread_study</span>() &#123;</span><br><span class="line"><span class="keyword">let</span> (tx , rx) = mpsc::<span class="title function_ invoke__">channel</span>();</span><br><span class="line">    <span class="comment">//当有多个输入，就要用clone，因为tx的所有权只有一个</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">tx1</span> = mpsc::Sender::<span class="title function_ invoke__">clone</span>(&amp;tx);</span><br><span class="line"></span><br><span class="line">    thread::<span class="title function_ invoke__">spawn</span>(<span class="keyword">move</span> || &#123;</span><br><span class="line">        <span class="keyword">let</span> <span class="variable">vals</span> = <span class="built_in">vec!</span>[</span><br><span class="line">            <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;hi&quot;</span>),</span><br><span class="line">            <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;from&quot;</span>),</span><br><span class="line">            <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;the&quot;</span>),</span><br><span class="line">            <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;thread&quot;</span>)</span><br><span class="line">        ];</span><br><span class="line">        <span class="keyword">for</span> <span class="variable">val</span> <span class="keyword">in</span> vals &#123;</span><br><span class="line">            tx.<span class="title function_ invoke__">send</span>(val).<span class="title function_ invoke__">unwrap</span>();</span><br><span class="line">            thread::<span class="title function_ invoke__">sleep</span>(Duration::<span class="title function_ invoke__">from_secs</span>(<span class="number">1</span>));</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    thread::<span class="title function_ invoke__">spawn</span>(<span class="keyword">move</span> || &#123;</span><br><span class="line">        <span class="keyword">let</span> <span class="variable">vals</span> = <span class="built_in">vec!</span>[</span><br><span class="line">            <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;hi&quot;</span>),</span><br><span class="line">            <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;from&quot;</span>),</span><br><span class="line">            <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;the&quot;</span>),</span><br><span class="line">            <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;thread&quot;</span>)</span><br><span class="line">        ];</span><br><span class="line">        <span class="keyword">for</span> <span class="variable">val</span> <span class="keyword">in</span> vals &#123;</span><br><span class="line">            <span class="comment">//注意这里用了tx1</span></span><br><span class="line">            tx1.<span class="title function_ invoke__">send</span>(val).<span class="title function_ invoke__">unwrap</span>();</span><br><span class="line">            thread::<span class="title function_ invoke__">sleep</span>(Duration::<span class="title function_ invoke__">from_secs</span>(<span class="number">1</span>));</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> <span class="variable">received</span> <span class="keyword">in</span> rx &#123;</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;Got: &#123;&#125;&quot;</span>, received);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="共享内存："><a href="#共享内存：" class="headerlink" title="共享内存："></a>共享内存：</h2><p>共享内存并发类似多所有权，多个线程可以同时访问同一块内存。（Channel就不行）</p>
+<h3 id="Mutex："><a href="#Mutex：" class="headerlink" title="Mutex："></a>Mutex：</h3><p>使用<code>Mutex</code>来每次只允许一个线程来访问数据。想要访问数据，线程必须先获取互斥锁（lock), lock数据结构是mutex 的一部分，它能跟踪谁对数据拥有独占访问权。</p>
+<p><strong>Mutex的两条规则</strong>：</p>
+<ol>
+<li>在使用数据之前，必须先尝试获取锁。</li>
+<li>使用完mutex所保护的数据，必须对数据进行解锁。</li>
+</ol>
+<h4 id="使用："><a href="#使用：" class="headerlink" title="使用："></a>使用：</h4><ol>
+<li>通过<code>Mutex::new</code>来创建<code>Mutex&lt;T&gt;</code>，<code>Mutex&lt;T&gt;</code>是个智能指针</li>
+<li>访问数据前，通过lock方法来获取锁</li>
+</ol>
+<h5 id="代码示例：-3"><a href="#代码示例：-3" class="headerlink" title="代码示例："></a>代码示例：</h5><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">share_memory</span>()&#123;</span><br><span class="line"> <span class="comment">//Mutex::new(5) 创建一个新的互斥锁</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">m</span> = Mutex::<span class="title function_ invoke__">new</span>(<span class="number">5</span>);</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">//m.lock().unwrap() 获取互斥锁的锁定，并返回一个 MutexGuard。MutexGuard 是一个智能指针，实现了 Deref 和 Drop，可以用来访问和修改锁定的数据。</span></span><br><span class="line">        <span class="comment">//离开作用域还会自动解锁</span></span><br><span class="line">        <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">num</span> = m.<span class="title function_ invoke__">lock</span>().<span class="title function_ invoke__">unwrap</span>();</span><br><span class="line">        *num = <span class="number">6</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;m = &#123;:?&#125;&quot;</span>, m) &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="使用Arc来进行原子引用计数："><a href="#使用Arc来进行原子引用计数：" class="headerlink" title="使用Arc&lt;T&gt;来进行原子引用计数："></a>使用<code>Arc&lt;T&gt;</code>来进行原子引用计数：</h4><p>就是用来代替<code>RC&lt;T&gt;</code>的，具体看代码示例：</p>
+<h5 id="代码示例：-4"><a href="#代码示例：-4" class="headerlink" title="代码示例："></a>代码示例：</h5><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">share_memory</span>() &#123;</span><br><span class="line"><span class="comment">//Arc::new(Mutex::new(0)) 创建一个新的 Arc，其中包含一个 Mutex，初始值为 0</span></span><br><span class="line">    <span class="comment">//Arc 允许多个线程共享同一个 Mutex，而 Mutex 确保对共享数据的访问是线程安全的。</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">counter</span> = Arc::<span class="title function_ invoke__">new</span>(Mutex::<span class="title function_ invoke__">new</span>(<span class="number">0</span>));</span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">handles</span> = <span class="built_in">vec!</span>[];</span><br><span class="line"></span><br><span class="line">    <span class="comment">//循环创建 10 个线程</span></span><br><span class="line">    <span class="keyword">for</span> <span class="variable">_</span> <span class="keyword">in</span> <span class="number">0</span>..<span class="number">10</span> &#123;</span><br><span class="line">        <span class="comment">//RC只用于单线程场景，多线程要用Arc</span></span><br><span class="line">        <span class="comment">//使用 Arc::clone 克隆 counter，确保每个线程都有自己的 Arc 引用，指向同一个 Mutex</span></span><br><span class="line">        <span class="keyword">let</span> <span class="variable">thread_counter</span> = Arc::<span class="title function_ invoke__">clone</span>(&amp;counter);</span><br><span class="line">        <span class="keyword">let</span> <span class="variable">handle</span> = thread::<span class="title function_ invoke__">spawn</span>(<span class="keyword">move</span> || &#123;</span><br><span class="line">            <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">num</span> = thread_counter.<span class="title function_ invoke__">lock</span>().<span class="title function_ invoke__">unwrap</span>();</span><br><span class="line">            *num += <span class="number">1</span>;</span><br><span class="line">        &#125;);</span><br><span class="line">        handles.<span class="title function_ invoke__">push</span>(handle);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//for handle in handles 遍历所有线程句柄。</span></span><br><span class="line">    <span class="keyword">for</span> <span class="variable">handle</span> <span class="keyword">in</span> handles &#123;</span><br><span class="line">        handle.<span class="title function_ invoke__">join</span>().<span class="title function_ invoke__">unwrap</span>();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;Result: &#123;&#125;&quot;</span>,*counter.<span class="title function_ invoke__">lock</span>().<span class="title function_ invoke__">unwrap</span>());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/11/05/Rust-lesson-24/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2024/11/05/Rust-lesson-24/" itemprop="url">Rust lesson 24 - 测试（Test）</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-11-05T21:32:13+08:00">
+                2024-11-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Rust-%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
+                    <span itemprop="name">Rust 开发基础</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="单元测试（Unit-Testing）"><a href="#单元测试（Unit-Testing）" class="headerlink" title="单元测试（Unit Testing）:"></a>单元测试（Unit Testing）:</h1><p>单元测试（Unit Testing）是一种软件测试方法，旨在验证代码中最小可测试单元（通常是函数或方法）的正确性。</p>
+<p>单元测试通常是自动化的，可以通过测试框架（如 Rust 的 cargo test）来运行。</p>
+<h2 id="简单示例："><a href="#简单示例：" class="headerlink" title="简单示例："></a>简单示例：</h2><p>在 Rust 中，单元测试是通过 <code>#[cfg(test)]</code> 属性和 <code>#[test]</code> 属性来实现的。<code>#[cfg(test)]</code> 属性用于标记测试模块，而 <code>#[test]</code> 属性用于标记测试函数。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// src/lib.rs 或 src/main.rs</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义一个简单的函数</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">add</span>(a: <span class="type">i32</span>, b: <span class="type">i32</span>) <span class="punctuation">-&gt;</span> <span class="type">i32</span> &#123;</span><br><span class="line">    a + b</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 测试模块</span></span><br><span class="line"><span class="comment">//属性标记了这个模块只在测试配置中编译。</span></span><br><span class="line"><span class="comment">//定义了一个名为 `tests` 的模块，用于存放测试函数。</span></span><br><span class="line"><span class="meta">#[cfg(test)]</span></span><br><span class="line"><span class="keyword">mod</span> tests &#123;</span><br><span class="line">    <span class="comment">// 引入要测试的函数</span></span><br><span class="line">    <span class="keyword">use</span> super::add;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 定义一个测试函数</span></span><br><span class="line">    <span class="comment">//- `#[test]` 属性标记了 `test_add` 函数是一个测试函数。</span></span><br><span class="line">    <span class="meta">#[test]</span></span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">test_add</span>() &#123;</span><br><span class="line">        <span class="comment">// 断言</span></span><br><span class="line">        <span class="built_in">assert_eq!</span>(<span class="title function_ invoke__">add</span>(<span class="number">1</span>, <span class="number">2</span>), <span class="number">3</span>);</span><br><span class="line">        <span class="built_in">assert_eq!</span>(<span class="title function_ invoke__">add</span>(-<span class="number">1</span>, <span class="number">1</span>), <span class="number">0</span>);</span><br><span class="line">        <span class="built_in">assert_eq!</span>(<span class="title function_ invoke__">add</span>(<span class="number">0</span>, <span class="number">0</span>), <span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="运行测试"><a href="#运行测试" class="headerlink" title="运行测试"></a>运行测试</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cargo <span class="built_in">test</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="其他一些常用属性："><a href="#其他一些常用属性：" class="headerlink" title="其他一些常用属性："></a>其他一些常用属性：</h2><ul>
+<li>**<code>#[ignore]</code>**：用于标记测试函数，使其在默认情况下不被运行。</li>
+<li>**<code>#[should_panic]</code>**：用于标记测试函数应该在某种条件下引发恐慌。</li>
+<li>**<code>#[bench]</code>**：用于标记基准测试函数，用于测量代码的性能。</li>
+</ul>
+<h3 id="使用示例："><a href="#使用示例：" class="headerlink" title="使用示例："></a>使用示例：</h3><h4 id="ignore"><a href="#ignore" class="headerlink" title="[ignore]:"></a><code>[ignore]</code>:</h4><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#[cfg(test)]</span></span><br><span class="line"><span class="keyword">mod</span> tests &#123;</span><br><span class="line">    <span class="keyword">use</span> super::add;</span><br><span class="line"></span><br><span class="line">    <span class="meta">#[test]</span></span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">test_add</span>() &#123;</span><br><span class="line">        <span class="built_in">assert_eq!</span>(<span class="title function_ invoke__">add</span>(<span class="number">1</span>, <span class="number">2</span>), <span class="number">3</span>);</span><br><span class="line">        <span class="built_in">assert_eq!</span>(<span class="title function_ invoke__">add</span>(-<span class="number">1</span>, <span class="number">1</span>), <span class="number">0</span>);</span><br><span class="line">        <span class="built_in">assert_eq!</span>(<span class="title function_ invoke__">add</span>(<span class="number">0</span>, <span class="number">0</span>), <span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">#[test]</span></span><br><span class="line">    <span class="meta">#[ignore]</span></span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">test_add_large_numbers</span>() &#123;</span><br><span class="line">        <span class="built_in">assert_eq!</span>(<span class="title function_ invoke__">add</span>(<span class="number">1_000_000</span>, <span class="number">2_000_000</span>), <span class="number">3_000_000</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">#[test]</span></span><br><span class="line">    <span class="meta">#[ignore]</span></span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">test_add_performance</span>() &#123;</span><br><span class="line">        <span class="comment">// 这是一个非常耗时的测试</span></span><br><span class="line">        <span class="keyword">for</span> <span class="variable">_</span> <span class="keyword">in</span> <span class="number">0</span>..<span class="number">1_000_000</span> &#123;</span><br><span class="line">            <span class="built_in">assert_eq!</span>(<span class="title function_ invoke__">add</span>(<span class="number">1</span>, <span class="number">2</span>), <span class="number">3</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="运行忽略的测试："><a href="#运行忽略的测试：" class="headerlink" title="运行忽略的测试："></a>运行忽略的测试：</h5><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cargo <span class="built_in">test</span> -- --ignored</span><br></pre></td></tr></table></figure>
+
+<h4 id="should-panic"><a href="#should-panic" class="headerlink" title="[should_panic]:"></a><code>[should_panic]</code>:</h4><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#[test]</span></span><br><span class="line"><span class="meta">#[should_panic(expected = <span class="string">&quot;some error message&quot;</span>)]</span></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">test_divide_by_zero</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">result</span> = <span class="number">1</span> / <span class="number">0</span>; <span class="comment">// 这将引发 panic</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="bench"><a href="#bench" class="headerlink" title="[bench]:"></a><code>[bench]</code>:</h4><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#[bench]</span></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">bench_add</span>(b: &amp;<span class="keyword">mut</span> test::Bencher) &#123;</span><br><span class="line">    b.<span class="title function_ invoke__">iter</span>(|| <span class="title function_ invoke__">add</span>(<span class="number">1</span>, <span class="number">2</span>));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h1 id="集成测试（Integration-Testing）："><a href="#集成测试（Integration-Testing）：" class="headerlink" title="集成测试（Integration Testing）："></a>集成测试（Integration Testing）：</h1><p>集成测试（Integration Testing）是一种软件测试方法，旨在验证多个组件或模块协同工作的正确性。与单元测试不同，集成测试关注的是组件之间的交互和接口，确保它们能够正确地协同工作，形成一个完整的系统或子系统。</p>
+<p>在 Rust 中，集成测试通常放在 <code>tests</code> 目录下，目录结构如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">my_project/</span><br><span class="line">├── src/</span><br><span class="line">│   ├── lib.rs</span><br><span class="line">│   └── main.rs</span><br><span class="line">└── tests/</span><br><span class="line">    └── integration_test.rs</span><br></pre></td></tr></table></figure>
+
+<h2 id="示例代码："><a href="#示例代码：" class="headerlink" title="示例代码："></a>示例代码：</h2><ol>
+<li><p><strong>项目结构</strong>：</p>
+<ul>
+<li><code>src/lib.rs</code>：定义了一个模块 <code>math</code>，其中包含两个函数 <code>add</code> 和 <code>multiply</code>。</li>
+<li><code>src/main.rs</code>：主程序文件，使用 <code>math</code> 模块中的函数进行计算。</li>
+<li><code>tests/integration_test.rs</code>：集成测试文件，测试 <code>add</code> 和 <code>multiply</code> 函数的组合使用。</li>
+</ul>
+</li>
+</ol>
+<p><code>src/lib.rs</code>:</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">pub</span> <span class="keyword">mod</span> math &#123;</span><br><span class="line">    <span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">add</span>(a: <span class="type">i32</span>, b: <span class="type">i32</span>) <span class="punctuation">-&gt;</span> <span class="type">i32</span> &#123;</span><br><span class="line">        a + b</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">multiply</span>(a: <span class="type">i32</span>, b: <span class="type">i32</span>) <span class="punctuation">-&gt;</span> <span class="type">i32</span> &#123;</span><br><span class="line">        a * b</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p><code>src/main.rs</code></p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">mod</span> math;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">sum</span> = math::<span class="title function_ invoke__">add</span>(<span class="number">1</span>, <span class="number">2</span>);</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">product</span> = math::<span class="title function_ invoke__">multiply</span>(sum, <span class="number">3</span>);</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;Result: &#123;&#125;&quot;</span>, product); <span class="comment">// 输出 &quot;Result: 9&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p> <code>tests/integration_test.rs</code></p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> my_project::math;</span><br><span class="line"></span><br><span class="line"><span class="meta">#[test]</span></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">test_add_and_multiply</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">sum</span> = math::<span class="title function_ invoke__">add</span>(<span class="number">1</span>, <span class="number">2</span>);</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">product</span> = math::<span class="title function_ invoke__">multiply</span>(sum, <span class="number">3</span>);</span><br><span class="line">    <span class="built_in">assert_eq!</span>(product, <span class="number">9</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="运行集成测试："><a href="#运行集成测试：" class="headerlink" title="运行集成测试："></a>运行集成测试：</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cargo <span class="built_in">test</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="common-mod-rs"><a href="#common-mod-rs" class="headerlink" title="common&#x2F;mod.rs"></a>common&#x2F;mod.rs</h1><p><code>common/mod.rs</code> 文件用于定义 <code>common</code> 模块，并可以选择性地引入子模块中的内容。</p>
+<p>目录结构：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">my_project/</span><br><span class="line">├── src/</span><br><span class="line">│   ├── common/</span><br><span class="line">│   │   ├── mod.rs</span><br><span class="line">│   │   ├── utils.rs</span><br><span class="line">│   │   └── error.rs</span><br><span class="line">│   ├── main.rs</span><br><span class="line">│   └── lib.rs</span><br><span class="line">└── Cargo.toml</span><br></pre></td></tr></table></figure>
+
+<h2 id="代码示例："><a href="#代码示例：" class="headerlink" title="代码示例："></a>代码示例：</h2><p><code>common/mod.rs:</code></p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 引入子模块</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">mod</span> utils;</span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">mod</span> error;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 重新导出子模块的内容</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">use</span> self::utils::greet;</span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">use</span> self::error::MyError;</span><br></pre></td></tr></table></figure>
+
+<p><code>common/utils.rs</code>:</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">greet</span>(name: &amp;<span class="type">str</span>) <span class="punctuation">-&gt;</span> <span class="type">String</span> &#123;</span><br><span class="line">    <span class="built_in">format!</span>(<span class="string">&quot;Hello, &#123;&#125;!&quot;</span>, name)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>common/error.rs</code>:</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#[derive(Debug)]</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">struct</span> <span class="title class_">MyError</span> &#123;</span><br><span class="line">    <span class="keyword">pub</span> message: <span class="type">String</span>,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">impl</span> <span class="title class_">MyError</span> &#123;</span><br><span class="line">    <span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">new</span>(message: &amp;<span class="type">str</span>) <span class="punctuation">-&gt;</span> <span class="keyword">Self</span> &#123;</span><br><span class="line">        MyError &#123;</span><br><span class="line">            message: message.<span class="title function_ invoke__">to_string</span>(),</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p><code>src/main.rs</code>:</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">mod</span> common;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="comment">// 使用 common 模块中的函数</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">greeting</span> = common::<span class="title function_ invoke__">greet</span>(<span class="string">&quot;Alice&quot;</span>);</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>, greeting);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 使用 common 模块中的结构体</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">error</span> = common::MyError::<span class="title function_ invoke__">new</span>(<span class="string">&quot;Something went wrong&quot;</span>);</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;:?&#125;&quot;</span>, error);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="文档测试（doc-tests）："><a href="#文档测试（doc-tests）：" class="headerlink" title="文档测试（doc tests）："></a>文档测试（doc tests）：</h1><p>文档测试（Doc Tests）是 Rust 中一种特殊的测试形式，它允许你在文档注释中编写测试代码。</p>
+<h2 id="代码示例：-1"><a href="#代码示例：-1" class="headerlink" title="代码示例："></a>代码示例：</h2><p><code>src/lib.rs</code>:</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/// Adds two integers and returns the result.</span></span><br><span class="line"><span class="comment">///</span></span><br><span class="line"><span class="comment">/// # Examples</span></span><br><span class="line"><span class="comment">///</span></span><br><span class="line"><span class="comment">/// ```</span></span><br><span class="line"><span class="comment">/// use my_library::add;</span></span><br><span class="line"><span class="comment">///</span></span><br><span class="line"><span class="comment">/// assert_eq!(add(1, 2), 3);</span></span><br><span class="line"><span class="comment">/// assert_eq!(add(-1, 1), 0);</span></span><br><span class="line"><span class="comment">/// assert_eq!(add(0, 0), 0);</span></span><br><span class="line"><span class="comment">/// ```</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">add</span>(a: <span class="type">i32</span>, b: <span class="type">i32</span>) <span class="punctuation">-&gt;</span> <span class="type">i32</span> &#123;</span><br><span class="line">    a + b</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>/// Adds two integers and returns the result.</code>：这是函数的简短描述。</li>
+<li><code>/// # Examples</code>：这是示例部分的标题。</li>
+<li>&#96;&#x2F;&#x2F;&#x2F; &#96;&#96;&#96;&#96;：开始一个代码块。</li>
+<li><code>/// use my_library::add;</code>：导入 <code>add</code> 函数。</li>
+<li><code>/// assert_eq!(add(1, 2), 3);</code>：断言 <code>add(1, 2)</code> 的结果应该是 <code>3</code>。</li>
+<li><code>/// assert_eq!(add(-1, 1), 0);</code>：断言 <code>add(-1, 1)</code> 的结果应该是 <code>0</code>。</li>
+<li><code>/// assert_eq!(add(0, 0), 0);</code>：断言 <code>add(0, 0)</code> 的结果应该是 <code>0</code>。</li>
+<li>&#96;&#x2F;&#x2F;&#x2F; &#96;&#96;&#96;&#96;：结束一个代码块。</li>
+</ul>
+<p><strong>运行测试</strong>：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cargo <span class="built_in">test</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="基准测试（Benchmarking"><a href="#基准测试（Benchmarking" class="headerlink" title="基准测试（Benchmarking):"></a>基准测试（Benchmarking):</h1><p>基准测试（Benchmarking）是一种用于测量代码性能的技术。</p>
+<p>目录结构：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">my_project/</span><br><span class="line">├── src/</span><br><span class="line">│   ├── lib.rs</span><br><span class="line">│   └── main.rs</span><br><span class="line">├── benches/</span><br><span class="line">│   └── add_bench.rs</span><br><span class="line">└── Cargo.toml</span><br></pre></td></tr></table></figure>
+
+<h2 id="示例代码：-1"><a href="#示例代码：-1" class="headerlink" title="示例代码："></a>示例代码：</h2><p> <code>src/lib.rs</code>:</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">add</span>(a: <span class="type">i32</span>, b: <span class="type">i32</span>) <span class="punctuation">-&gt;</span> <span class="type">i32</span> &#123;</span><br><span class="line">    a + b</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>benches/add_bench.rs</code>:</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> criterion::&#123;criterion_group, criterion_main, Criterion&#125;;</span><br><span class="line"><span class="keyword">use</span> my_project::add;</span><br><span class="line"></span><br><span class="line"><span class="comment">// `fn bench_add(c: &amp;mut Criterion) &#123; ... &#125;`：定义一个基准测试函数 `bench_add`，接受一个 `Criterion` 类型的参数。</span></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">bench_add</span>(c: &amp;<span class="keyword">mut</span> Criterion) &#123;</span><br><span class="line">	<span class="comment">// `c.bench_function(&quot;add&quot;, |b| b.iter(|| add(1, 2)));`：使用 `c.bench_function` 方法注册一个基准测试，名称为 `&quot;add&quot;`，测试函数为 `|| add(1, 2)`。</span></span><br><span class="line">	c.<span class="title function_ invoke__">bench_function</span>(<span class="string">&quot;add&quot;</span>, |b| b.<span class="title function_ invoke__">iter</span>(|| <span class="title function_ invoke__">add</span>(<span class="number">1</span>, <span class="number">2</span>)));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// `criterion_group!(benches, bench_add);`：定义一个基准测试组 `benches`，包含 `bench_add` 测试。</span></span><br><span class="line">criterion_group!(benches, bench_add);</span><br><span class="line"><span class="comment">//`criterion_main!(benches);`：定义主函数，运行 `benches` 组中的所有基准测试。</span></span><br><span class="line">criterion_main!(benches);</span><br></pre></td></tr></table></figure>
+
+<p><strong>运行测试</strong>：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cargo bench</span><br></pre></td></tr></table></figure>
+
+<p><strong>生成详细报告</strong>：<br><code>criterion</code> 库会生成详细的性能报告，包括图表和统计数据。这些报告通常保存在 <code>target/criterion</code> 目录下，你可以使用浏览器打开这些报告文件进行查看。</p>
+<p><strong>安装 criterion 库</strong>：<br><code>cargo.toml</code>文件里添加下面内容：</p>
+<figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[dev-dependencies]</span></span><br><span class="line"><span class="attr">criterion</span> = <span class="string">&quot;0.4&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="示例-Examples"><a href="#示例-Examples" class="headerlink" title="示例(Examples):"></a>示例(Examples):</h1><p><code>examples</code> 目录通常用于存放示例代码文件。</p>
+<p>目录结构：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">my_project/</span><br><span class="line">├── src/</span><br><span class="line">│   ├── lib.rs</span><br><span class="line">│   └── main.rs</span><br><span class="line">├── examples/</span><br><span class="line">│   ├── example1.rs</span><br><span class="line">│   └── example2.rs</span><br><span class="line">├── benches/</span><br><span class="line">│   └── add_bench.rs</span><br><span class="line">└── Cargo.toml</span><br></pre></td></tr></table></figure>
+
+<h2 id="示例代码：-2"><a href="#示例代码：-2" class="headerlink" title="示例代码："></a>示例代码：</h2><p><code>src/lib.rs</code>:</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">add</span>(a: <span class="type">i32</span>, b: <span class="type">i32</span>) <span class="punctuation">-&gt;</span> <span class="type">i32</span> &#123;</span><br><span class="line">    a + b</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>examples/example1.rs</code>:</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">extern</span> <span class="keyword">crate</span> my_project;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> my_project::add;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">result</span> = <span class="title function_ invoke__">add</span>(<span class="number">1</span>, <span class="number">2</span>);</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;1 + 2 = &#123;&#125;&quot;</span>, result);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>examples/example2.rs</code>:</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">extern</span> <span class="keyword">crate</span> my_project;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> my_project::add;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">a</span> = <span class="number">10</span>;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">b</span> = <span class="number">20</span>;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">result</span> = <span class="title function_ invoke__">add</span>(a, b);</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125; + &#123;&#125; = &#123;&#125;&quot;</span>, a, b, result);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>编译和运行example1</strong>：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cargo run --example example1</span><br></pre></td></tr></table></figure>
+
+<p><strong>编译和运行example2</strong>：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cargo run --example example2</span><br></pre></td></tr></table></figure>
+
+<h1 id="目录结构规范："><a href="#目录结构规范：" class="headerlink" title="目录结构规范："></a>目录结构规范：</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">my_project/</span><br><span class="line">├── Cargo.lock</span><br><span class="line">├── Cargo.toml</span><br><span class="line">├── src/</span><br><span class="line">│   ├── lib.rs</span><br><span class="line">│   ├── main.rs</span><br><span class="line">│   └── bin/</span><br><span class="line">│       ├── named-executable.rs</span><br><span class="line">│       ├── another-executable.rs</span><br><span class="line">│       └── multi-file-executable/</span><br><span class="line">│           ├── main.rs</span><br><span class="line">│           └── some_module.rs</span><br><span class="line">├── benches/</span><br><span class="line">│   ├── large-input.rs</span><br><span class="line">│   └── multi-file-bench/</span><br><span class="line">│       ├── main.rs</span><br><span class="line">│       └── bench_module.rs</span><br><span class="line">├── examples/</span><br><span class="line">│   ├── simple.rs</span><br><span class="line">│   └── multi-file-example/</span><br><span class="line">│       ├── main.rs</span><br><span class="line">│       └── ex_module.rs</span><br><span class="line">└── tests/</span><br><span class="line">    ├── some-integration-tests.rs</span><br><span class="line">    └── multi-file-test/</span><br><span class="line">        ├── main.rs</span><br><span class="line">        └── test_module.rs</span><br></pre></td></tr></table></figure>
+
+<h3 id="目录和文件说明"><a href="#目录和文件说明" class="headerlink" title="目录和文件说明"></a>目录和文件说明</h3><ol>
+<li><p>**<code>Cargo.lock</code>**：记录项目依赖的具体版本信息，确保项目在不同环境中使用相同的依赖版本。</p>
+</li>
+<li><p>**<code>Cargo.toml</code>**：项目的配置文件，包含项目元数据、依赖项等信息。</p>
+</li>
+<li><p>**<code>src/</code>**：源代码目录，包含项目的主代码。</p>
+<ul>
+<li>**<code>lib.rs</code>**：库的入口文件。如果项目是一个库，<code>lib.rs</code> 是主要的模块文件。</li>
+<li>**<code>main.rs</code>**：应用程序的入口文件。如果项目是一个可执行程序，<code>main.rs</code> 是主函数所在文件。</li>
+<li>**<code>bin/</code>**：多可执行文件目录，包含多个独立的可执行文件。<ul>
+<li>**<code>named-executable.rs</code>**：命名的可执行文件1。</li>
+<li>**<code>another-executable.rs</code>**：命名的可执行文件2。</li>
+<li>**<code>multi-file-executable/</code>**：多文件可执行文件目录。<ul>
+<li>**<code>main.rs</code>**：主文件。</li>
+<li>**<code>some_module.rs</code>**：模块文件。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>**<code>benches/</code>**：基准测试目录，包含基准测试文件。</p>
+<ul>
+<li>**<code>large-input.rs</code>**：基准测试文件1。</li>
+<li>**<code>multi-file-bench/</code>**：多文件基准测试目录。<ul>
+<li>**<code>main.rs</code>**：主文件。</li>
+<li>**<code>bench_module.rs</code>**：模块文件。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>**<code>examples/</code>**：示例代码目录，包含展示如何使用库的示例文件。</p>
+<ul>
+<li>**<code>simple.rs</code>**：示例文件1。</li>
+<li>**<code>multi-file-example/</code>**：多文件示例目录。<ul>
+<li>**<code>main.rs</code>**：主文件。</li>
+<li>**<code>ex_module.rs</code>**：模块文件。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>**<code>tests/</code>**：集成测试目录，包含集成测试文件。</p>
+<ul>
+<li>**<code>some-integration-tests.rs</code>**：集成测试文件1。</li>
+<li>**<code>multi-file-test/</code>**：多文件集成测试目录。<ul>
+<li>**<code>main.rs</code>**：主文件。</li>
+<li>**<code>test_module.rs</code>**：模块文件。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://example.com/2024/11/03/Rust-lesson-23/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1824,642 +2315,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2024/10/28/Rust-lesson-15/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2024/10/28/Rust-lesson-15/" itemprop="url">Rust lesson 15 - 模块化</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-10-28T17:13:12+08:00">
-                2024-10-28
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Rust-%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
-                    <span itemprop="name">Rust 开发基础</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="包（package）"><a href="#包（package）" class="headerlink" title="包（package）"></a>包（package）</h1><p>包（package）是一个包含一个或多个 crates 的目录树。包是 Rust 项目的基本单位，可以是一个库（library）或一个可执行文件（binary），也可以同时包含两者。包通常由 Cargo.toml 文件定义，这是一个配置文件，用于指定包的元数据、依赖关系和其他构建选项。</p>
-<h2 id="包的结构："><a href="#包的结构：" class="headerlink" title="包的结构："></a>包的结构：</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">my_package/</span><br><span class="line">├── Cargo.toml</span><br><span class="line">├── src/</span><br><span class="line">│   ├── lib.rs  # 库入口文件（如果包是一个库）</span><br><span class="line">│   └── main.rs  # 可执行文件入口文件（如果包是一个二进制程序）</span><br><span class="line">└── tests/  # 集成测试文件</span><br></pre></td></tr></table></figure>
-
-<h2 id="包的组成："><a href="#包的组成：" class="headerlink" title="包的组成："></a>包的组成：</h2><ol>
-<li>cargo.toml</li>
-</ol>
-<ul>
-<li>这是包的配置文件，定义了包的元数据、依赖关系和其他构建选项。</li>
-<li>一个基本的 <code>Cargo.toml</code> 文件可能如下所示：&#96;&#96;&#96;rust</li>
-</ul>
-<figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[package]</span></span><br><span class="line"><span class="attr">name</span> = <span class="string">&quot;my_package&quot;</span></span><br><span class="line"><span class="attr">version</span> = <span class="string">&quot;0.1.0&quot;</span></span><br><span class="line"><span class="attr">authors</span> = [<span class="string">&quot;Your Name &lt;you@example.com&gt;&quot;</span>]</span><br><span class="line"><span class="attr">edition</span> = <span class="string">&quot;2021&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="section">[dependencies]</span></span><br><span class="line"><span class="attr">serde</span> = <span class="string">&quot;1.0&quot;</span></span><br></pre></td></tr></table></figure>
-
-<ol start="2">
-<li>src&#x2F; 目录：</li>
-</ol>
-<ul>
-<li>包含源代码文件。</li>
-<li><code>lib.rs</code>：库的入口文件。如果包是一个库，这是主文件。</li>
-<li><code>main.rs</code>：可执行文件的入口文件。如果包是一个二进制程序，这是主文件。</li>
-</ul>
-<ol start="3">
-<li>tests&#x2F; 目录：</li>
-</ol>
-<ul>
-<li>包含集成测试文件。每个文件都是一个单独的模块，可以包含多个测试函数。</li>
-</ul>
-<h2 id="包的类型："><a href="#包的类型：" class="headerlink" title="包的类型："></a>包的类型：</h2><ol>
-<li>库包（Library Package）：<br> 提供可重用的代码。<br> 通常包含一个 lib.rs 文件。<br> 可以被其他包依赖。</li>
-<li>可执行文件包（Binary Package）：<br> 生成一个可执行文件。<br> 通常包含一个 main.rs 文件。<br> 可以包含多个可执行文件（通过在 src&#x2F;bin&#x2F; 目录下添加多个 *.rs 文件）。</li>
-<li>混合包（Mixed Package）：<br> 同时包含库和可执行文件。<br> 通常包含 lib.rs 和 main.rs 文件。</li>
-</ol>
-<h2 id="依赖管理："><a href="#依赖管理：" class="headerlink" title="依赖管理："></a>依赖管理：</h2><p>在 <code>Cargo.toml</code> 文件中，你可以指定包的依赖关系。依赖关系可以是其他包或本地路径。</p>
-<h3 id="添加依赖："><a href="#添加依赖：" class="headerlink" title="添加依赖："></a>添加依赖：</h3><figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[dependencies]</span></span><br><span class="line"><span class="attr">serde</span> = <span class="string">&quot;1.0&quot;</span></span><br><span class="line"><span class="attr">tokio</span> = &#123; version = <span class="string">&quot;1.0&quot;</span>, features = [<span class="string">&quot;full&quot;</span>] &#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="本地路径依赖"><a href="#本地路径依赖" class="headerlink" title="本地路径依赖:"></a>本地路径依赖:</h3><figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[dependencies]</span></span><br><span class="line"><span class="attr">my_local_lib</span> = &#123; path = <span class="string">&quot;../my_local_lib&quot;</span> &#125;</span><br></pre></td></tr></table></figure>
-
-
-<h1 id="库（crates）"><a href="#库（crates）" class="headerlink" title="库（crates）"></a>库（crates）</h1><p>crate 是编译和链接的基本单位。一个 crate 可以是一个库（library）或一个可执行文件（binary），也可以同时包含两者。crate 是 Rust 项目的核心组成部分，通过 <code>Cargo.toml</code> 文件进行管理和配置。</p>
-<h2 id="什么是库？"><a href="#什么是库？" class="headerlink" title="什么是库？"></a>什么是库？</h2><ol>
-<li>库（Library Crate）：<br> 提供可重用的代码。<br> 通常包含一个 lib.rs 文件。<br> 可以被其他 crate 依赖。</li>
-<li>可执行文件（Binary Crate）：<br> 生成一个可执行文件。<br> 通常包含一个 main.rs 文件。<br> 可以包含多个可执行文件（通过在 src&#x2F;bin&#x2F; 目录下添加多个 *.rs 文件）。</li>
-</ol>
-<h2 id="crate结构："><a href="#crate结构：" class="headerlink" title="crate结构："></a>crate结构：</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">my_crate/</span><br><span class="line">├── Cargo.toml</span><br><span class="line">├── src/</span><br><span class="line">│   ├── lib.rs  # 库入口文件（如果 <span class="keyword">crate</span> 是一个库）</span><br><span class="line">│   └── main.rs  # 可执行文件入口文件（如果 <span class="keyword">crate</span> 是一个二进制程序）</span><br><span class="line">└── tests/  # 集成测试文件</span><br></pre></td></tr></table></figure>
-
-<h2 id="crate的类型："><a href="#crate的类型：" class="headerlink" title="crate的类型："></a>crate的类型：</h2><ol>
-<li>库 crate：<br> 提供可重用的代码。<br> 通常包含一个 lib.rs 文件。<br> 可以被其他 crate 依赖。</li>
-<li>可执行文件 crate：<br> 生成一个可执行文件。<br> 通常包含一个 main.rs 文件。<br> 可以包含多个可执行文件（通过在 src&#x2F;bin&#x2F; 目录下添加多个 *.rs 文件）。</li>
-<li>混合 crate：<br> 同时包含库和可执行文件。<br> 通常包含 lib.rs 和 main.rs 文件。</li>
-</ol>
-<h2 id="依赖管理：-1"><a href="#依赖管理：-1" class="headerlink" title="依赖管理："></a>依赖管理：</h2><p>在 <code>Cargo.toml</code> 文件中，你可以指定 crate 的依赖关系。依赖关系可以是其他 crate 或本地路径。</p>
-<h3 id="添加依赖：-1"><a href="#添加依赖：-1" class="headerlink" title="添加依赖："></a>添加依赖：</h3><figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[dependencies]</span></span><br><span class="line"><span class="attr">serde</span> = <span class="string">&quot;1.0&quot;</span></span><br><span class="line"><span class="attr">tokio</span> = &#123; version = <span class="string">&quot;1.0&quot;</span>, features = [<span class="string">&quot;full&quot;</span>] &#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="本地路径依赖："><a href="#本地路径依赖：" class="headerlink" title="本地路径依赖："></a>本地路径依赖：</h3><figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[dependencies]</span></span><br><span class="line"><span class="attr">my_local_lib</span> = &#123; path = <span class="string">&quot;../my_local_lib&quot;</span> &#125;</span><br></pre></td></tr></table></figure>
-
-
-<h1 id="包和库的区别："><a href="#包和库的区别：" class="headerlink" title="包和库的区别："></a>包和库的区别：</h1><ol>
-<li><strong>范围</strong>：<ul>
-<li><strong>包</strong>：是一个包含一个或多个 crates 的目录树，由 <code>Cargo.toml</code> 文件定义。</li>
-<li><strong>库</strong>：是一个可重用的代码集合，通常包含一个 <code>lib.rs</code> 文件。</li>
-</ul>
-</li>
-<li><strong>文件结构</strong>：<ul>
-<li><strong>包</strong>：包含 <code>Cargo.toml</code> 文件、<code>src</code> 目录、测试文件等。</li>
-<li><strong>库</strong>：主要包含 <code>src/lib.rs</code> 文件及其相关的模块文件。</li>
-</ul>
-</li>
-<li><strong>功能</strong>：<ul>
-<li><strong>包</strong>：管理项目的元数据、依赖关系和构建选项。</li>
-<li><strong>库</strong>：提供可重用的代码，供其他 crate 使用。</li>
-</ul>
-</li>
-<li><strong>用途</strong>：<ul>
-<li><strong>包</strong>：用于组织和管理整个项目，可以发布到 crates.io。</li>
-<li><strong>库</strong>：用于封装可重用的代码，提高代码的模块化和复用性。</li>
-</ul>
-</li>
-</ol>
-<h1 id="模块（mod"><a href="#模块（mod" class="headerlink" title="模块（mod)"></a>模块（mod)</h1><p>模块系统允许你将代码分成逻辑单元，提高代码的可读性和可维护性。</p>
-<h2 id="模块系统的基本概念"><a href="#模块系统的基本概念" class="headerlink" title="模块系统的基本概念"></a>模块系统的基本概念</h2><ol>
-<li><p><strong>模块</strong>：</p>
-<ul>
-<li>模块是一个包含其他项（如函数、结构体、枚举、其他模块等）的逻辑单元。</li>
-<li>模块可以通过 <code>mod</code> 关键字定义。</li>
-</ul>
-</li>
-<li><p><strong>可见性</strong>：</p>
-<ul>
-<li>默认情况下，模块中的项是私有的（private），只能在定义它们的模块内访问。</li>
-<li>使用 <code>pub</code> 关键字可以将项声明为公有的（public），使其在父模块或其他模块中可见。</li>
-</ul>
-</li>
-<li><p><strong>路径</strong>：</p>
-<ul>
-<li>路径是用于引用模块或模块中项的标识符，可以是绝对路径或相对路径。</li>
-</ul>
-</li>
-<li><p><strong>重新导出</strong>：</p>
-<ul>
-<li>使用 <code>pub use</code> 关键字将模块中的项重新导出到父模块中，使其在父模块中可见。</li>
-</ul>
-</li>
-</ol>
-<p>项目结构示例：</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">my_project/</span><br><span class="line">├── Cargo.toml</span><br><span class="line">└── src/</span><br><span class="line">    ├── lib.rs</span><br><span class="line">    └── shapes/</span><br><span class="line">        ├── <span class="keyword">mod</span>.rs</span><br><span class="line">        ├── circle.rs</span><br><span class="line">        └── rectangle.rs</span><br></pre></td></tr></table></figure>
-
-<h3 id="定义模块"><a href="#定义模块" class="headerlink" title="定义模块"></a>定义模块</h3><ol>
-<li><p>src&#x2F;lib.rs<br> 这是库的入口文件，定义顶层模块并重新导出子模块中的项。</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// src/lib.rs</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">mod</span> shapes;</span><br><span class="line"></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">use</span> shapes::circle::draw_circle <span class="keyword">as</span> draw;</span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">use</span> shapes::rectangle::draw_rectangle <span class="keyword">as</span> draw_rect;</span><br><span class="line"></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">say_hello</span>() &#123;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;Hello from the library!&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>src&#x2F;shapes&#x2F;mod.rs<br>这是 shapes 模块的入口文件，定义子模块。</p>
-</li>
-</ol>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// src/shapes/mod.rs</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">mod</span> circle;</span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">mod</span> rectangle;</span><br><span class="line"></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">draw_shapes</span>() &#123;</span><br><span class="line">    circle::<span class="title function_ invoke__">draw_circle</span>();</span><br><span class="line">    rectangle::<span class="title function_ invoke__">draw_rectangle</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ol start="3">
-<li>src&#x2F;shapes&#x2F;circle.rs<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// src/shapes/circle.rs</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">draw_circle</span>() &#123;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;Drawing a circle&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">calculate_area</span>(radius: <span class="type">f64</span>) <span class="punctuation">-&gt;</span> <span class="type">f64</span> &#123;</span><br><span class="line">    std::<span class="type">f64</span>::consts::PI * radius * radius</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-</ol>
-<h3 id="使用模块"><a href="#使用模块" class="headerlink" title="使用模块"></a>使用模块</h3><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// src/main.rs</span></span><br><span class="line"><span class="keyword">extern</span> <span class="keyword">crate</span> my_project;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> my_project::&#123;draw, draw_rect&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    my_project::<span class="title function_ invoke__">say_hello</span>();</span><br><span class="line">    <span class="title function_ invoke__">draw</span>();          <span class="comment">// 调用 draw_circle</span></span><br><span class="line">    <span class="title function_ invoke__">draw_rect</span>();     <span class="comment">// 调用 draw_rectangle</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<h1 id="工作区（workspace）"><a href="#工作区（workspace）" class="headerlink" title="工作区（workspace）"></a>工作区（workspace）</h1><p>工作区（workspace）是一种组织多个包（packages）的方式，这些包共享相同的依赖关系和构建配置。工作区允许你在单个 <code>Cargo.toml</code> 文件中管理多个包，从而简化大型项目的管理和构建过程。</p>
-<h2 id="工作区的基本概念"><a href="#工作区的基本概念" class="headerlink" title="工作区的基本概念"></a>工作区的基本概念</h2><ol>
-<li><strong>工作区</strong>：<ul>
-<li>工作区是一个包含多个包的目录树。</li>
-<li>每个包都有自己的 <code>Cargo.toml</code> 文件，但工作区有一个顶级的 <code>Cargo.toml</code> 文件来管理所有包的依赖关系和构建配置。</li>
-</ul>
-</li>
-<li><strong>成员包</strong>：<ul>
-<li>成员包是工作区中的每个包，每个包都可以是一个独立的库或可执行文件。</li>
-<li>成员包的 <code>Cargo.toml</code> 文件可以指定自己的依赖关系和构建选项。</li>
-</ul>
-</li>
-<li>**顶级 <code>Cargo.toml</code>**：<ul>
-<li>顶级 <code>Cargo.toml</code> 文件定义了工作区的成员包，并可以指定共享的依赖关系和构建配置。</li>
-</ul>
-</li>
-</ol>
-<h2 id="工作区的结构"><a href="#工作区的结构" class="headerlink" title="工作区的结构"></a>工作区的结构</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">my_workspace/</span><br><span class="line">├── Cargo.toml  # 顶级 Cargo.toml 文件</span><br><span class="line">├── my_library/</span><br><span class="line">│   ├── Cargo.toml  # my_library 的 Cargo.toml 文件</span><br><span class="line">│   └── src/</span><br><span class="line">│       └── lib.rs</span><br><span class="line">└── my_binary/</span><br><span class="line">    ├── Cargo.toml  # my_binary 的 Cargo.toml 文件</span><br><span class="line">    └── src/</span><br><span class="line">        └── main.rs</span><br><span class="line">        </span><br></pre></td></tr></table></figure>
-
-<h2 id="创建工作区："><a href="#创建工作区：" class="headerlink" title="创建工作区："></a>创建工作区：</h2><ol>
-<li>创建顶级 Cargo.toml 文件：</li>
-</ol>
-<figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[workspace]</span></span><br><span class="line"><span class="attr">members</span> = [</span><br><span class="line">    <span class="string">&quot;my_library&quot;</span>,</span><br><span class="line">    <span class="string">&quot;my_binary&quot;</span></span><br><span class="line">]</span><br></pre></td></tr></table></figure>
-
-<ol start="2">
-<li>创建成员包</li>
-</ol>
-<ul>
-<li>使用 <code>cargo new</code> 命令创建成员包。<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cargo new my_library --lib</span><br><span class="line">cargo new my_binary</span><br></pre></td></tr></table></figure></li>
-</ul>
-<h1 id="可见性-visibility"><a href="#可见性-visibility" class="headerlink" title="可见性(visibility)"></a>可见性(visibility)</h1><p>指代码项（如函数、结构体、枚举、模块等）在代码中的可见范围。</p>
-<p>项目结构：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">my_project/</span><br><span class="line">├── Cargo.toml</span><br><span class="line">└── src/</span><br><span class="line">    ├── lib.rs</span><br><span class="line">    └── shapes/</span><br><span class="line">        ├── mod.rs</span><br><span class="line">        ├── circle.rs</span><br><span class="line">        └── rectangle.rs</span><br></pre></td></tr></table></figure>
-
-<h2 id="可见性关键字"><a href="#可见性关键字" class="headerlink" title="可见性关键字"></a>可见性关键字</h2><ol>
-<li>**<code>pub</code>**：<ul>
-<li>将项声明为公有（public），使其在父模块及其子模块之外可见。</li>
-<li>如果不使用 <code>pub</code>，项默认为私有（private），只能在定义它的模块内访问。</li>
-</ul>
-</li>
-<li>**<code>pub(in path)</code>**：<ul>
-<li>将项声明为在指定路径内的公有，限制其可见范围。</li>
-<li><code>path</code> 可以是绝对路径或相对路径。</li>
-</ul>
-</li>
-<li>**<code>pub(crate)</code>**：<ul>
-<li>将项声明为在当前 crate 内公有，使其在整个 crate 内可见。</li>
-</ul>
-</li>
-<li>**<code>pub(super)</code>**：<ul>
-<li>将项声明为在其父模块内公有，使其在父模块及其子模块内可见。</li>
-</ul>
-</li>
-</ol>
-<h3 id="示例："><a href="#示例：" class="headerlink" title="示例："></a>示例：</h3><ol>
-<li>公有（pub）：<br> 将项声明为公有，使其在父模块及其子模块之外可见。</li>
-</ol>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// src/shapes/circle.rs</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">draw_circle</span>() &#123;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;Drawing a circle&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">calculate_area</span>(radius: <span class="type">f64</span>) <span class="punctuation">-&gt;</span> <span class="type">f64</span> &#123;</span><br><span class="line">    std::<span class="type">f64</span>::consts::PI * radius * radius</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ol start="2">
-<li><p>限制可见范围（pub(in path)）：<br> 将项声明为在指定路径内的公有，限制其可见范围。</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// src/shapes/circle.rs</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">draw_circle</span>() &#123;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;Drawing a circle&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="title function_ invoke__">pub</span>(<span class="keyword">in</span> crate::shapes) <span class="keyword">fn</span> <span class="title function_">calculate_area</span>(radius: <span class="type">f64</span>) <span class="punctuation">-&gt;</span> <span class="type">f64</span> &#123;</span><br><span class="line">    std::<span class="type">f64</span>::consts::PI * radius * radius</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>当前 crate 内公有（pub(crate)）：<br> 将项声明为在当前 crate 内公有，使其在整个 crate 内可见。</p>
-</li>
-</ol>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// src/shapes/circle.rs</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">draw_circle</span>() &#123;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;Drawing a circle&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="title function_ invoke__">pub</span>(<span class="keyword">crate</span>) <span class="keyword">fn</span> <span class="title function_">calculate_area</span>(radius: <span class="type">f64</span>) <span class="punctuation">-&gt;</span> <span class="type">f64</span> &#123;</span><br><span class="line">    std::<span class="type">f64</span>::consts::PI * radius * radius</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ol start="4">
-<li>父模块内公有（pub(super)）：<br> 将项声明为在其父模块内公有，使其在父模块及其子模块内可见。</li>
-</ol>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// src/shapes/circle.rs</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">draw_circle</span>() &#123;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;Drawing a circle&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="title function_ invoke__">pub</span>(<span class="keyword">super</span>) <span class="keyword">fn</span> <span class="title function_">calculate_area</span>(radius: <span class="type">f64</span>) <span class="punctuation">-&gt;</span> <span class="type">f64</span> &#123;</span><br><span class="line">    std::<span class="type">f64</span>::consts::PI * radius * radius</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h1 id="路径（Path）"><a href="#路径（Path）" class="headerlink" title="路径（Path）"></a>路径（Path）</h1><p>路径（Path）用于引用模块或模块中的项（如函数、结构体、枚举、常量等）。路径可以是绝对路径或相对路径，通过路径，你可以在代码中访问不同模块中的项。</p>
-<h2 id="路径的基本概念"><a href="#路径的基本概念" class="headerlink" title="路径的基本概念"></a>路径的基本概念</h2><ol>
-<li><strong>绝对路径</strong>：<ul>
-<li>从根模块开始的路径。</li>
-<li>根模块通常是 crate 的入口点（<code>lib.rs</code> 或 <code>main.rs</code>）。</li>
-</ul>
-</li>
-<li><strong>相对路径</strong>：<ul>
-<li>从当前模块开始的路径。</li>
-<li>使用 <code>self</code>、<code>super</code> 和模块名称来表示相对路径。</li>
-</ul>
-</li>
-</ol>
-<h3 id="路径的语法"><a href="#路径的语法" class="headerlink" title="路径的语法"></a>路径的语法</h3><ol>
-<li><strong>绝对路径</strong>：<ul>
-<li>以 <code>crate</code>、<code>self</code> 或 <code>super</code> 开头。</li>
-<li>例如：<code>crate::module::item</code>、<code>self::module::item</code>、<code>super::module::item</code>。</li>
-</ul>
-</li>
-<li><strong>相对路径</strong>：<ul>
-<li>从当前模块开始，使用模块名称。</li>
-<li>例如：<code>module::item</code>。</li>
-</ul>
-</li>
-</ol>
-<p>示例目录结构：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">my_project/</span><br><span class="line">├── Cargo.toml</span><br><span class="line">└── src/</span><br><span class="line">    ├── lib.rs</span><br><span class="line">    └── shapes/</span><br><span class="line">        ├── mod.rs</span><br><span class="line">        ├── circle.rs</span><br><span class="line">        └── rectangle.rs</span><br></pre></td></tr></table></figure>
-
-<h3 id="绝对路径示例"><a href="#绝对路径示例" class="headerlink" title="绝对路径示例"></a>绝对路径示例</h3><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// src/main.rs</span></span><br><span class="line"><span class="keyword">extern</span> <span class="keyword">crate</span> my_project;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> my_project::shapes::circle::draw_circle;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    my_project::<span class="title function_ invoke__">say_hello</span>();</span><br><span class="line">    <span class="title function_ invoke__">draw_circle</span>();  <span class="comment">// 调用 draw_circle</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="相对路径示例"><a href="#相对路径示例" class="headerlink" title="相对路径示例"></a>相对路径示例</h3><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// src/shapes/mod.rs</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">mod</span> circle;</span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">mod</span> rectangle;</span><br><span class="line"></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">draw_shapes</span>() &#123;</span><br><span class="line">    self::circle::<span class="title function_ invoke__">draw_circle</span>();</span><br><span class="line">    self::rectangle::<span class="title function_ invoke__">draw_rectangle</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h1 id="单元测试（unit-test"><a href="#单元测试（unit-test" class="headerlink" title="单元测试（unit test)"></a>单元测试（unit test)</h1><p>单元测试（unit testing）是确保代码正确性和健壮性的重要手段。</p>
-<h2 id="单元测试的基本概念"><a href="#单元测试的基本概念" class="headerlink" title="单元测试的基本概念"></a>单元测试的基本概念</h2><ol>
-<li><strong>测试模块</strong>：<ul>
-<li>测试代码通常放在模块的 <code>#[cfg(test)]</code> 属性中，这样测试代码不会在生产环境中编译。</li>
-<li>每个模块可以有自己的测试模块。</li>
-</ul>
-</li>
-<li><strong>测试函数</strong>：<ul>
-<li>测试函数使用 <code>#[test]</code> 属性标记。</li>
-<li>测试函数必须没有参数且返回类型为 <code>()</code>。</li>
-</ul>
-</li>
-<li><strong>断言</strong>：<ul>
-<li>使用 <code>assert!</code> 宏来检查条件是否为真。</li>
-<li>使用 <code>assert_eq!</code> 和 <code>assert_ne!</code> 宏来比较值是否相等或不相等。</li>
-</ul>
-</li>
-</ol>
-<p>项目结构：</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">my_project/</span><br><span class="line">├── Cargo.toml</span><br><span class="line">└── src/</span><br><span class="line">    ├── lib.rs</span><br><span class="line">    └── tests/</span><br><span class="line">        └── integration_test.rs</span><br></pre></td></tr></table></figure>
-
-<h3 id="代码示例："><a href="#代码示例：" class="headerlink" title="代码示例："></a>代码示例：</h3><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// src/lib.rs</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">mod</span> math &#123;</span><br><span class="line">    <span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">add</span>(a: <span class="type">i32</span>, b: <span class="type">i32</span>) <span class="punctuation">-&gt;</span> <span class="type">i32</span> &#123;</span><br><span class="line">        a + b</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">subtract</span>(a: <span class="type">i32</span>, b: <span class="type">i32</span>) <span class="punctuation">-&gt;</span> <span class="type">i32</span> &#123;</span><br><span class="line">        a - b</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">multiply</span>(a: <span class="type">i32</span>, b: <span class="type">i32</span>) <span class="punctuation">-&gt;</span> <span class="type">i32</span> &#123;</span><br><span class="line">        a * b</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">divide</span>(a: <span class="type">i32</span>, b: <span class="type">i32</span>) <span class="punctuation">-&gt;</span> <span class="type">Result</span>&lt;<span class="type">i32</span>, &amp;<span class="symbol">&#x27;static</span> <span class="type">str</span>&gt; &#123;</span><br><span class="line">        <span class="keyword">if</span> b == <span class="number">0</span> &#123;</span><br><span class="line">            <span class="title function_ invoke__">Err</span>(<span class="string">&quot;Division by zero&quot;</span>)</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="title function_ invoke__">Ok</span>(a / b)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">#[cfg(test)]</span></span><br><span class="line"><span class="keyword">mod</span> tests &#123;</span><br><span class="line">    <span class="keyword">use</span> super::math;</span><br><span class="line"></span><br><span class="line">    <span class="meta">#[test]</span></span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">test_add</span>() &#123;</span><br><span class="line">        <span class="built_in">assert_eq!</span>(math::<span class="title function_ invoke__">add</span>(<span class="number">2</span>, <span class="number">3</span>), <span class="number">5</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">#[test]</span></span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">test_subtract</span>() &#123;</span><br><span class="line">        <span class="built_in">assert_eq!</span>(math::<span class="title function_ invoke__">subtract</span>(<span class="number">5</span>, <span class="number">3</span>), <span class="number">2</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">#[test]</span></span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">test_multiply</span>() &#123;</span><br><span class="line">        <span class="built_in">assert_eq!</span>(math::<span class="title function_ invoke__">multiply</span>(<span class="number">4</span>, <span class="number">5</span>), <span class="number">20</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">#[test]</span></span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">test_divide</span>() &#123;</span><br><span class="line">        <span class="built_in">assert_eq!</span>(math::<span class="title function_ invoke__">divide</span>(<span class="number">10</span>, <span class="number">2</span>).<span class="title function_ invoke__">unwrap</span>(), <span class="number">5</span>);</span><br><span class="line">        <span class="built_in">assert!</span>(math::<span class="title function_ invoke__">divide</span>(<span class="number">10</span>, <span class="number">0</span>).<span class="title function_ invoke__">is_err</span>());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ol>
-<li>**<code>pub mod math</code>**：<ul>
-<li>定义了一个 <code>math</code> 模块，包含一些数学函数。</li>
-</ul>
-</li>
-<li>**<code>#[cfg(test)] mod tests</code>**：<ul>
-<li>定义了一个测试模块，只在测试配置中编译。</li>
-</ul>
-</li>
-<li>**<code>#[test]</code>**：<ul>
-<li>标记测试函数，这些函数将在运行测试时自动执行。</li>
-</ul>
-</li>
-<li>**<code>assert_eq!</code> 和 <code>assert!</code>**：<ul>
-<li><code>assert_eq!</code> 用于检查两个值是否相等。</li>
-<li><code>assert!</code> 用于检查一个条件是否为真。</li>
-</ul>
-</li>
-</ol>
-<h3 id="运行单元测试："><a href="#运行单元测试：" class="headerlink" title="运行单元测试："></a>运行单元测试：</h3><ol>
-<li><p>运行 cargo test</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cargo <span class="built_in">test</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>输出：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">running 4 tests</span><br><span class="line">test tests::test_add ... ok</span><br><span class="line">test tests::test_subtract ... ok</span><br><span class="line">test tests::test_multiply ... ok</span><br><span class="line">test tests::test_divide ... ok</span><br><span class="line"></span><br><span class="line">test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s</span><br></pre></td></tr></table></figure></li>
-</ol>
-<h1 id="集成测试（Integration-Test"><a href="#集成测试（Integration-Test" class="headerlink" title="集成测试（Integration Test)"></a>集成测试（Integration Test)</h1><p>集成测试（integration testing）用于验证多个模块或组件之间的交互是否按预期工作。</p>
-<h2 id="集成测试的基本概念"><a href="#集成测试的基本概念" class="headerlink" title="集成测试的基本概念"></a>集成测试的基本概念</h2><ol>
-<li><p><strong>测试文件</strong>：</p>
-<ul>
-<li>集成测试文件通常放在 <code>tests</code> 目录下。</li>
-<li>每个测试文件都是一个单独的 crate，可以独立编译和运行。</li>
-</ul>
-</li>
-<li><p><strong>测试函数</strong>：</p>
-<ul>
-<li>测试函数使用 <code>#[test]</code> 属性标记。</li>
-<li>测试函数必须没有参数且返回类型为 <code>()</code>。</li>
-</ul>
-</li>
-<li><p><strong>断言</strong>：</p>
-<ul>
-<li>使用 <code>assert!</code> 宏来检查条件是否为真。</li>
-<li>使用 <code>assert_eq!</code> 和 <code>assert_ne!</code> 宏来比较值是否相等或不相等。</li>
-</ul>
-</li>
-</ol>
-<p>继续沿用上面单元测试的目录结构</p>
-<h3 id="创建集成测试文件："><a href="#创建集成测试文件：" class="headerlink" title="创建集成测试文件："></a>创建集成测试文件：</h3><p>在 tests 目录下创建一个新的文件，例如 integration_test.rs。</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// tests/integration_test.rs</span></span><br><span class="line"><span class="keyword">use</span> my_project::math;</span><br><span class="line"></span><br><span class="line"><span class="meta">#[test]</span></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">test_integration</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">sum</span> = math::<span class="title function_ invoke__">add</span>(<span class="number">2</span>, <span class="number">3</span>);</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">product</span> = math::<span class="title function_ invoke__">multiply</span>(sum, <span class="number">4</span>);</span><br><span class="line">    <span class="built_in">assert_eq!</span>(product, <span class="number">20</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="运行集成测试："><a href="#运行集成测试：" class="headerlink" title="运行集成测试："></a>运行集成测试：</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cargo <span class="built_in">test</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="忽略某些测试"><a href="#忽略某些测试" class="headerlink" title="忽略某些测试"></a>忽略某些测试</h3><p>如果你有一些测试需要在特定条件下运行，可以使用 <code>#[ignore]</code> 属性来忽略这些测试。</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#[cfg(test)]</span></span><br><span class="line"><span class="keyword">mod</span> tests &#123;</span><br><span class="line">    <span class="keyword">use</span> super::math;</span><br><span class="line"></span><br><span class="line">    <span class="meta">#[test]</span></span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">test_add</span>() &#123;</span><br><span class="line">        <span class="built_in">assert_eq!</span>(math::<span class="title function_ invoke__">add</span>(<span class="number">2</span>, <span class="number">3</span>), <span class="number">5</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">#[test]</span></span><br><span class="line">    <span class="meta">#[ignore]</span></span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">test_long_running</span>() &#123;</span><br><span class="line">        <span class="comment">// 这个测试会被忽略</span></span><br><span class="line">        <span class="built_in">assert_eq!</span>(math::<span class="title function_ invoke__">add</span>(<span class="number">1000</span>, <span class="number">2000</span>), <span class="number">3000</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="运行特定测试"><a href="#运行特定测试" class="headerlink" title="运行特定测试"></a>运行特定测试</h3><p>可以使用 <code>cargo test</code> 命令加上测试名称来运行特定的测试。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cargo test test_add</span><br></pre></td></tr></table></figure>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2024/10/26/Rust-lesson-14/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2024/10/26/Rust-lesson-14/" itemprop="url">Rust lesson 14 - 返回值和错误处理</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-10-26T20:21:16+08:00">
-                2024-10-26
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Rust-%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
-                    <span itemprop="name">Rust 开发基础</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="Opiton返回值"><a href="#Opiton返回值" class="headerlink" title="Opiton返回值"></a>Opiton返回值</h1><p><code>Option</code> 是一种用于表示可能缺失值的枚举类型。它有两个变体：<code>Some(T)</code> 表示存在一个值，<code>None</code> 表示不存在值。<code>Option</code> 常用于错误处理，特别是在可能没有结果的情况下。</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">enum</span> <span class="title class_">Opiton</span>&lt;T&gt; &#123;</span><br><span class="line">	<span class="title function_ invoke__">Some</span>(T),</span><br><span class="line">	<span class="literal">None</span>,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="基础示例："><a href="#基础示例：" class="headerlink" title="基础示例："></a>基础示例：</h2><p>&#96;</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="comment">//返回 p1=Some(&#x27;A&#x27;),p1是 Option 类型</span></span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">s</span> = <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;A&quot;</span>);</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">p1</span> = s.<span class="title function_ invoke__">pop</span>();</span><br><span class="line">    dbg!(p1);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//返回None,因为弹两次已经为空了。</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">p2</span> = s.<span class="title function_ invoke__">pop</span>();</span><br><span class="line">    dbg!(p2); </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="匹配Option："><a href="#匹配Option：" class="headerlink" title="匹配Option："></a>匹配Option：</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">plus_one</span>(x: <span class="type">Option</span>&lt;<span class="type">i32</span>&gt;) <span class="punctuation">-&gt;</span> <span class="type">Option</span>&lt;<span class="type">i32</span>&gt; &#123;</span><br><span class="line">	<span class="keyword">match</span> x &#123;</span><br><span class="line">		<span class="literal">None</span> =&gt; <span class="literal">None</span>,</span><br><span class="line">		<span class="title function_ invoke__">Some</span>(i) =&gt; <span class="title function_ invoke__">Some</span>(i+<span class="number">1</span>),</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">five</span> = <span class="title function_ invoke__">Some</span>(<span class="number">5</span>);</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">six</span> = <span class="title function_ invoke__">plus_one</span>(five);</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;:?&#125;&quot;</span>, six); </span><br></pre></td></tr></table></figure>
-
-<h2 id="使用unwrap"><a href="#使用unwrap" class="headerlink" title="使用unwrap:"></a>使用unwrap:</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//unwrap</span></span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">s</span> = <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;Hello&quot;</span>);</span><br><span class="line">    <span class="comment">//unwrap，有值的时候取值，没值就panic</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">p1</span> = s.<span class="title function_ invoke__">pop</span>().<span class="title function_ invoke__">unwrap</span>();</span><br><span class="line">    <span class="comment">//输出 o，把Some(o)的Some去掉了</span></span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;:?&#125;&quot;</span>,p1); </span><br></pre></td></tr></table></figure>
-
-<h2 id="使用is-some和is-none"><a href="#使用is-some和is-none" class="headerlink" title="使用is_some和is_none:"></a>使用<code>is_some</code>和<code>is_none</code>:</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//is_some 和 is_none</span></span><br><span class="line"><span class="keyword">let</span> <span class="variable">v</span> = [<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>];</span><br><span class="line"><span class="comment">//判断 v[1]有没有值</span></span><br><span class="line"><span class="comment">//if !v.get(1).is_none()&#123;&#125; 相同效果</span></span><br><span class="line"><span class="keyword">if</span> v.<span class="title function_ invoke__">get</span>(<span class="number">1</span>).<span class="title function_ invoke__">is_some</span>() &#123;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>,v[<span class="number">1</span>]);</span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure>
-
-<h2 id="使用-unwrap-or"><a href="#使用-unwrap-or" class="headerlink" title="使用 unwrap_or:"></a>使用 <code>unwrap_or</code>:</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"> </span><br><span class="line"> <span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line"> <span class="comment">//b为0正常来讲会返回None，但unwrap_or可以设定其他默认返回值</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">r</span> = <span class="title function_ invoke__">div</span>(<span class="number">10</span>,<span class="number">0</span>).<span class="title function_ invoke__">unwrap_or</span>(<span class="number">0.0</span>);</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>,r); </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"> <span class="keyword">fn</span> <span class="title function_">div</span>(a: <span class="type">i32</span>, b: <span class="type">i32</span>) <span class="punctuation">-&gt;</span> <span class="type">Option</span>&lt;<span class="type">f64</span>&gt; &#123;</span><br><span class="line">    <span class="comment">//分母不能为0</span></span><br><span class="line">    <span class="keyword">if</span> b != <span class="number">0</span> &#123;</span><br><span class="line">        <span class="title function_ invoke__">Some</span>(a <span class="keyword">as</span> <span class="type">f64</span> / b <span class="keyword">as</span> <span class="type">f64</span>)</span><br><span class="line">    &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="literal">None</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure>
-
-<h1 id="Rust-中的错误分类："><a href="#Rust-中的错误分类：" class="headerlink" title="Rust 中的错误分类："></a>Rust 中的错误分类：</h1><ol>
-<li>可恢复错误，通常用于从系统全局角度来看可以接受的错误，例如处理用户的访问、操作和错误，这些操作只会影响操作进程，而不会对系统的全局稳定性产生影响。<br> <code>Rsesult&lt;T, E&gt;</code> 用于可恢复错误。</li>
-<li>不可恢复错误，通常是全局性或者系统性的错误，例如数组越界访问等等，对系统安全性有致命影响<br><code>panic!</code> 用于不可恢复错误。</li>
-</ol>
-<h2 id="Panic："><a href="#Panic：" class="headerlink" title="Panic："></a>Panic：</h2><h3 id="被动触发："><a href="#被动触发：" class="headerlink" title="被动触发："></a>被动触发：</h3><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">	<span class="keyword">let</span> <span class="variable">v</span> = <span class="built_in">vec!</span>[<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>];</span><br><span class="line">	v[<span class="number">99</span>];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="主动触发："><a href="#主动触发：" class="headerlink" title="主动触发："></a>主动触发：</h3><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">	<span class="built_in">panic!</span>(<span class="string">&quot;crash and burn&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-<h2 id="Result"><a href="#Result" class="headerlink" title="Result:"></a>Result:</h2><p>很多错误没严重到程序要完全停止，例如：想要打开一个不存在的文件但是失败了，我们下一步可能是想创建文件，而不是直接停止程序。</p>
-<p><code>Ok(T)</code>：表示操作成功，并包含一个成功值 T。<br><code>Err(E)</code>：表示操作失败，并包含一个错误值 E。</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">enum</span> <span class="title class_">Result</span>&lt;T,E&gt; &#123;</span><br><span class="line">	<span class="title function_ invoke__">Ok</span>(T),</span><br><span class="line">	<span class="title function_ invoke__">Err</span>(E),</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-<h3 id="返回result"><a href="#返回result" class="headerlink" title="返回result:"></a>返回result:</h3><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"> <span class="keyword">enum</span> <span class="title class_">MathError</span> &#123;</span><br><span class="line">    DivisionByZero,</span><br><span class="line">    NegativeSquareRoot,</span><br><span class="line">&#125; </span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">//返回Result&lt;成功数据类型，失败数据类型&gt;</span></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">div</span>(a: <span class="type">i32</span>, b: <span class="type">i32</span>) <span class="punctuation">-&gt;</span> <span class="type">Result</span>&lt;<span class="type">f64</span>,MathError&gt; &#123;</span><br><span class="line">    <span class="comment">//分母不能为0</span></span><br><span class="line">    <span class="keyword">if</span> b != <span class="number">0</span> &#123;</span><br><span class="line">        <span class="title function_ invoke__">Ok</span>(a <span class="keyword">as</span> <span class="type">f64</span> / b <span class="keyword">as</span> <span class="type">f64</span>)</span><br><span class="line">    &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">	    <span class="comment">//把失败原因包装在Err里并返回</span></span><br><span class="line">        <span class="title function_ invoke__">Err</span>(MathError::DivisionByZero)</span><br><span class="line">    &#125;</span><br><span class="line">&#125; </span><br><span class="line"></span><br><span class="line"> <span class="keyword">fn</span> <span class="title function_">sqrt</span>(a: <span class="type">f64</span>) <span class="punctuation">-&gt;</span> <span class="type">Result</span>&lt;<span class="type">f64</span>, MathError&gt; &#123;</span><br><span class="line">    <span class="keyword">if</span> a &lt; <span class="number">0.0</span>&#123;</span><br><span class="line">        <span class="title function_ invoke__">Err</span>(MathError::NegativeSquareRoot)</span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">        <span class="title function_ invoke__">Ok</span>(a.<span class="title function_ invoke__">sqrt</span>())</span><br><span class="line">    &#125;</span><br><span class="line">&#125; </span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<h3 id="处理result"><a href="#处理result" class="headerlink" title="处理result:"></a>处理result:</h3><p>打开hello.txt文件，如果文件不存在而失败，希望创建这文件。如果因为其他原因失败，一样panic。</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="comment">//处理Result</span></span><br><span class="line">    <span class="comment">//open() 函数打开文件，返回是个Result类型</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">f</span> = File::<span class="title function_ invoke__">open</span>(<span class="string">&quot;hello.txt&quot;</span>);</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">f</span> = <span class="keyword">match</span> f &#123;</span><br><span class="line">        <span class="title function_ invoke__">Ok</span>(file) =&gt; file,</span><br><span class="line">        <span class="comment">//kind() 会输出更详细的错误类型</span></span><br><span class="line">        <span class="title function_ invoke__">Err</span>(error) =&gt; <span class="keyword">match</span> error.<span class="title function_ invoke__">kind</span>()&#123;</span><br><span class="line">            ErrorKind::NotFound =&gt; <span class="keyword">match</span> File::<span class="title function_ invoke__">create</span>(<span class="string">&quot;hello.txt&quot;</span>) &#123;</span><br><span class="line">                <span class="title function_ invoke__">Ok</span>(fc) =&gt; fc,</span><br><span class="line">                <span class="title function_ invoke__">Err</span>(e) =&gt; <span class="built_in">panic!</span>(<span class="string">&quot;creating file failed: &#123;&#125;&quot;</span>,e),      </span><br><span class="line">            &#125;,</span><br><span class="line">            other_error =&gt; <span class="built_in">panic!</span>(<span class="string">&quot;opening file failed: &#123;&#125;&quot;</span>, other_error),</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">    &#125;; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="unwrap"><a href="#unwrap" class="headerlink" title="unwrap():"></a>unwrap():</h3><p>如果Result 是 Ok，那么unwrap会返回Ok中的值；如果是Err，则会调用panic!</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="comment">//unwrap</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">f</span> = File::<span class="title function_ invoke__">open</span>(<span class="string">&quot;hello.txt&quot;</span>).<span class="title function_ invoke__">unwrap</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="expect"><a href="#expect" class="headerlink" title="expect():"></a>expect():</h3><p>expect跟unwrap差不多，就是错误输出可以自定义内容</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">	<span class="comment">//expect 按自己期望修改打印出来的错误信息</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">f</span> = File::<span class="title function_ invoke__">open</span>(<span class="string">&quot;hello.txt&quot;</span>).<span class="title function_ invoke__">expect</span>(<span class="string">&quot;Failed to open hello.txt&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="map"><a href="#map" class="headerlink" title="map:"></a>map:</h3><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//map</span></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">line</span> = <span class="string">&quot;1\n2\n3\n4\n&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//遍历每一行，line.lines()是迭代器，按行分割字符串</span></span><br><span class="line">    <span class="keyword">for</span> <span class="variable">num</span> <span class="keyword">in</span> line.<span class="title function_ invoke__">lines</span>() &#123;</span><br><span class="line">        <span class="comment">// num.parse::&lt;i32&gt;() 将num转为i32类型，成功就ok,不成功Err</span></span><br><span class="line">        <span class="comment">// ok的话， map会将ok中的值*2</span></span><br><span class="line">        <span class="keyword">match</span> num.parse::&lt;<span class="type">i32</span>&gt;().<span class="title function_ invoke__">map</span>(|i| i * <span class="number">2</span>) &#123;</span><br><span class="line">            <span class="title function_ invoke__">Ok</span>(n) =&gt; <span class="built_in">println!</span>(<span class="string">&quot;&#123;n&#125;&quot;</span>),</span><br><span class="line">            <span class="title function_ invoke__">Err</span>(..) =&gt; &#123;&#125;</span><br><span class="line">            </span><br><span class="line">        &#125;</span><br><span class="line">    &#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="map-err"><a href="#map-err" class="headerlink" title="map_err:"></a>map_err:</h3><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//map_err</span></span><br><span class="line"><span class="comment">//注意 Result&lt;(), String&gt;的String</span></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">x</span>() <span class="punctuation">-&gt;</span> <span class="type">Result</span>&lt;(), <span class="type">String</span>&gt; &#123;</span><br><span class="line">    <span class="comment">//map_err,如果文件打开失败，map_err 方法将 std::io::Error 转换为一个 String 类型的错误信息。</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">f</span> = File::<span class="title function_ invoke__">open</span>(<span class="string">&quot;hello.txt&quot;</span>).<span class="title function_ invoke__">map_err</span>(|e: std::io::Error| <span class="built_in">format!</span>(<span class="string">&quot;&#123;e&#125;&quot;</span>));</span><br><span class="line">    <span class="keyword">match</span> f &#123;</span><br><span class="line">        <span class="comment">//：如果文件打开失败，返回 Err(e)，其中 e 是转换后的 String 错误信息。</span></span><br><span class="line">        <span class="title function_ invoke__">Err</span>(e) =&gt; <span class="title function_ invoke__">Err</span>(e),</span><br><span class="line">        <span class="title function_ invoke__">Ok</span>(_) =&gt; <span class="title function_ invoke__">Ok</span>(()),</span><br><span class="line">        </span><br><span class="line">    &#125;</span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure>
-
-<h3 id="传播错误："><a href="#传播错误：" class="headerlink" title="传播错误："></a>传播错误：</h3><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">read_username_from_file</span>() <span class="punctuation">-&gt;</span> <span class="type">Result</span>&lt;<span class="type">String</span>, std::io::Error&gt; &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">f</span> = File::<span class="title function_ invoke__">open</span>(<span class="string">&quot;hello.txt&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">f</span> = <span class="keyword">match</span> f &#123;</span><br><span class="line">        <span class="title function_ invoke__">Ok</span>(file) =&gt; file,</span><br><span class="line">        <span class="title function_ invoke__">Err</span>(error) =&gt; <span class="keyword">return</span> <span class="title function_ invoke__">Err</span>(error),</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">s</span> = <span class="type">String</span>::<span class="title function_ invoke__">new</span>();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">match</span> f.<span class="title function_ invoke__">read_to_string</span>(&amp;<span class="keyword">mut</span> s) &#123;</span><br><span class="line">        <span class="title function_ invoke__">Ok</span>(_) =&gt; <span class="title function_ invoke__">Ok</span>(s),</span><br><span class="line">        <span class="title function_ invoke__">Err</span>(error) =&gt; <span class="title function_ invoke__">Err</span>(error),</span><br><span class="line">    &#125; </span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//上面这样写太长</span></span><br><span class="line"><span class="comment">//简略写法：</span></span><br><span class="line"><span class="comment">//对于Result，如果结果是Ok(T),则把T赋值给f</span></span><br><span class="line"><span class="comment">//如果结果是Err(E),则返回该错误</span></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">read_username_from_file</span>() <span class="punctuation">-&gt;</span> <span class="type">Result</span>&lt;<span class="type">String</span>, io::Error&gt; &#123;</span><br><span class="line">	<span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">f</span> = File::<span class="title function_ invoke__">open</span>(<span class="string">&quot;hello.txt&quot;</span>)?;</span><br><span class="line">	<span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">s</span> = <span class="type">String</span>::<span class="title function_ invoke__">new</span>();</span><br><span class="line">	f.<span class="title function_ invoke__">read_to_string</span>(&amp;<span class="keyword">mut</span> s)?;</span><br><span class="line">	<span class="title function_ invoke__">Ok</span>(s)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">read_username_from_file</span>() <span class="punctuation">-&gt;</span> <span class="type">Result</span>&lt;<span class="type">String</span>, std::io::Error&gt; &#123;</span><br><span class="line"><span class="comment">//还有更简单的，链式方法调用：</span></span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">s</span> = <span class="type">String</span>::<span class="title function_ invoke__">new</span>();</span><br><span class="line"></span><br><span class="line">    <span class="comment">//? 运算符用于在函数返回 Result 类型时，简化错误处理。如果某个操作返回 Err，? 运算符会立即将错误返回，否则继续执行后续代码。</span></span><br><span class="line">    <span class="comment">//如果 File::open(&quot;hello.txt&quot;) 返回 Err，则立即返回该错误；否则，继续执行 read_to_string 方法。</span></span><br><span class="line">    File::<span class="title function_ invoke__">open</span>(<span class="string">&quot;hello.txt&quot;</span>)?.<span class="title function_ invoke__">read_to_string</span>(&amp;<span class="keyword">mut</span> s)?;</span><br><span class="line"></span><br><span class="line">    <span class="title function_ invoke__">Ok</span>(s)</span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure>
-
-<h2 id="Option和Result-互换："><a href="#Option和Result-互换：" class="headerlink" title="Option和Result 互换："></a>Option和Result 互换：</h2><h3 id="Option-转-Result，ok-or-："><a href="#Option-转-Result，ok-or-：" class="headerlink" title="Option 转 Result，ok_or()："></a>Option 转 Result，ok_or()：</h3><p><code>Some(v)</code> -&gt; <code>Ok(v)</code><br><code>None</code> -&gt; <code>Err(err)</code></p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"> <span class="comment">//Option 转 Result</span></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">op_to_re</span>(arr: &amp;[<span class="type">i32</span>]) <span class="punctuation">-&gt;</span> <span class="type">Result</span>&lt;&amp;<span class="type">i32</span>, <span class="type">String</span>&gt; &#123;</span><br><span class="line">    <span class="comment">//ok_or(&quot;out of index&quot;.to_string())：将 Option&lt;&amp;i32&gt; 转换为 Result&lt;&amp;i32, String&gt;。</span></span><br><span class="line">    <span class="comment">//如果 arr.get(0) 返回 Some(&amp;i32)，则 ok_or 返回 Ok(&amp;i32)。</span></span><br><span class="line">    <span class="comment">//如果 arr.get(0) 返回 None，则 ok_or 返回 Err(&quot;out of index&quot;.to_string())。</span></span><br><span class="line">    arr.<span class="title function_ invoke__">get</span>(<span class="number">0</span>).<span class="title function_ invoke__">ok_or</span>(<span class="string">&quot;out of index&quot;</span>.<span class="title function_ invoke__">to_string</span>())</span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure>
-
-<h3 id="Result-转-Option-ok-："><a href="#Result-转-Option-ok-：" class="headerlink" title="Result 转 Option, ok()："></a>Result 转 Option, ok()：</h3><p><code>Ok(v)</code> -&gt; <code>None</code><br><code>Err(e)</code> -&gt; <code>Some(v)</code></p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">	<span class="keyword">let</span> <span class="variable">res</span>: <span class="type">Result</span>&lt;<span class="type">i32</span>, &amp;<span class="type">str</span>&gt; = <span class="title function_ invoke__">Ok</span>(<span class="number">24</span>);</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">option</span> = res.<span class="title function_ invoke__">ok</span>();</span><br><span class="line">    <span class="built_in">assert_eq!</span>(opt,<span class="title function_ invoke__">Some</span>(<span class="number">42</span>));</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">res</span>: <span class="type">Result</span>&lt;<span class="type">i32</span>, &amp;<span class="type">str</span>&gt;= <span class="title function_ invoke__">Err</span>(<span class="string">&quot;Nothing here&quot;</span>);</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">opt</span>: <span class="type">Option</span>&lt;<span class="type">i32</span>&gt; = res.<span class="title function_ invoke__">ok</span>();</span><br><span class="line">    <span class="built_in">assert_eq!</span>(opt,<span class="literal">None</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2510,7 +2365,7 @@
               
                 <a href="/archives/%20%7C%7C%20archive">
               
-                  <span class="site-state-item-count">53</span>
+                  <span class="site-state-item-count">55</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

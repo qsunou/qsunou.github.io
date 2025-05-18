@@ -262,6 +262,289 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2025/05/17/%E6%9C%89%E6%95%88%E6%8B%AC%E5%8F%B7%E5%BA%8F%E5%88%97/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2025/05/17/%E6%9C%89%E6%95%88%E6%8B%AC%E5%8F%B7%E5%BA%8F%E5%88%97/" itemprop="url">未命名</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2025-05-17T23:59:25+08:00">
+                2025-05-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <hr>
+<p>title: 有效括号序列<br>categories:</p>
+<ul>
+<li>算法(Rust\Go\Ts)<br>tags:</li>
+<li>Stack</li>
+<li>Typescript</li>
+<li>Golang</li>
+<li>Rust</li>
+</ul>
+<h1 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">//给出一个仅包含字符&#x27;(&#x27;,&#x27;)&#x27;,&#x27;&#123;&#x27;,&#x27;&#125;&#x27;,&#x27;[&#x27;和&#x27;]&#x27;,的字符串，判断给出的字符串是否是合法的括号序列</span><br><span class="line">//括号必须以正确的顺序关闭，&quot;()&quot;和&quot;()[]&#123;&#125;&quot;都是合法的括号序列，但&quot;(]&quot;和&quot;([)]&quot;不合法。</span><br><span class="line"></span><br><span class="line">//示例：</span><br><span class="line">//输入 &quot;[&quot; ，返回值false</span><br><span class="line">//输入 &quot;()&quot; ，返回值true</span><br></pre></td></tr></table></figure>
+
+<h1 id="Rust-实现"><a href="#Rust-实现" class="headerlink" title="Rust 实现"></a>Rust 实现</h1><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">is_valid</span>(s: <span class="type">String</span>) <span class="punctuation">-&gt;</span> <span class="type">bool</span> &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">stack</span> = <span class="type">Vec</span>::<span class="title function_ invoke__">new</span>();</span><br><span class="line"></span><br><span class="line">    <span class="comment">//chars 将输入字符串 s 转换为字符迭代器，逐个处理每个字符。</span></span><br><span class="line">    <span class="keyword">for</span> <span class="variable">ch</span> <span class="keyword">in</span> s.<span class="title function_ invoke__">chars</span>() &#123;</span><br><span class="line">        <span class="keyword">match</span> ch &#123;</span><br><span class="line">            <span class="string">&#x27;(&#x27;</span> | <span class="string">&#x27;&#123;&#x27;</span> | <span class="string">&#x27;[&#x27;</span> =&gt; stack.<span class="title function_ invoke__">push</span>(ch),</span><br><span class="line">            <span class="string">&#x27;)&#x27;</span> =&gt; &#123;</span><br><span class="line">                <span class="keyword">if</span> stack.<span class="title function_ invoke__">pop</span>() != <span class="title function_ invoke__">Some</span>(<span class="string">&#x27;(&#x27;</span>) &#123;</span><br><span class="line">                    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="string">&#x27;&#125;&#x27;</span> =&gt; &#123;</span><br><span class="line">                <span class="keyword">if</span> stack.<span class="title function_ invoke__">pop</span>() != <span class="title function_ invoke__">Some</span>(<span class="string">&#x27;&#123;&#x27;</span>) &#123;</span><br><span class="line">                    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="string">&#x27;]&#x27;</span> =&gt; &#123;</span><br><span class="line">                <span class="keyword">if</span> stack.<span class="title function_ invoke__">pop</span>() != <span class="title function_ invoke__">Some</span>(<span class="string">&#x27;[&#x27;</span>) &#123;</span><br><span class="line">                    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            _ =&gt; &#123;&#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    stack.<span class="title function_ invoke__">is_empty</span>()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">test_cases</span> = <span class="built_in">vec!</span>[</span><br><span class="line">        <span class="string">&quot;()&quot;</span>, </span><br><span class="line">        <span class="string">&quot;()[]&#123;&#125;&quot;</span>, </span><br><span class="line">        <span class="string">&quot;(]&quot;</span>, </span><br><span class="line">        <span class="string">&quot;([)]&quot;</span>, </span><br><span class="line">        <span class="string">&quot;&#123;[]&#125;&quot;</span>, </span><br><span class="line">        <span class="string">&quot;&quot;</span>, </span><br><span class="line">        <span class="string">&quot;[&quot;</span> </span><br><span class="line">    ];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> <span class="variable">s</span> <span class="keyword">in</span> test_cases &#123;</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;\&quot;&#123;&#125;\&quot; =&gt; &#123;&#125;&quot;</span>, s, <span class="title function_ invoke__">is_valid</span>(s.<span class="title function_ invoke__">to_string</span>()));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h1 id="Go实现"><a href="#Go实现" class="headerlink" title="Go实现"></a>Go实现</h1><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">isValid</span><span class="params">(s <span class="type">string</span>)</span></span> <span class="type">bool</span> &#123;</span><br><span class="line">	<span class="keyword">var</span> stack []<span class="type">rune</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> _, ch := <span class="keyword">range</span> s &#123;</span><br><span class="line">		<span class="keyword">switch</span> ch &#123;</span><br><span class="line">		<span class="keyword">case</span> <span class="string">&#x27;(&#x27;</span>, <span class="string">&#x27;&#123;&#x27;</span>, <span class="string">&#x27;[&#x27;</span>:</span><br><span class="line">			stack = <span class="built_in">append</span>(stack, ch)</span><br><span class="line">		<span class="keyword">case</span> <span class="string">&#x27;)&#x27;</span>:</span><br><span class="line">			<span class="keyword">if</span> <span class="built_in">len</span>(stack) == <span class="number">0</span> || stack[<span class="built_in">len</span>(stack)<span class="number">-1</span>] != <span class="string">&#x27;(&#x27;</span> &#123;</span><br><span class="line">				<span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">			&#125;</span><br><span class="line">			stack = stack[:<span class="built_in">len</span>(stack)<span class="number">-1</span>]</span><br><span class="line">		<span class="keyword">case</span> <span class="string">&#x27;&#125;&#x27;</span>:</span><br><span class="line">			<span class="keyword">if</span> <span class="built_in">len</span>(stack) == <span class="number">0</span> || stack[<span class="built_in">len</span>(stack)<span class="number">-1</span>] != <span class="string">&#x27;&#123;&#x27;</span> &#123;</span><br><span class="line">				<span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">			&#125;</span><br><span class="line">			stack = stack[:<span class="built_in">len</span>(stack)<span class="number">-1</span>]</span><br><span class="line">		<span class="keyword">case</span> <span class="string">&#x27;]&#x27;</span>:</span><br><span class="line">			<span class="keyword">if</span> <span class="built_in">len</span>(stack) == <span class="number">0</span> || stack[<span class="built_in">len</span>(stack)<span class="number">-1</span>] != <span class="string">&#x27;[&#x27;</span> &#123;</span><br><span class="line">				<span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">			&#125;</span><br><span class="line">			stack = stack[:<span class="built_in">len</span>(stack)<span class="number">-1</span>]</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="built_in">len</span>(stack) == <span class="number">0</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h1 id="TypeScript实现"><a href="#TypeScript实现" class="headerlink" title="TypeScript实现"></a>TypeScript实现</h1><figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">isValid</span>(<span class="params"><span class="attr">s</span>: <span class="built_in">string</span></span>): <span class="built_in">boolean</span> &#123;</span><br><span class="line">  <span class="keyword">const</span> <span class="attr">stack</span>: <span class="built_in">string</span>[] = [];</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> <span class="attr">map</span>: &#123; [<span class="attr">key</span>: <span class="built_in">string</span>]: <span class="built_in">string</span> &#125; = &#123;</span><br><span class="line">    <span class="string">&quot;(&quot;</span>: <span class="string">&quot;)&quot;</span>,</span><br><span class="line">    <span class="string">&quot;[&quot;</span>: <span class="string">&quot;]&quot;</span>,</span><br><span class="line">    <span class="string">&quot;&#123;&quot;</span>: <span class="string">&quot;&#125;&quot;</span>,</span><br><span class="line">  &#125;;</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">const</span> ch <span class="keyword">of</span> s) &#123;</span><br><span class="line">    <span class="keyword">if</span> (ch === <span class="string">&quot;(&quot;</span> || ch === <span class="string">&quot;[&quot;</span> || ch === <span class="string">&quot;&#123;&quot;</span>) &#123;</span><br><span class="line">      stack.<span class="title function_">push</span>(ch);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="comment">//stack.length === 0 → 栈为空，说明没有左括号与当前右括号匹配</span></span><br><span class="line">      <span class="comment">//map[&quot;(&quot;] = &quot;)&quot;，但当前字符是 &quot;]&quot; → 不匹配 → 返回 false</span></span><br><span class="line">      <span class="keyword">if</span> (stack.<span class="property">length</span> === <span class="number">0</span> || map[stack.<span class="title function_">pop</span>() <span class="keyword">as</span> <span class="built_in">string</span>] !== ch) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> stack.<span class="property">length</span> === <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2025/05/17/%E6%A0%88%E7%9A%84%E5%8E%8B%E5%85%A5%E3%80%81%E5%BC%B9%E5%87%BA%E5%BA%8F%E5%88%97/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2025/05/17/%E6%A0%88%E7%9A%84%E5%8E%8B%E5%85%A5%E3%80%81%E5%BC%B9%E5%87%BA%E5%BA%8F%E5%88%97/" itemprop="url">栈的压入、弹出序列</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2025-05-17T23:56:13+08:00">
+                2025-05-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%AE%97%E6%B3%95-Rust-Go-Ts/" itemprop="url" rel="index">
+                    <span itemprop="name">算法(Rust\Go\Ts)</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">// 输入两个整数序列，第一个序列表示栈的压入顺序，请判断第二个序列是否可能为该栈的弹出顺序。</span><br><span class="line">// 假设压入栈的所有数字均不相等。例如序列1,2,3,4,5是某栈的压入顺序，</span><br><span class="line">// 序列4,5,3,2,1是该压栈序列对应的一个弹出序列，但4,3,5,1,2就不可能是该压栈序列的弹出序列。</span><br><span class="line">// 1. 0&lt;=pushV.length == popV.length &lt;=1000</span><br><span class="line">// 2. -1000&lt;=pushV[i]&lt;=1000</span><br><span class="line">// 3. pushV 的所有数字均不相同</span><br><span class="line"></span><br><span class="line">// 输入：[1,2,3,4,5],[4,5,3,2,1]</span><br><span class="line">// 返回值：true</span><br><span class="line">// 可以通过push(1)=&gt;push(2)=&gt;push(3)=&gt;push(4)=&gt;pop()=&gt;push(5)=&gt;pop()=&gt;pop()=&gt;pop()=&gt;pop()</span><br><span class="line">// 这样的顺序得到[4,5,3,2,1]这个序列，返回true</span><br></pre></td></tr></table></figure>
+
+<h1 id="Rust实现："><a href="#Rust实现：" class="headerlink" title="Rust实现："></a>Rust实现：</h1><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">is_possible_pop_order</span>(push_v: <span class="type">Vec</span>&lt;<span class="type">i32</span>&gt;, pop_v: <span class="type">Vec</span>&lt;<span class="type">i32</span>&gt;) <span class="punctuation">-&gt;</span> <span class="type">bool</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> push_v.<span class="title function_ invoke__">len</span>() != pop_v.<span class="title function_ invoke__">len</span>() &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">stack</span> = <span class="type">Vec</span>::<span class="title function_ invoke__">new</span>();</span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">pop_index</span> = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> &amp;num <span class="keyword">in</span> &amp;push_v &#123;</span><br><span class="line">        stack.<span class="title function_ invoke__">push</span>(num);</span><br><span class="line">        <span class="comment">// 当栈顶元素与当前弹出序列的元素相等时，弹出栈顶元素</span></span><br><span class="line">        <span class="keyword">while</span> !stack.<span class="title function_ invoke__">is_empty</span>() &amp;&amp; *stack.<span class="title function_ invoke__">last</span>().<span class="title function_ invoke__">unwrap</span>() == pop_v[pop_index] &#123;</span><br><span class="line">            stack.<span class="title function_ invoke__">pop</span>();</span><br><span class="line">            pop_index += <span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    stack.<span class="title function_ invoke__">is_empty</span>()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">push_v</span> = <span class="built_in">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>];</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">pop_v1</span> = <span class="built_in">vec!</span>[<span class="number">4</span>, <span class="number">5</span>, <span class="number">3</span>, <span class="number">2</span>, <span class="number">1</span>];</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">pop_v2</span> = <span class="built_in">vec!</span>[<span class="number">4</span>, <span class="number">3</span>, <span class="number">5</span>, <span class="number">1</span>, <span class="number">2</span>];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> <span class="title function_ invoke__">is_possible_pop_order</span>(push_v, pop_v) &#123;</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;true&quot;</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;false&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="Go-实现"><a href="#Go-实现" class="headerlink" title="Go 实现"></a>Go 实现</h1><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">isPossiblePopOrder</span><span class="params">(push_v []<span class="type">int</span>, pop_v []<span class="type">int</span>)</span></span> <span class="type">bool</span> &#123;</span><br><span class="line">	<span class="keyword">if</span> <span class="built_in">len</span>(push_v) != <span class="built_in">len</span>(pop_v) &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">var</span> stack []<span class="type">int</span></span><br><span class="line">	pop_index := <span class="number">0</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> _, num := <span class="keyword">range</span> push_v &#123;</span><br><span class="line">		stack = <span class="built_in">append</span>(stack, num)</span><br><span class="line">		<span class="comment">// 当栈顶元素与当前弹出序列的元素相等时，弹出栈顶元素</span></span><br><span class="line">		<span class="keyword">for</span> <span class="built_in">len</span>(stack) &gt; <span class="number">0</span> &amp;&amp; stack[<span class="built_in">len</span>(stack)<span class="number">-1</span>] == pop_v[pop_index] &#123;</span><br><span class="line">			<span class="comment">//stack[:len(stack)-1]：Go 中切片操作，表示取从开始到倒数第二个元素（不包含最后一个）。</span></span><br><span class="line">			<span class="comment">//通过赋值 stack = ...，实现了“移除最后一个元素”的效果。因为go没pop方法</span></span><br><span class="line">			stack = stack[:<span class="built_in">len</span>(stack)<span class="number">-1</span>]</span><br><span class="line">			pop_index++</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="built_in">len</span>(stack) == <span class="number">0</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="TypeScript实现"><a href="#TypeScript实现" class="headerlink" title="TypeScript实现"></a>TypeScript实现</h1><figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">isPopOrder</span>(<span class="params"><span class="attr">pushV</span>: <span class="built_in">number</span>[], <span class="attr">popV</span>: <span class="built_in">number</span>[]</span>): <span class="built_in">boolean</span> &#123;</span><br><span class="line">  <span class="keyword">if</span> (pushV.<span class="property">length</span> !== popV.<span class="property">length</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> <span class="attr">stack</span>: <span class="built_in">number</span>[] = [];</span><br><span class="line">  <span class="keyword">let</span> popIndex = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">const</span> num <span class="keyword">of</span> pushV) &#123;</span><br><span class="line">    stack.<span class="title function_">push</span>(num);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 当栈顶元素与当前 popV 元素匹配时，持续弹出</span></span><br><span class="line">    <span class="keyword">while</span> (stack.<span class="property">length</span> &gt; <span class="number">0</span> &amp;&amp; stack[stack.<span class="property">length</span> - <span class="number">1</span>] === popV[popIndex]) &#123;</span><br><span class="line">      stack.<span class="title function_">pop</span>();</span><br><span class="line">      popIndex++;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 最终栈应为空</span></span><br><span class="line">  <span class="keyword">return</span> stack.<span class="property">length</span> === <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://example.com/2025/05/17/%E6%A0%88%E5%9F%BA%E7%A1%80/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1700,427 +1983,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2025/02/25/Solana%20%E5%90%88%E7%BA%A6%E5%BC%80%E5%8F%91%20-%20%E5%90%88%E7%BA%A6%E5%AE%89%E5%85%A8pub(crate)%E4%BD%BF%E7%94%A8/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2025/02/25/Solana%20%E5%90%88%E7%BA%A6%E5%BC%80%E5%8F%91%20-%20%E5%90%88%E7%BA%A6%E5%AE%89%E5%85%A8pub(crate)%E4%BD%BF%E7%94%A8/" itemprop="url">Solana 合约开发 - 合约安全 pub(crate) 使用</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2025-02-25T22:45:34+08:00">
-                2025-02-25
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Solana%E5%90%88%E7%BA%A6%E5%BC%80%E5%8F%91-%E5%90%88%E7%BA%A6%E5%AE%89%E5%85%A8/" itemprop="url" rel="index">
-                    <span itemprop="name">Solana合约开发 - 合约安全</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="可见性修饰符以及含义："><a href="#可见性修饰符以及含义：" class="headerlink" title="可见性修饰符以及含义："></a>可见性修饰符以及含义：</h1><ol>
-<li><code>pub</code>: 对所有 crate 和模块可见（完全公开）。</li>
-<li><code>pub(crate)</code>: 仅对当前 crate 内的模块可见，也就是当前合约内可以调用，其他合约不行。</li>
-<li><code>pub(super)</code>: 仅对当前模块的父模块可见。</li>
-<li><code>pub(in path)</code>: 仅对指定路径内的模块可见（更细粒度的控制）。</li>
-</ol>
-<p>在 Solana 合约开发中，由于智能合约运行在区块链上，安全性是首要考虑因素。因此，合理使用 pub(crate) 可以有效隐藏内部逻辑，减少暴露给外部的风险。</p>
-<h1 id="Pub（crate）使用示例："><a href="#Pub（crate）使用示例：" class="headerlink" title="Pub（crate）使用示例："></a>Pub（crate）使用示例：</h1><h2 id="隐藏内部工具函数："><a href="#隐藏内部工具函数：" class="headerlink" title="隐藏内部工具函数："></a><strong>隐藏内部工具函数</strong>：</h2><p>智能合约通常包含一些辅助函数，用于验证数据、处理逻辑或计算结果。这些函数不需要暴露给外部，但需要在多个模块之间共享。</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// src/utils.rs</span></span><br><span class="line"><span class="title function_ invoke__">pub</span>(<span class="keyword">crate</span>) <span class="keyword">fn</span> <span class="title function_">validate_account_size</span>(data: &amp;[<span class="type">u8</span>], expected_size: <span class="type">usize</span>) <span class="punctuation">-&gt;</span> <span class="type">bool</span> &#123;</span><br><span class="line">    data.<span class="title function_ invoke__">len</span>() == expected_size</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="title function_ invoke__">pub</span>(<span class="keyword">crate</span>) <span class="keyword">fn</span> <span class="title function_">calculate_fee</span>(amount: <span class="type">u64</span>, fee_rate: <span class="type">u64</span>) <span class="punctuation">-&gt;</span> <span class="type">u64</span> &#123;</span><br><span class="line">    amount * fee_rate / <span class="number">100</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-<h2 id="封装内部状态结构体"><a href="#封装内部状态结构体" class="headerlink" title="封装内部状态结构体:"></a>封装内部状态结构体:</h2><p>智能合约通常需要维护一些内部状态（如计数器、余额、配置）。这些状态结构体可能只在合约内部使用，不需要暴露给外部。</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// src/state.rs</span></span><br><span class="line"><span class="meta">#[derive(Default)]</span></span><br><span class="line"><span class="title function_ invoke__">pub</span>(<span class="keyword">crate</span>) <span class="keyword">struct</span> <span class="title class_">InternalState</span> &#123;</span><br><span class="line">    <span class="title function_ invoke__">pub</span>(<span class="keyword">crate</span>) counter: <span class="type">u64</span>,</span><br><span class="line">    <span class="title function_ invoke__">pub</span>(<span class="keyword">crate</span>) balance: <span class="type">u64</span>,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">impl</span> <span class="title class_">InternalState</span> &#123;</span><br><span class="line">    <span class="title function_ invoke__">pub</span>(<span class="keyword">crate</span>) <span class="keyword">fn</span> <span class="title function_">increment_counter</span>(&amp;<span class="keyword">mut</span> <span class="keyword">self</span>) &#123;</span><br><span class="line">        <span class="keyword">self</span>.counter += <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="title function_ invoke__">pub</span>(<span class="keyword">crate</span>) <span class="keyword">fn</span> <span class="title function_">add_balance</span>(&amp;<span class="keyword">mut</span> <span class="keyword">self</span>, amount: <span class="type">u64</span>) &#123;</span><br><span class="line">        <span class="keyword">self</span>.balance += amount;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="共享常量和配置："><a href="#共享常量和配置：" class="headerlink" title="共享常量和配置："></a>共享常量和配置：</h2><p>智能合约可能需要一些全局常量或配置（如最大允许值、默认费率）。这些常量通常只在合约内部使用，不需要暴露给外部。</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">impl</span> <span class="title class_">StakePool</span> &#123;</span><br><span class="line">    <span class="title function_ invoke__">pub</span>(<span class="keyword">crate</span>) <span class="keyword">const</span> SEED_PREFIX: &amp;<span class="symbol">&#x27;static</span> <span class="type">str</span> = <span class="string">&quot;stake_pool_v1&quot;</span>;</span><br><span class="line">    <span class="title function_ invoke__">pub</span>(<span class="keyword">crate</span>) <span class="keyword">const</span> LEN: <span class="type">usize</span> = <span class="number">194</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="限制公共接口："><a href="#限制公共接口：" class="headerlink" title="限制公共接口："></a>限制公共接口：</h2><p>Solana 合约的入口点函数（<code>process_instruction</code>）是唯一的公开接口，所有外部调用都必须通过它。其他所有内容都应该是私有的或受限制的。</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// src/lib.rs</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#[program]</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">mod</span> swap &#123;</span><br><span class="line">    <span class="keyword">use</span> super::*;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">lp_token_stake</span>(ctx: Context&lt;LPTokenStake&gt;, index: <span class="type">u16</span>, amount: <span class="type">u64</span>) <span class="punctuation">-&gt;</span> <span class="type">Result</span>&lt;()&gt; &#123;</span><br><span class="line">        instructions::<span class="title function_ invoke__">lp_token_stake</span>(ctx, index, amount)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// instructions/stake.rs</span></span><br><span class="line"></span><br><span class="line"><span class="title function_ invoke__">pub</span>(<span class="keyword">crate</span>) <span class="keyword">fn</span> <span class="title function_">lp_token_stake</span>(ctx: Context&lt;LPTokenStake&gt;, index: <span class="type">u16</span>, amount: <span class="type">u64</span>) <span class="punctuation">-&gt;</span> <span class="type">Result</span>&lt;()&gt; &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">staker</span> = &amp;ctx.accounts.user;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">lp_mint</span> = &amp;ctx.accounts.lp_mint;</span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">stake_pool</span> = ctx.accounts.stake_pool.<span class="title function_ invoke__">load_mut</span>()?;</span><br><span class="line"></span><br><span class="line">    require!(amount &gt; <span class="number">0</span>, ErrorCode::InvalidAmount);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// ......</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h1 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h1><ol>
-<li><strong>最小化暴露</strong><br> 只有必要的部分才应该使用 pub 或 pub(crate)。<br> 对于内部逻辑，优先使用 pub(crate) 而不是 pub。</li>
-<li><strong>模块化设计</strong><br> 将功能划分为多个模块（如 instructions、state、utils），并通过 pub(crate) 控制模块间的可见性。<br> 避免将所有代码放在一个文件中，保持代码清晰且易于维护。</li>
-<li><strong>安全审计</strong><br> 定期审查代码，确保没有意外暴露的接口。<br> 使用工具（如 Clippy）检查未使用的 pub 或 pub(crate)。<br> <a target="_blank" rel="noopener" href="https://doc.rust-lang.org/clippy/usage.html">https://doc.rust-lang.org/clippy/usage.html</a></li>
-</ol>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2025/02/24/Solana%20%E5%90%88%E7%BA%A6%E5%BC%80%E5%8F%91%20-%20Account%20&%20AccountInfo%20&%20InterfaceAccount%20&%20AccountLoader/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2025/02/24/Solana%20%E5%90%88%E7%BA%A6%E5%BC%80%E5%8F%91%20-%20Account%20&%20AccountInfo%20&%20InterfaceAccount%20&%20AccountLoader/" itemprop="url">Solana 合约开发 - Account & AccountInfo & InterfaceAccount & AccountLoader 区别</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2025-02-24T19:51:49+08:00">
-                2025-02-24
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Solana%E5%90%88%E7%BA%A6%E5%BC%80%E5%8F%91/" itemprop="url" rel="index">
-                    <span itemprop="name">Solana合约开发</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="Account"><a href="#Account" class="headerlink" title="Account"></a>Account</h1><p>在 Solana 中，Account 是一个核心概念，表示区块链上的一个存储单元。每个账户都有一个唯一的地址（公钥），并且可以存储数据、持有 SOL（Solana 的原生代币）以及执行权限控制。</p>
-<ul>
-<li><p><strong>账户类型</strong> ：Solana 上的账户可以分为几种类型：</p>
-<ul>
-<li><code>System Account</code> ：由系统程序管理的账户，通常用于存储 SOL。</li>
-<li><code>Program Derived Address (PDA)</code> ：由程序派生的地址，用于存储与特定程序相关的数据。</li>
-<li><code>Token Account</code> ：用于存储 SPL 代币（Solana 的标准代币协议）。</li>
-</ul>
-</li>
-<li><p><strong>账户结构</strong> ：每个账户包含以下信息：</p>
-<ul>
-<li>公钥（地址）</li>
-<li>数据（可以是任意字节序列）</li>
-<li>权限（所有者程序）</li>
-<li>SOL 余额</li>
-</ul>
-</li>
-</ul>
-<p>在Anchor中，Account 是 Anchor 框架 提供的一个高级抽象，用于简化账户的操作。它封装了账户的数据、权限、所有者程序等信息，并提供了类型安全的访问方式。</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">pub</span> etf_token_info: <span class="type">Box</span>&lt;Account&lt;<span class="symbol">&#x27;info</span>, EtfToken&gt;&gt;,</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">#[derive(Clone)]</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">struct</span> <span class="title class_">Account</span>&lt;<span class="symbol">&#x27;info</span>, T: AccountSerialize + AccountDeserialize + <span class="built_in">Clone</span>&gt; &#123;</span><br><span class="line">    account: T,</span><br><span class="line">    info: &amp;<span class="symbol">&#x27;info</span> AccountInfo&lt;<span class="symbol">&#x27;info</span>&gt;,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>由于AccountInfo为字节数组，难以修改，Anchor 会自动将 AccountInfo 的字节数组反序列化为 T 类型，并存储在 account 字段中，这样就方便用户进行修改。</p>
-<h1 id="AccountInfo"><a href="#AccountInfo" class="headerlink" title="AccountInfo"></a>AccountInfo</h1><p>AccountInfo 是 Solana 运行时提供的原生结构体 ，表示账户的底层元数据。它是 Solana 程序中最基础的账户表示形式，所有操作最终都会涉及 AccountInfo。</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/// Account information</span></span><br><span class="line"><span class="meta">#[derive(Clone)]</span></span><br><span class="line"><span class="meta">#[repr(C)]</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">struct</span> <span class="title class_">AccountInfo</span>&lt;<span class="symbol">&#x27;a</span>&gt; &#123;</span><br><span class="line">    <span class="comment">/// Public key of the account</span></span><br><span class="line">    <span class="keyword">pub</span> key: &amp;<span class="symbol">&#x27;a</span> Pubkey,</span><br><span class="line">    <span class="comment">/// The lamports in the account.  Modifiable by programs.</span></span><br><span class="line">    <span class="keyword">pub</span> lamports: Rc&lt;RefCell&lt;&amp;<span class="symbol">&#x27;a</span> <span class="keyword">mut</span> <span class="type">u64</span>&gt;&gt;,</span><br><span class="line">    <span class="comment">/// The data held in this account.  Modifiable by programs.</span></span><br><span class="line">    <span class="keyword">pub</span> data: Rc&lt;RefCell&lt;&amp;<span class="symbol">&#x27;a</span> <span class="keyword">mut</span> [<span class="type">u8</span>]&gt;&gt;,</span><br><span class="line">    <span class="comment">/// Program that owns this account</span></span><br><span class="line">    <span class="keyword">pub</span> owner: &amp;<span class="symbol">&#x27;a</span> Pubkey,</span><br><span class="line">    <span class="comment">/// The epoch at which this account will next owe rent</span></span><br><span class="line">    <span class="keyword">pub</span> rent_epoch: Epoch,</span><br><span class="line">    <span class="comment">/// Was the transaction signed by this account&#x27;s public key?</span></span><br><span class="line">    <span class="keyword">pub</span> is_signer: <span class="type">bool</span>,</span><br><span class="line">    <span class="comment">/// Is the account writable?</span></span><br><span class="line">    <span class="keyword">pub</span> is_writable: <span class="type">bool</span>,</span><br><span class="line">    <span class="comment">/// This account&#x27;s data contains a loaded program (and is now read-only)</span></span><br><span class="line">    <span class="keyword">pub</span> executable: <span class="type">bool</span>,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>结构 ：AccountInfo 是一个结构体，包含了以下字段：<ul>
-<li><code>key</code>: 账户的公钥（地址）。</li>
-<li><code>is_signer</code>: 表示该账户是否是交易的签名者。</li>
-<li><code>is_writable</code>: 表示该账户是否可写（即是否可以修改其数据或余额）。</li>
-<li><code>lamports</code>: 账户中的 SOL 余额（以 lamports 为单位，1 SOL &#x3D; 10^9 lamports）。</li>
-<li><code>data</code>: 账户存储的数据（字节数组）。</li>
-<li><code>owner</code>: 账户的所有者程序（即哪个程序有权修改该账户的数据）。</li>
-<li><code>用途</code> ：AccountInfo 是 Solana 程序中最基础的账户表示形式，所有的账户操作最终都会涉及到 AccountInfo。开发者可以直接通过 AccountInfo 来访问和修改账户的数据。</li>
-</ul>
-</li>
-</ul>
-<h2 id="如何转换-Account-和-AccountInfo？"><a href="#如何转换-Account-和-AccountInfo？" class="headerlink" title="如何转换 Account 和 AccountInfo？"></a>如何转换 Account 和 AccountInfo？</h2><p>在 Anchor 中，<code>Account</code> 实际上是对 <code>AccountInfo</code> 的封装。可以通过以下方式获取底层 <code>AccountInfo</code>：</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="variable">account_info</span>: &amp;AccountInfo = ctx.accounts.my_account.<span class="title function_ invoke__">to_account_info</span>();</span><br></pre></td></tr></table></figure>
-
-<p>反之，若需将 <code>AccountInfo</code> 转换为 Anchor 的 <code>Account</code>，需手动验证并反序列化数据：</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="variable">account</span>: Account&lt;MyData&gt; = Account::<span class="title function_ invoke__">try_from</span>(&amp;account_info)?;</span><br></pre></td></tr></table></figure>
-
-
-<h1 id="InterfaceAccount"><a href="#InterfaceAccount" class="headerlink" title="InterfaceAccount"></a>InterfaceAccount</h1><p>InterfaceAccount 是一个接口 ，定义了账户必须实现的方法或属性。它的作用类似于面向对象编程中的接口（如 Java 的 Interface 或 Rust 的 Trait），确保不同账户类型遵循统一的行为规范。</p>
-<p>在 Solana 的 Anchor 框架中，InterfaceAccount&lt;’info, TokenAccount&gt; 是一种结合了接口（Interface）和具体账户类型（如 TokenAccount）的泛型结构。它用于在智能合约中约束某个账户必须实现特定的接口（即行为规范），同时关联具体的账户类型（如 SPL Token 账户）。</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">pub</span> etf_token_ata: <span class="type">Box</span>&lt;InterfaceAccount&lt;<span class="symbol">&#x27;info</span>, TokenAccount&gt;&gt;,</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#[derive(Clone)]</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">struct</span> <span class="title class_">InterfaceAccount</span>&lt;<span class="symbol">&#x27;info</span>, T: AccountSerialize + AccountDeserialize + <span class="built_in">Clone</span>&gt; &#123;</span><br><span class="line">    account: Account&lt;<span class="symbol">&#x27;info</span>, T&gt;,</span><br><span class="line">    <span class="comment">// The owner here is used to make sure that changes aren&#x27;t incorrectly propagated</span></span><br><span class="line">    <span class="comment">// to an account with a modified owner</span></span><br><span class="line">    owner: Pubkey,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="1-泛型参数"><a href="#1-泛型参数" class="headerlink" title="1. 泛型参数"></a>1. <strong>泛型参数</strong></h4><ul>
-<li><strong><code>&#39;info</code></strong> ：生命周期参数，确保账户引用的上下文有效性。</li>
-<li><strong><code>T</code></strong> ：泛型类型参数，需满足以下约束：<ul>
-<li><code>AccountSerialize</code>：账户数据可序列化。</li>
-<li><code>AccountDeserialize</code>：账户数据可反序列化。</li>
-<li><code>Clone</code>：允许结构体被克隆。</li>
-</ul>
-</li>
-</ul>
-<h4 id="2-字段说明"><a href="#2-字段说明" class="headerlink" title="2. 字段说明"></a>2. <strong>字段说明</strong></h4><ul>
-<li><strong><code>account: Account&lt;&#39;info, T&gt;</code></strong><br>  封装具体账户数据的 Anchor 账户类型，包含账户的元数据（如地址、权限、数据等）。</li>
-<li><strong><code>owner: Pubkey</code></strong><br>  账户的原始所有者公钥，owner 字段保存账户的初始所有者公钥 。在操作账户前，检查当前账户的所有者是否与 owner 一致，确保操作合法性。防止所有者被篡改后引发的安全问题。</li>
-</ul>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 定义代币操作接口</span></span><br><span class="line"><span class="meta">#[interface]</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">trait</span> <span class="title class_">TokenInterface</span> &#123;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">transfer</span>(&amp;<span class="keyword">mut</span> <span class="keyword">self</span>, to: &amp;<span class="keyword">mut</span> <span class="keyword">dyn</span> TokenInterface, amount: <span class="type">u64</span>) <span class="punctuation">-&gt;</span> ProgramResult;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 为 SPL Token 账户实现接口</span></span><br><span class="line"><span class="keyword">impl</span> <span class="title class_">TokenInterface</span> <span class="keyword">for</span> <span class="title class_">SplTokenAccount</span> &#123;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">transfer</span>(&amp;<span class="keyword">mut</span> <span class="keyword">self</span>, to: &amp;<span class="keyword">mut</span> <span class="keyword">dyn</span> TokenInterface, amount: <span class="type">u64</span>) <span class="punctuation">-&gt;</span> ProgramResult &#123;</span><br><span class="line">        <span class="comment">// 调用 SPL Token 程序的转账逻辑</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 在指令上下文中使用 InterfaceAccount</span></span><br><span class="line"><span class="meta">#[derive(Accounts)]</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">struct</span> <span class="title class_">Transfer</span>&lt;<span class="symbol">&#x27;info</span>&gt; &#123;</span><br><span class="line">    <span class="meta">#[account(mut)]</span></span><br><span class="line">    <span class="keyword">pub</span> from: InterfaceAccount&lt;<span class="symbol">&#x27;info</span>, SplTokenAccount&gt;,</span><br><span class="line">    <span class="meta">#[account(mut)]</span></span><br><span class="line">    <span class="keyword">pub</span> to: InterfaceAccount&lt;<span class="symbol">&#x27;info</span>, SplTokenAccount&gt;,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 执行转账</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">transfer</span>(ctx: Context&lt;Transfer&gt;, amount: <span class="type">u64</span>) <span class="punctuation">-&gt;</span> ProgramResult &#123;</span><br><span class="line">    ctx.accounts.from.<span class="title function_ invoke__">transfer</span>(&amp;<span class="keyword">mut</span> ctx.accounts.to, amount)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<h1 id="AccountLoader"><a href="#AccountLoader" class="headerlink" title="AccountLoader"></a>AccountLoader</h1><p>在Solana中，每个账户的数据是以字节数组的形式存储的。当你在智能合约中处理账户数据时，通常需要将这些字节数组反序列化为 Rust 的结构体或其他高级数据结构，以便进行操作。手动处理字节数组不仅繁琐，而且容易出错。</p>
-<h2 id="AccountLoader-的主要作用是："><a href="#AccountLoader-的主要作用是：" class="headerlink" title="AccountLoader 的主要作用是："></a>AccountLoader 的主要作用是：</h2><ul>
-<li><code>简化数据加载</code> ：自动将账户的字节数组反序列化为 Rust 结构体。</li>
-<li><code>提供线程安全的访问 </code>：通过 load() 和 load_mut() 方法，确保对账户数据的读写操作是线程安全的。</li>
-<li><code>支持复杂数据结构</code> ：可以轻松处理复杂的嵌套数据结构，而不需要手动解析字节数组。</li>
-</ul>
-<h2 id="什么是-zero-copy-unsafe"><a href="#什么是-zero-copy-unsafe" class="headerlink" title="什么是(zero_copy(unsafe))"></a>什么是(zero_copy(unsafe))</h2><p><code>#[account(zero_copy(unsafe))]</code> 是 Anchor 提供的一个属性，用于标记一个账户结构体为“零拷贝”（Zero-Copy）模式。这意味着该结构体的数据不会被反序列化到 Rust 的堆内存中，而是直接从账户的字节数组中读取和写入数据。</p>
-<ul>
-<li><strong><code>零拷贝</code></strong> ：零拷贝是一种优化技术，避免了将数据从字节数组反序列化为 Rust 结构体的过程。相反，程序直接操作原始字节数组中的数据。</li>
-<li><strong><code>unsafe</code></strong> ：由于零拷贝模式绕过了 Rust 的安全检查机制（如边界检查），因此它被认为是不安全的。开发者需要确保手动处理数据时不会出现越界访问等问题。</li>
-</ul>
-<h2 id="为什么要用零拷贝？"><a href="#为什么要用零拷贝？" class="headerlink" title="为什么要用零拷贝？"></a>为什么要用零拷贝？</h2><p>Solana 的账户数据是以字节数组的形式存储的，通常在智能合约中需要将这些字节数组反序列化为 Rust 结构体进行操作。然而，这种反序列化过程会带来以下问题：</p>
-<ul>
-<li><strong><code>性能开销</code></strong> ：每次加载账户数据时都需要进行反序列化，这会消耗额外的 CPU 时间。</li>
-<li>**<code>内存占用</code>**：反序列化后的数据会被复制到堆内存中，增加了内存使用。</li>
-<li>通过使用零拷贝模式，可以避免这些开销，因为程序直接操作原始字节数组中的数据，而不需要额外的反序列化和内存分配。</li>
-</ul>
-<h2 id="什么是repr-packed-？"><a href="#什么是repr-packed-？" class="headerlink" title="什么是repr(packed)？"></a>什么是repr(packed)？</h2><p>#[repr(packed)] 是 Rust 的一个属性，用于指定结构体的内存布局。具体来说，它告诉编译器不要在结构体字段之间插入任何填充字节（padding），从而使得结构体的内存布局更加紧凑。</p>
-<ul>
-<li><strong><code>默认行为</code></strong> ：Rust 编译器为了提高内存访问效率，通常会在结构体字段之间插入填充字节，以确保字段的对齐（alignment）。例如，u64 类型通常需要 8 字节对齐。</li>
-<li><strong><code>packed 属性</code></strong> ：使用 #[repr(packed)] 后，编译器会移除这些填充字节，使得结构体的大小尽可能小。</li>
-</ul>
-<p>在 Solana 中，账户数据是以字节数组的形式存储的，且每个账户都有固定的大小。为了最大化利用账户空间并减少浪费，通常会希望结构体的内存布局与账户数据的字节数组布局完全一致。</p>
-<p>如果不对结构体使用 #[repr(packed)]，编译器可能会插入填充字节，导致结构体的内存布局与账户数据的字节数组布局不匹配，进而引发数据解析错误。</p>
-<p>举个例子</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">MyData</span> &#123;</span><br><span class="line">    value: <span class="type">u64</span>,  <span class="comment">// 8 bytes</span></span><br><span class="line">    flag: <span class="type">bool</span>,  <span class="comment">// 1 byte</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>在默认情况下，Rust 编译器会对 MyData 进行对齐处理。由于 u64 需要 8 字节对齐，编译器会在 flag 后面插入 7 个填充字节，以确保下一个字段（如果有）也能正确对齐。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">| u64 (8 bytes) | bool (1 byte) | padding (7 bytes) |</span><br></pre></td></tr></table></figure>
-<p>如果我们使用 #[repr(packed)]，编译器将不会插入任何填充字节，结构体的内存布局将是紧凑的。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">| u64 (8 bytes) | bool (1 byte) |</span><br></pre></td></tr></table></figure>
-
-<h3 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h3><ul>
-<li><strong><code>填充字节的作用</code></strong> ：Rust 编译器默认会在结构体字段之间插入填充字节，以确保字段的对齐要求。这种行为提高了内存访问效率，但可能导致结构体的内存布局与账户数据的字节数组布局不匹配。</li>
-<li><strong><code>问题的原因</code></strong> ：如果不对结构体使用 #[repr(packed)]，编译器可能会插入填充字节，导致结构体的内存布局与账户数据的字节数组布局不一致。这会引发数据解析错误，因为程序会错误地读取或写入数据。</li>
-<li><strong><code>解决方案</code></strong> ：使用 #[repr(packed)] 来移除填充字节，确保结构体的内存布局与账户数据的字节数组布局一致。这样可以避免数据解析错误，并高效地利用账户空间。</li>
-</ul>
-<h3 id="注意事项："><a href="#注意事项：" class="headerlink" title="注意事项："></a>注意事项：</h3><ul>
-<li>虽然 #[repr(packed)] 可以解决数据布局不匹配的问题，但它也有一些潜在的风险：<ul>
-<li><strong><code>性能下降</code></strong> ：未对齐的内存访问在某些架构上可能会导致性能下降。</li>
-<li><strong><code>安全性风险</code></strong> ：未对齐的内存访问在某些架构上可能会导致崩溃或未定义行为。</li>
-</ul>
-</li>
-</ul>
-<h2 id="怎么用："><a href="#怎么用：" class="headerlink" title="怎么用："></a>怎么用：</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#[derive(Accounts)]</span> 里面使用：</span><br><span class="line">	<span class="meta">#[account(init, payer = user, space = 8 + 8)]</span></span><br><span class="line">    <span class="keyword">pub</span> pool_state: AccountLoader&lt;<span class="symbol">&#x27;info</span>, PoolState&gt;,</span><br><span class="line"></span><br><span class="line">	<span class="meta">#[account(mut)]</span></span><br><span class="line">    <span class="keyword">pub</span> pool_state: AccountLoader&lt;<span class="symbol">&#x27;info</span>, PoolState&gt;,</span><br><span class="line">    </span><br><span class="line">------------------------------</span><br><span class="line">结构体：</span><br><span class="line"><span class="meta">#[account(zero_copy(unsafe))]</span></span><br><span class="line"><span class="meta">#[repr(packed)]</span></span><br><span class="line"><span class="meta">#[derive(Default, Debug)]</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">struct</span> <span class="title class_">PoolState</span> &#123;</span><br><span class="line">    <span class="keyword">pub</span> pool_creator: Pubkey,</span><br><span class="line">    <span class="keyword">pub</span> token_0_vault: Pubkey,</span><br><span class="line">    <span class="keyword">pub</span> token_1_vault: Pubkey,</span><br><span class="line">    <span class="keyword">pub</span> token_0_mint: Pubkey,</span><br><span class="line">    <span class="keyword">pub</span> token_1_mint: Pubkey,</span><br><span class="line">    <span class="keyword">pub</span> token_0_vault: <span class="type">u64</span>,</span><br><span class="line">&#125;    </span><br><span class="line"></span><br><span class="line">------------------------------</span><br><span class="line">方法使用：</span><br><span class="line"><span class="comment">//load(): 返回一个不可变引用，确保数据不会被修改。</span></span><br><span class="line"><span class="comment">//load_mut(): 返回一个可变引用，允许修改数据，但确保同一时间只有一个指令可以修改该数据。</span></span><br><span class="line"><span class="comment">//load_init() 时，会创建一个新的账户并将其反序列化为 PoolState 结构体。</span></span><br><span class="line"><span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">pool_state</span> =  ctx.accounts.pool_state.<span class="title function_ invoke__">load_init</span>()?;</span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2171,7 +2033,7 @@
               
                 <a href="/archives/%20%7C%7C%20archive">
               
-                  <span class="site-state-item-count">53</span>
+                  <span class="site-state-item-count">55</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
