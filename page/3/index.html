@@ -262,6 +262,178 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2025/02/09/Solana%20-%20Dex%20config%20%E5%BC%80%E5%8F%91/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2025/02/09/Solana%20-%20Dex%20config%20%E5%BC%80%E5%8F%91/" itemprop="url">Solana 合约开发 - DeFi - Dex 开发一：Config</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2025-02-09T15:02:36+08:00">
+                2025-02-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Solana%E5%90%88%E7%BA%A6%E5%BC%80%E5%8F%91-DeFi-Dex/" itemprop="url" rel="index">
+                    <span itemprop="name">Solana合约开发-DeFi-Dex</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>一个Dex 会涉及到许多模块，例如用户创建、流动性池创建、监视器创建、管理员创建、SWAP等，接下来会一一讲解，首先讲下 <code>Config</code> 模块。</p>
+<p>在创建AMM 的流动型池之前，我们需要先编写 config，通常用于配置和管理AMM相关参数的一组工具或接口。这些参数对于决定流动性池的行为、交易费用、价格发现机制等至关重要，接下来一起看看代码。</p>
+<h1 id="合约代码："><a href="#合约代码：" class="headerlink" title="合约代码："></a>合约代码：</h1><p><code>anchor/programs/swap/src/states/config.rs:</code></p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> anchor_lang::prelude::*;</span><br><span class="line"></span><br><span class="line"><span class="comment">//定义 AmmConfig账户</span></span><br><span class="line"><span class="meta">#[account]</span></span><br><span class="line"><span class="meta">#[derive(InitSpace,Default,Debug)]</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">struct</span> <span class="title class_">AmmConfig</span> &#123;</span><br><span class="line">    <span class="keyword">pub</span> bump: <span class="type">u8</span>,   <span class="comment">//用于生成程序派生地址（PDA）时避免冲突。</span></span><br><span class="line">    <span class="keyword">pub</span> trade_fee_rate: <span class="type">u64</span>, <span class="comment">//交易手续费率，表示每笔交易中收取的费用比例。</span></span><br><span class="line">    <span class="keyword">pub</span> create_pool_fee: <span class="type">u64</span>, <span class="comment">//创建一个新的流动性池时需要支付的一次性费用。</span></span><br><span class="line">    <span class="keyword">pub</span> protocol_fee_rate: <span class="type">u64</span>, <span class="comment">//协议级别的费用比率，可能用于支持协议的发展或维护。</span></span><br><span class="line">    <span class="keyword">pub</span> protocol_owner: Pubkey, <span class="comment">//协议所有者的公钥，通常是接收协议级别费用的账户。</span></span><br><span class="line">    <span class="keyword">pub</span> fund_fee_rate: <span class="type">u64</span>, <span class="comment">//指向基金或其他资金池的费用比率。   </span></span><br><span class="line">    <span class="keyword">pub</span> fund_owner: Pubkey, <span class="comment">//基金或其他资金池的所有者公钥，</span></span><br><span class="line">    <span class="keyword">pub</span> index: <span class="type">u16</span>, <span class="comment">//一个标识符，可能用于区分不同的 AMM 配置实例。</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">impl</span> <span class="title class_">AmmConfig</span> &#123;</span><br><span class="line">	<span class="keyword">pub</span> <span class="keyword">const</span> CONFIG_PREFIX_SEED: &amp;<span class="type">str</span> = <span class="string">&quot;amm_config&quot;</span>;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//使用 1_000_000 作为分母，可以将费率表示为百万分之一的单位。例如，3000 对应 3000 / 1_000_000 = 0.003，即 0.3%。</span></span><br><span class="line">    <span class="keyword">pub</span> <span class="keyword">const</span> FEE_RATE_VALUE: <span class="type">u64</span> = <span class="number">1_000_000</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">get_amm_config_key</span>(index: <span class="type">u16</span>) <span class="punctuation">-&gt;</span> Pubkey &#123;</span><br><span class="line">        <span class="comment">// 计算池子状态账户的PDA</span></span><br><span class="line">        Pubkey::<span class="title function_ invoke__">find_program_address</span>(</span><br><span class="line">            &amp;[<span class="keyword">Self</span>::CONFIG_PREFIX_SEED.<span class="title function_ invoke__">as_bytes</span>(), &amp;index.<span class="title function_ invoke__">to_be_bytes</span>()],</span><br><span class="line">            &amp;crate::ID,</span><br><span class="line">        )</span><br><span class="line">        .<span class="number">0</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><code>anchor/programs/swap/src/accounts_all/config.rs</code>：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> anchor_lang::prelude::*;</span><br><span class="line"><span class="keyword">use</span> crate::states::*;</span><br><span class="line"></span><br><span class="line"><span class="meta">#[derive(Accounts)]</span></span><br><span class="line"><span class="meta">#[instruction(index: u16)]</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">struct</span> <span class="title class_">CreateAmmConfig</span>&lt;<span class="symbol">&#x27;info</span>&gt; &#123;</span><br><span class="line">	<span class="comment">//初始化amm_config账户，space使用了INIT_SPACE自动计算所需要的空间，需要上面states目录文件derive支持</span></span><br><span class="line">	<span class="comment">// 而 &quot;8 +&quot; 是因为Solana 账户有一个 8 字节的头部用于存储账户的分配大小和其他元数据</span></span><br><span class="line">	<span class="comment">// seeds里面使用 &amp;index 是为了区分账户，毕竟多个index会有多个config账户</span></span><br><span class="line">	<span class="comment">// 这里使用 AccountLoader 以后单开一篇再讲</span></span><br><span class="line">	<span class="comment">// &amp;index是引用instruction里面的index，也就是动态获取index</span></span><br><span class="line">	<span class="meta">#[account(</span></span><br><span class="line"><span class="meta">        init,</span></span><br><span class="line"><span class="meta">        payer = owner,</span></span><br><span class="line"><span class="meta">        space = 8+ AmmConfig::INIT_SPACE,</span></span><br><span class="line"><span class="meta">        seeds = [</span></span><br><span class="line"><span class="meta">            AmmConfig::CONFIG_PREFIX_SEED.as_bytes(),</span></span><br><span class="line"><span class="meta">            //&amp;index.to_be_bytes() 是 Rust 中的一个表达式，用于将一个整数（如 u16、u32 等）转换为大端序（Big-Endian）的字节数组,从小到大排序，8个字节为1位，u16即为2位，如果index=1,则为&amp;[0, 1]</span></span><br><span class="line">            &amp;index.<span class="title function_ invoke__">to_be_bytes</span>(),       </span><br><span class="line">        ],</span><br><span class="line">        bump,</span><br><span class="line">        </span><br><span class="line">    )]</span><br><span class="line">    <span class="keyword">pub</span> amm_config: Account&lt;<span class="symbol">&#x27;info</span>, AmmConfig&gt;,</span><br><span class="line"></span><br><span class="line">    <span class="meta">#[account(mut)]</span></span><br><span class="line">    <span class="keyword">pub</span> owner: Signer&lt;<span class="symbol">&#x27;info</span>&gt;,</span><br><span class="line"></span><br><span class="line">    <span class="keyword">pub</span> system_program: Program&lt;<span class="symbol">&#x27;info</span>, System&gt;,</span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+<p>&#96;anchor&#x2F;programs&#x2F;swap&#x2F;src&#x2F;instructions&#x2F;config.rs:</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> crate::accounts_all::*;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> anchor_lang::prelude::*;</span><br><span class="line"></span><br><span class="line"><span class="comment">//设置amm参数,创建amm_config</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">create_amm_config</span>(</span><br><span class="line">    ctx: Context&lt;CreateAmmConfig&gt;,</span><br><span class="line">    index: <span class="type">u16</span>,</span><br><span class="line">    trade_fee_rate: <span class="type">u64</span>,</span><br><span class="line">    protocol_fee_rate: <span class="type">u64</span>,</span><br><span class="line">    create_pool_fee: <span class="type">u64</span>,</span><br><span class="line">    fund_fee_rate: <span class="type">u64</span>,</span><br><span class="line">) <span class="punctuation">-&gt;</span> <span class="type">Result</span>&lt;()&gt; &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">config</span> = ctx.accounts.amm_config.<span class="title function_ invoke__">deref_mut</span>();</span><br><span class="line">    config.protocol_owner = ctx.accounts.owner.<span class="title function_ invoke__">key</span>();</span><br><span class="line">    config.bump = ctx.bumps.amm_config;</span><br><span class="line">    config.trade_fee_rate = trade_fee_rate;</span><br><span class="line">    config.protocol_fee_rate = protocol_fee_rate;</span><br><span class="line">    config.create_pool_fee = create_pool_fee;</span><br><span class="line">    config.fund_fee_rate = fund_fee_rate;</span><br><span class="line">    config.fund_owner = ctx.accounts.owner.<span class="title function_ invoke__">key</span>();</span><br><span class="line">    config.index = index;</span><br><span class="line">    <span class="title function_ invoke__">Ok</span>(())</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">注意！！！这里有个超级大坑：</span><br><span class="line"><span class="meta">#[instruction(index: u16)]</span>不单要参数匹配，还要顺序匹配，也就`index`的位置必须放在create_amm_config方法的第一位，如果不在第一位，哪怕instruction里面写的是index,也会读取到其他第一位的值，例如trade_fee_rate，然后传入到instruction到seeds里面，生成错误的PDA，导致初始化账户一直出现种子冲突问题。</span><br></pre></td></tr></table></figure>
+
+<p><code>lib.rs </code>:</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// pub mod 里面添加以下代码：</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">create_amm_config</span>(</span><br><span class="line">        ctx: Context&lt;CreateAmmConfig&gt;,</span><br><span class="line">        index: <span class="type">u16</span>,</span><br><span class="line">        trade_fee_rate: <span class="type">u64</span>,</span><br><span class="line">        protocol_fee_rate: <span class="type">u64</span>,</span><br><span class="line">        fund_fee_rate: <span class="type">u64</span>,</span><br><span class="line">        create_pool_fee: <span class="type">u64</span>,       </span><br><span class="line">    ) <span class="punctuation">-&gt;</span> <span class="type">Result</span>&lt;()&gt; &#123;</span><br><span class="line">        <span class="built_in">assert!</span>(trade_fee_rate &lt; AmmConfig::FEE_RATE_VALUE);</span><br><span class="line">        <span class="built_in">assert!</span>(protocol_fee_rate &lt;= AmmConfig::FEE_RATE_VALUE);</span><br><span class="line">        <span class="built_in">assert!</span>(fund_fee_rate &lt;= AmmConfig::FEE_RATE_VALUE);</span><br><span class="line">        <span class="built_in">assert!</span>(fund_fee_rate + protocol_fee_rate &lt;= AmmConfig::FEE_RATE_VALUE);</span><br><span class="line">        instructions::<span class="title function_ invoke__">create_amm_config</span>(</span><br><span class="line">            ctx,</span><br><span class="line">            index,</span><br><span class="line">            trade_fee_rate,</span><br><span class="line">            protocol_fee_rate,</span><br><span class="line">            fund_fee_rate,</span><br><span class="line">            create_pool_fee,</span><br><span class="line">            </span><br><span class="line">        )</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">注意！！！这里有个超级大坑：</span><br><span class="line"><span class="meta">#[instruction(index: u16)]</span>不单要参数匹配，还要顺序匹配，也就`index`的位置必须放在create_amm_config方法的第一位，如果不在第一位，哪怕instruction里面写的是index,也会读取到其他第一位的值，例如trade_fee_rate，然后传入到instruction到seeds里面，生成错误的PDA，导致初始化账户一直出现种子冲突问题。</span><br></pre></td></tr></table></figure>
+
+<p>执行Anchor命令：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">anchor build &amp;&amp; anchor deploy</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="前端TS测试代码："><a href="#前端TS测试代码：" class="headerlink" title="前端TS测试代码："></a>前端TS测试代码：</h1><p>获取本地钱包：<br><code>anchor/example/api/wallet.ts</code>:</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> * <span class="keyword">as</span> anchor <span class="keyword">from</span> <span class="string">&quot;@coral-xyz/anchor&quot;</span></span><br><span class="line"><span class="keyword">import</span> &#123; <span class="title class_">Program</span>&#125; <span class="keyword">from</span> <span class="string">&quot;@coral-xyz/anchor&quot;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; swap &#125; <span class="keyword">from</span> <span class="string">&quot;../../target/types/swap&quot;</span>;</span><br><span class="line">  </span><br><span class="line"><span class="keyword">const</span> provider = anchor.<span class="property">AnchorProvider</span>.<span class="title function_">env</span>();</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;provider:&quot;</span>, provider.<span class="property">wallet</span>.<span class="property">publicKey</span>.<span class="title function_">toBase58</span>());</span><br><span class="line">anchor.<span class="title function_">setProvider</span>(provider);</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> program = anchor.<span class="property">workspace</span>.<span class="property">swap</span> <span class="keyword">as</span> <span class="title class_">Program</span>&lt;swap&gt; ;</span><br><span class="line"><span class="keyword">const</span> wallet = provider.<span class="property">wallet</span> <span class="keyword">as</span> anchor.<span class="property">Wallet</span>;</span><br><span class="line"><span class="keyword">const</span> connection = provider.<span class="property">connection</span>;</span><br><span class="line"><span class="keyword">export</span> &#123; program, provider,connection&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">//定义并导出 useDefaultWallet 函数。</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">function</span> <span class="title function_">useDefaultWallet</span>(<span class="params"></span>) &#123;</span><br><span class="line">	<span class="keyword">return</span> anchor.<span class="property">Wallet</span>.<span class="title function_">local</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> * <span class="keyword">as</span> anchor <span class="keyword">from</span> <span class="string">&#x27;@coral-xyz/anchor&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; program &#125; <span class="keyword">from</span> <span class="string">&#x27;./wallet&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; <span class="variable constant_">BN</span> &#125; <span class="keyword">from</span> <span class="string">&#x27;bn.js&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; <span class="title class_">PublicKey</span> &#125; <span class="keyword">from</span> <span class="string">&#x27;@solana/web3.js&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//创建AmmConfig</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">async</span> <span class="keyword">function</span> <span class="title function_">createAmmConfig</span>(<span class="params"></span></span><br><span class="line"><span class="params">  <span class="attr">wallet</span>: anchor.<span class="title class_">Wallet</span>,</span></span><br><span class="line"><span class="params">  <span class="attr">trade_fee_rate</span>: <span class="built_in">number</span>,</span></span><br><span class="line"><span class="params">  <span class="attr">protocol_fee_rate</span>: <span class="built_in">number</span>,</span></span><br><span class="line"><span class="params">  <span class="attr">fund_fee_rate</span>: <span class="built_in">number</span>,</span></span><br><span class="line"><span class="params">  <span class="attr">create_pool_fee</span>: <span class="built_in">number</span>,</span></span><br><span class="line"><span class="params">  <span class="attr">index</span>: <span class="built_in">number</span>,</span></span><br><span class="line"><span class="params"></span>) &#123;</span><br><span class="line">	<span class="keyword">const</span> [ammConfigPda, bump] = <span class="keyword">await</span> <span class="title class_">PublicKey</span>.<span class="title function_">findProgramAddress</span>(</span><br><span class="line">	    [</span><br><span class="line">	    <span class="title class_">Buffer</span>.<span class="title function_">from</span>(<span class="string">&#x27;amm_config&#x27;</span>), <span class="comment">//必须要与合约里面定义的种子前缀一样</span></span><br><span class="line">	    <span class="title function_">u16ToBytes</span>(index)   </span><br><span class="line">	    ],</span><br><span class="line">	    program.<span class="property">programId</span>,</span><br><span class="line">	  );</span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">await</span> program.<span class="property">methods</span></span><br><span class="line">    .<span class="title function_">createAmmConfig</span>(</span><br><span class="line">	  index, <span class="comment">//u16使用number类型就好，不需要BN</span></span><br><span class="line">      <span class="keyword">new</span> <span class="title function_">BN</span>(trade_fee_rate), <span class="comment">// 转换为 BN 类型 ,因为合约参数使用了u64，数值较大</span></span><br><span class="line">      <span class="keyword">new</span> <span class="title function_">BN</span>(protocol_fee_rate), <span class="comment">// 转换为 BN 类型</span></span><br><span class="line">      <span class="keyword">new</span> <span class="title function_">BN</span>(fund_fee_rate), <span class="comment">// 转换为 BN 类型</span></span><br><span class="line">      <span class="keyword">new</span> <span class="title function_">BN</span>(create_pool_fee), <span class="comment">// 转换为 BN 类型     </span></span><br><span class="line">    )</span><br><span class="line">    .<span class="title function_">accounts</span>(&#123;</span><br><span class="line">	  <span class="attr">ammConfig</span>: ammConfigPda,</span><br><span class="line">	  <span class="attr">owner</span>: wallet.<span class="property">publicKey</span>,</span><br><span class="line">    &#125; <span class="keyword">as</span> <span class="built_in">never</span> )</span><br><span class="line">    .<span class="title function_">signers</span>([wallet.<span class="property">payer</span>])</span><br><span class="line">    .<span class="title function_">rpc</span>();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//更新 AmmConfig，暂时不用管，因为还没创建admin账户，这个后面还会讲</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">async</span> <span class="keyword">function</span> <span class="title function_">updateAmmConfig</span>(<span class="params"></span></span><br><span class="line"><span class="params">  <span class="attr">wallet</span>: anchor.<span class="title class_">Wallet</span>,</span></span><br><span class="line"><span class="params">  <span class="attr">num</span>: <span class="built_in">number</span>,</span></span><br><span class="line"><span class="params">  <span class="attr">value</span>: <span class="built_in">number</span>,</span></span><br><span class="line"><span class="params">  <span class="attr">index</span>: <span class="built_in">number</span>,</span></span><br><span class="line"><span class="params"></span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> [adminPda] = anchor.<span class="property">web3</span>.<span class="property">PublicKey</span>.<span class="title function_">findProgramAddressSync</span>(</span><br><span class="line">    [<span class="title class_">Buffer</span>.<span class="title function_">from</span>(<span class="string">&#x27;admin_v1&#x27;</span>), wallet.<span class="property">publicKey</span>.<span class="title function_">toBuffer</span>()],</span><br><span class="line">    program.<span class="property">programId</span>,</span><br><span class="line">  );</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> [ammConfigPda, bump] = <span class="keyword">await</span> <span class="title class_">PublicKey</span>.<span class="title function_">findProgramAddress</span>(</span><br><span class="line">    [<span class="title class_">Buffer</span>.<span class="title function_">from</span>(<span class="string">&#x27;amm_config&#x27;</span>), <span class="title function_">u16ToBytes</span>(index)],</span><br><span class="line">    program.<span class="property">programId</span>,</span><br><span class="line">  );</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">await</span> program.<span class="property">methods</span></span><br><span class="line">    .<span class="title function_">updateAmmConfig</span>(num, <span class="keyword">new</span> <span class="title function_">BN</span>(value))</span><br><span class="line">    .<span class="title function_">accounts</span>(&#123;</span><br><span class="line">      <span class="attr">owner</span>: wallet.<span class="property">publicKey</span>,</span><br><span class="line">      <span class="attr">admin</span>: adminPda,</span><br><span class="line">      <span class="attr">ammConfig</span>: ammConfigPda,</span><br><span class="line">    &#125;)</span><br><span class="line">    .<span class="title function_">signers</span>([wallet.<span class="property">payer</span>])</span><br><span class="line">    .<span class="title function_">rpc</span>();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//获取 AmmConfig配置信息</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">async</span> <span class="keyword">function</span> <span class="title function_">getAmmConfig</span>(<span class="params"><span class="attr">index</span>: <span class="built_in">number</span></span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> [ammConfigPda, bump] = <span class="keyword">await</span> <span class="title class_">PublicKey</span>.<span class="title function_">findProgramAddress</span>(</span><br><span class="line">	    [</span><br><span class="line">	    <span class="title class_">Buffer</span>.<span class="title function_">from</span>(<span class="string">&#x27;amm_config&#x27;</span>), <span class="comment">//必须要与合约里面定义的种子前缀一样</span></span><br><span class="line">	    <span class="title function_">u16ToBytes</span>(index)   </span><br><span class="line">	    ],</span><br><span class="line">	    program.<span class="property">programId</span>,</span><br><span class="line">	  );</span><br><span class="line">	<span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;ammConfig Pda is:&#x27;</span>, ammConfigPda.<span class="title function_">toString</span>());</span><br><span class="line"></span><br><span class="line"><span class="comment">//fetch 方法用于从链上获取账户的数据，并将其反序列化为指定的 Rust 结构体,从链上获取一个特定的 AMM 配置账户（ammConfig）的数据。	</span></span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">await</span> program.<span class="property">account</span>.<span class="property">ammConfig</span>.<span class="title function_">fetch</span>(ammConfigPda);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//将number转换为u16字节数组，对应 &amp;index.to_be_bytes()</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">function</span> <span class="title function_">u16ToBytes</span>(<span class="params"><span class="attr">num</span>: <span class="built_in">number</span></span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> arr = <span class="keyword">new</span> <span class="title class_">ArrayBuffer</span>(<span class="number">2</span>);</span><br><span class="line">  <span class="keyword">const</span> view = <span class="keyword">new</span> <span class="title class_">DataView</span>(arr);</span><br><span class="line">  view.<span class="title function_">setUint16</span>(<span class="number">0</span>, num, <span class="literal">false</span>);</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Uint8Array</span>(arr);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>调用测试方法：<br><code>anchor/example/index.ts</code></p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> * <span class="keyword">as</span> anchor <span class="keyword">from</span> <span class="string">&#x27;@coral-xyz/anchor&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; connection, program, provider, useDefaultWallet &#125; <span class="keyword">from</span> <span class="string">&#x27;./api/wallet&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; createAmmConfig, getAmmConfig &#125; <span class="keyword">from</span> <span class="string">&#x27;./api/config&#x27;</span>;</span><br><span class="line"></span><br><span class="line">(<span class="title function_">async</span> () =&gt; &#123;</span><br><span class="line">	<span class="comment">// 获取默认钱包</span></span><br><span class="line">	<span class="keyword">const</span> defaultWallet = <span class="title function_">useDefaultWallet</span>();</span><br><span class="line"></span><br><span class="line">	<span class="comment">//创建config</span></span><br><span class="line">  <span class="keyword">const</span> amm_config = <span class="keyword">await</span> <span class="title function_">createAmmConfig</span>(defaultWallet, <span class="number">3_000</span>, <span class="number">3_000</span>, <span class="number">3_000</span>, <span class="number">3_000</span>, <span class="number">1</span>);</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(amm_config); <span class="comment">//会输出trancsations</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">//获取config具体信息</span></span><br><span class="line">  <span class="keyword">const</span> <span class="title class_">AmmConfig</span> = <span class="keyword">await</span> <span class="title function_">getAmmConfig</span>(<span class="number">1</span>);</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;get_amm_config is&#x27;</span>, <span class="title class_">AmmConfig</span>); <span class="comment">//输出具体配置</span></span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">	<span class="comment">//更新config，需要admin章节创建admin后才能使用</span></span><br><span class="line">  <span class="keyword">const</span> updateConfig = <span class="keyword">await</span> <span class="title function_">updateAmmConfig</span>(defaultWallet, <span class="number">0</span>, <span class="number">4_000</span>, <span class="number">1</span>);</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;updateAmmConfig is&#x27;</span>, updateConfig);</span><br></pre></td></tr></table></figure>
+
+<p>执行Anchor命令：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">anchor run api</span><br></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://example.com/2025/02/08/Solana%20%E5%90%88%E7%BA%A6%E5%BC%80%E5%8F%91%20-%20DeFi%20%20%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1898,169 +2070,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2024/11/03/Rust-lesson-22/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2024/11/03/Rust-lesson-22/" itemprop="url">Rust lesson 22 - 闭包</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-11-03T20:42:54+08:00">
-                2024-11-03
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Rust-%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
-                    <span itemprop="name">Rust 开发基础</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="What-is-闭包："><a href="#What-is-闭包：" class="headerlink" title="What is 闭包："></a>What is 闭包：</h1><p>闭包（closures）是一种匿名函数，可以捕获其定义环境中的变量。匿名函数（anonymous functions）是没有名字的函数。它们通常在需要临时使用的场合下定义和使用，而不是像普通函数那样有一个固定的名称。</p>
-<h2 id="闭包基本语法："><a href="#闭包基本语法：" class="headerlink" title="闭包基本语法："></a>闭包基本语法：</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//这个函数就没有名字，就只有内容，然后可以返回值给某个变量</span></span><br><span class="line">|参数<span class="number">1</span>, 参数<span class="number">2</span>, ..., 参数N| <span class="punctuation">-&gt;</span> 返回类型 &#123; </span><br><span class="line">    <span class="comment">// 闭包体</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">x</span> = <span class="number">5</span>;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">add_x</span> = |y: <span class="type">i32</span>| <span class="punctuation">-&gt;</span> <span class="type">i32</span> &#123; x + y &#125;; <span class="comment">//这里就捕获了环境中的变量x</span></span><br><span class="line">    <span class="comment">//let add_x = |y| x + y;  省略写法，编译器会自己推断类型</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">result</span> = <span class="title function_ invoke__">add_x</span>(<span class="number">3</span>);</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;Result: &#123;&#125;&quot;</span>, result); <span class="comment">// 输出 &quot;Result: 8&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<h2 id="闭包的特点："><a href="#闭包的特点：" class="headerlink" title="闭包的特点："></a>闭包的特点：</h2><ol>
-<li>匿名性：闭包没有名称，通常被赋值给变量或作为参数传递。</li>
-<li>捕获环境：闭包可以捕获其定义环境中的变量。</li>
-<li>类型推断：Rust 编译器可以自动推断闭包的参数类型和返回类型。</li>
-<li>灵活的捕获模式：闭包可以通过三种不同的方式捕获环境中的变量：move、copy 和 borrow。</li>
-</ol>
-<h1 id="闭包的使用："><a href="#闭包的使用：" class="headerlink" title="闭包的使用："></a>闭包的使用：</h1><h2 id="作为函数参数："><a href="#作为函数参数：" class="headerlink" title="作为函数参数："></a>作为函数参数：</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//接受一个泛型参数 `F`</span></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">apply_to_3</span>&lt;F&gt;(f: F) <span class="punctuation">-&gt;</span> <span class="type">i32</span> </span><br><span class="line"><span class="comment">//要求 `F` 实现 `Fn(i32) -&gt; i32`,即 `F` 必须是一个接受一个 `i32` 参数并返回一个 `i32` 的函数或闭包。</span></span><br><span class="line"><span class="keyword">where</span> F : <span class="title function_ invoke__">Fn</span>(<span class="type">i32</span>) <span class="punctuation">-&gt;</span> <span class="type">i32</span> &#123;</span><br><span class="line"><span class="comment">//调用传入的函数或闭包 f，并将 3 作为参数传递给它</span></span><br><span class="line">	<span class="title function_ invoke__">f</span>(<span class="number">3</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">	<span class="keyword">let</span> <span class="variable">double</span> = |x| x * <span class="number">2</span>;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>,<span class="title function_ invoke__">apply_to_3</span>(double));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//输出6</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="捕获环境变量"><a href="#捕获环境变量" class="headerlink" title="捕获环境变量"></a>捕获环境变量</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">closure</span>() &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">x</span> = <span class="number">4</span>;</span><br><span class="line">    <span class="comment">//x 在equal_to_x作用域外 依然被捕获</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">equal_to_x</span> = |z | z==x;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">y</span> = <span class="number">4</span>;</span><br><span class="line">    <span class="built_in">assert!</span>(<span class="title function_ invoke__">equal_to_x</span>(y));</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">	<span class="title function_ invoke__">closure</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h1 id="闭包三种捕获方式："><a href="#闭包三种捕获方式：" class="headerlink" title="闭包三种捕获方式："></a>闭包三种捕获方式：</h1><h2 id="引用捕获："><a href="#引用捕获：" class="headerlink" title="引用捕获："></a>引用捕获：</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">closure</span>() &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">x</span> = <span class="number">4</span>;</span><br><span class="line">    <span class="comment">//x 在equal_to_x作用域外 依然被捕获</span></span><br><span class="line">    <span class="comment">//闭包 equal_to_x 内部保存了对 x 的引用，而不是复制 x 的值。</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">equal_to_x</span> = |z | z==x;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">y</span> = <span class="number">4</span>;</span><br><span class="line">    <span class="built_in">assert!</span>(<span class="title function_ invoke__">equal_to_x</span>(y));</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<h2 id="按可变引用捕获："><a href="#按可变引用捕获：" class="headerlink" title="按可变引用捕获："></a>按可变引用捕获：</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">closure</span>() &#123;</span><br><span class="line">	<span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">num</span> =<span class="number">5</span>;</span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">change_num</span> = |x | num += x;</span><br><span class="line">    <span class="title function_ invoke__">change_num</span>(<span class="number">5</span>);</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;num: &#123;&#125;&quot;</span>, num);</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<h2 id="移动（Move）捕获："><a href="#移动（Move）捕获：" class="headerlink" title="移动（Move）捕获："></a>移动（Move）捕获：</h2><p>就是所有权移动了</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">s</span> = <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;hello&quot;</span>);</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">print_s</span> = <span class="keyword">move</span> || <span class="built_in">println!</span>(<span class="string">&quot;s is: &#123;&#125;&quot;</span>, s);</span><br><span class="line">    <span class="title function_ invoke__">print_s</span>(); <span class="comment">// 输出 &quot;s is: hello&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 下面这行代码会报错，因为 s 的所有权已经被移动到闭包中</span></span><br><span class="line">    <span class="comment">// println!(&quot;s is: &#123;&#125;&quot;, s);</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-<h1 id="Move-关键字："><a href="#Move-关键字：" class="headerlink" title="Move 关键字："></a>Move 关键字：</h1><p><code>move</code> 关键字用于强制闭包获取其捕获的环境变量的所有权，而不是仅仅借用这些变量。</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">closure</span>() &#123;</span><br><span class="line">	<span class="keyword">let</span> <span class="variable">x</span> = <span class="built_in">vec!</span>[<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>];</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">equal_to_x</span> = <span class="keyword">move</span> |z| z==x;</span><br><span class="line">    <span class="comment">//x 没有所有权</span></span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;can&#x27;t use x here: &#123;:?&#125;&quot;</span>, x);</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2111,7 +2120,7 @@
               
                 <a href="/archives/%20%7C%7C%20archive">
               
-                  <span class="site-state-item-count">51</span>
+                  <span class="site-state-item-count">52</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2122,7 +2131,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-count">7</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -2133,7 +2142,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-count">9</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

@@ -81,13 +81,13 @@
 
 <meta name="description" content="什么是hardhat?Hardhat 是一个以 Ethereum 开发为核心的开发框架，主要用于智能合约的编写、测试、部署和调试。它为开发者提供了一套完整的工具链，极大地简化了以太坊开发流程，尤其是在本地开发环境中。 环境hardhat准备：1234mkdir firstcontractcd firstcontract yarn add -D hardhat #安装包npx hardhat  #初">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Solidity lesson 1 - Hello World">
+<meta property="og:title" content="Solidity lesson 1 - 介绍与部署第一个程序">
 <meta property="og:url" content="http://example.com/2025/03/19/ETH%E5%90%88%E7%BA%A6%E5%BC%80%E5%8F%91%20-%20lesson%201%20-%20Hello%20World/index.html">
 <meta property="og:site_name" content="Hexo">
 <meta property="og:description" content="什么是hardhat?Hardhat 是一个以 Ethereum 开发为核心的开发框架，主要用于智能合约的编写、测试、部署和调试。它为开发者提供了一套完整的工具链，极大地简化了以太坊开发流程，尤其是在本地开发环境中。 环境hardhat准备：1234mkdir firstcontractcd firstcontract yarn add -D hardhat #安装包npx hardhat  #初">
 <meta property="og:locale">
 <meta property="article:published_time" content="2025-03-19T10:24:50.129Z">
-<meta property="article:modified_time" content="2025-03-19T10:53:17.012Z">
+<meta property="article:modified_time" content="2025-03-19T14:38:41.108Z">
 <meta property="article:author" content="QsunOu">
 <meta property="article:tag" content="ETH">
 <meta property="article:tag" content="Solidity">
@@ -127,7 +127,7 @@
 
 
 
-  <title>Solidity lesson 1 - Hello World | Hexo</title>
+  <title>Solidity lesson 1 - 介绍与部署第一个程序 | Hexo</title>
   
 
 
@@ -281,7 +281,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Solidity lesson 1 - Hello World</h1>
+          <h1 class="post-title" itemprop="name headline">Solidity lesson 1 - 介绍与部署第一个程序</h1>
         
 
         <div class="post-meta">
@@ -358,16 +358,42 @@
 
 <h1 id="hardhat目录结构"><a href="#hardhat目录结构" class="headerlink" title="hardhat目录结构:"></a>hardhat目录结构:</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">my-hardhat-project/</span><br><span class="line">├── contracts/          # 存放 Solidity 智能合约文件</span><br><span class="line">│   └── MyContract.sol  # 示例智能合约</span><br><span class="line">├── scripts/            # 存放部署脚本和其他脚本</span><br><span class="line">│   └── deploy.js       # 示例部署脚本</span><br><span class="line">├── test/               # 存放测试脚本</span><br><span class="line">│   └── MyContract.test.js  # 示例测试脚本</span><br><span class="line">├── artifacts/          # 编译后的合约 ABI 和字节码（自动生成）</span><br><span class="line">├── cache/              # 缓存文件（自动生成）</span><br><span class="line">├── hardhat.config.js   # Hardhat 配置文件</span><br><span class="line">└── package.json        # Node.js 项目配置文件</span><br></pre></td></tr></table></figure>
 
-<h1 id="编写-HelloWorld"><a href="#编写-HelloWorld" class="headerlink" title="编写 HelloWorld"></a>编写 HelloWorld</h1><p>solidity&#x2F;firstcontract&#x2F;contracts&#x2F;HelloWorld.sol:</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// SPDX-License-Identifier: MIT</span></span><br><span class="line">pragma solidity ^<span class="number">0.8</span><span class="number">.24</span>;</span><br><span class="line"></span><br><span class="line">contract <span class="title class_">HelloWorld</span> &#123;</span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">hello</span>(<span class="params"></span>) public pure <span class="title function_">returns</span>(<span class="params">string memory</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;Hello, World!&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><code>pure</code>和 <code>memory</code> 后面再讲</p>
+<h1 id="编写-HelloWorld"><a href="#编写-HelloWorld" class="headerlink" title="编写 HelloWorld"></a>编写 HelloWorld</h1><ol>
+<li>solidity&#x2F;firstcontract&#x2F;contracts&#x2F;HelloWorld.sol:<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// SPDX-License-Identifier: MIT</span></span><br><span class="line">pragma solidity ^<span class="number">0.8</span><span class="number">.24</span>;</span><br><span class="line"></span><br><span class="line">contract <span class="title class_">HelloWorld</span> &#123;</span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">hello</span>(<span class="params"></span>) public pure <span class="title function_">returns</span>(<span class="params">string memory</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;Hello, World!&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<code>pure</code>和 <code>memory</code> 后面再讲</li>
+</ol>
 <p>版本号要与solidity&#x2F;firstcontract&#x2F;hardhat.config.js 相同或更高：</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">require</span>(<span class="string">&quot;@nomicfoundation/hardhat-toolbox&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">/** <span class="doctag">@type</span> import(&#x27;hardhat/config&#x27;).HardhatUserConfig */</span></span><br><span class="line"><span class="variable language_">module</span>.<span class="property">exports</span> = &#123;</span><br><span class="line">  <span class="attr">solidity</span>: <span class="string">&quot;0.8.24&quot;</span>,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
 
-<p>编译文件：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npx hardhat compile</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>编译文件：<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npx hardhat compile</span><br></pre></td></tr></table></figure></li>
+</ol>
+<p>成功后会在 solidity&#x2F;firstcontract&#x2F;artifacts&#x2F;contracts&#x2F;HelloWorld.sol&#x2F;HelloWorld.json 生成json文件</p>
+<ol start="3">
+<li><p>把<code>hardhat.config.js</code>  改成 ts 文件,并修改内容</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> <span class="string">&quot;@nomicfoundation/hardhat-toolbox&quot;</span>;</span><br><span class="line"><span class="keyword">import</span> <span class="string">&quot;@nomicfoundation/hardhat-ethers&quot;</span>;</span><br><span class="line"><span class="keyword">type</span> <span class="title class_">Config</span> = <span class="keyword">import</span>(<span class="string">&quot;hardhat/config&quot;</span>).<span class="property">HardhatUserConfig</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="attr">config</span>: <span class="title class_">Config</span> = &#123;</span><br><span class="line">  <span class="attr">solidity</span>: <span class="string">&quot;0.8.24&quot;</span>,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> config;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>yarn 安装 ts-node 包</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yarn add -D ts-node typescript</span><br></pre></td></tr></table></figure>
 
-<p>会在 solidity&#x2F;firstcontract&#x2F;artifacts&#x2F;contracts&#x2F;HelloWorld.sol&#x2F;HelloWorld.json 生成json文件</p>
+</li>
+<li><p>编写单元测试，solidity&#x2F;firstcontract&#x2F;test&#x2F; 下的<code>Lock.js</code> 改为 <code>HelloWorld.ts</code> ,添加以下内容</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> <span class="string">&quot;@nomicfoundation/hardhat-ethers&quot;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; ethers &#125; <span class="keyword">from</span> <span class="string">&quot;hardhat&quot;</span>; <span class="comment">//Ethers.js库的核心模块，提供与以太坊区块链交互的功能（如部署合约、调用方法）。</span></span><br><span class="line"><span class="keyword">import</span> &#123; expect &#125; <span class="keyword">from</span> <span class="string">&quot;chai&quot;</span>; <span class="comment">//Chai断言库的方法，用于测试结果是否符合预期。</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// describe</span></span><br><span class="line"><span class="comment">// 定义一个测试套件，名为HelloWorld，用于组织相关测试用例。</span></span><br><span class="line"><span class="comment">// it</span></span><br><span class="line"><span class="comment">// 定义一个具体的测试用例，描述为should say hello world，表示测试目标是验证合约是否返回&quot;Hello World!&quot;。</span></span><br><span class="line"><span class="title function_">describe</span>(<span class="string">&quot;HelloWorld&quot;</span>, <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">  <span class="title function_">it</span>(<span class="string">&quot;should say hello world&quot;</span>, <span class="keyword">async</span> <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">    <span class="comment">// 1.setup</span></span><br><span class="line">    <span class="comment">// 2.import contract</span></span><br><span class="line">    <span class="comment">// 3.test action</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">const</span> <span class="variable constant_">HW</span> = <span class="keyword">await</span> ethers.<span class="title function_">getContractFactory</span>(<span class="string">&quot;HelloWorld&quot;</span>); <span class="comment">//获取名为HelloWorld的智能合约工厂对象(其实就之前写的合约），用于创建和部署合约实例。</span></span><br><span class="line">    <span class="keyword">const</span> hw = <span class="keyword">await</span> <span class="variable constant_">HW</span>.<span class="title function_">deploy</span>(); <span class="comment">//部署HelloWorld合约到本地测试网络，并返回合约实例。</span></span><br><span class="line">    <span class="keyword">await</span> hw.<span class="title function_">waitForDeployment</span>(); <span class="comment">//等待合约部署完成，确保后续操作在合约可用状态下执行。</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">//  hw.hello()</span></span><br><span class="line">    <span class="comment">// 调用合约的hello方法，获取其返回值。</span></span><br><span class="line">    <span class="comment">// expect(...).to.equal(...)</span></span><br><span class="line">    <span class="comment">// 使用Chai断言库验证返回值是否等于字符串&quot;Hello World!&quot;。</span></span><br><span class="line">    <span class="title function_">expect</span>(<span class="keyword">await</span> hw.<span class="title function_">hello</span>()).<span class="property">to</span>.<span class="title function_">equal</span>(<span class="string">&quot;Hello World!&quot;</span>);</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>项目根目录创建个tsconfig.json文件，内容添加<code>&#123;&#125;</code> </p>
+</li>
+<li><p>进行测试</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npx hardhat test</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>本地启动一个区块链节点</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">npx hardhat node</span><br><span class="line">Started HTTP and WebSocket JSON-RPC server at http://127.0.0.1:8545/</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>根目录下创建scripts目录，并创建 deploy-hello.ts<br>&#x2F;Users&#x2F;qsun-ou&#x2F;solidity&#x2F;firstcontract&#x2F;scripts&#x2F;deploy-hello.ts</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> <span class="string">&quot;@nomicfoundation/hardhat-ethers&quot;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; ethers &#125; <span class="keyword">from</span> <span class="string">&quot;hardhat&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">async</span> <span class="keyword">function</span> <span class="title function_">deploy</span>(<span class="params"></span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> <span class="title class_">HelloWorld</span> = <span class="keyword">await</span> ethers.<span class="title function_">getContractFactory</span>(<span class="string">&quot;HelloWorld&quot;</span>);</span><br><span class="line">  <span class="keyword">const</span> helloWorld = <span class="keyword">await</span> <span class="title class_">HelloWorld</span>.<span class="title function_">deploy</span>(); <span class="comment">//HelloWorld.deploy() 部署合约到区块链。</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">await</span> helloWorld.<span class="title function_">waitForDeployment</span>(); <span class="comment">//使用 waitForDeployment() 确保合约成功部署。</span></span><br><span class="line">  <span class="keyword">return</span> helloWorld;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 该函数用于调用已部署的 HelloWorld 合约的 hello 方法，并打印返回值。</span></span><br><span class="line"><span class="keyword">async</span> <span class="keyword">function</span> <span class="title function_">sayHello</span>(<span class="params"><span class="attr">helloWorld</span>: <span class="built_in">any</span></span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> hello = <span class="keyword">await</span> helloWorld.<span class="title function_">hello</span>();</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(hello);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 这是程序的主入口，负责依次执行以下操作：</span></span><br><span class="line"><span class="comment">// 调用 deploy 函数，部署 HelloWorld 合约。</span></span><br><span class="line"><span class="comment">// 将部署完成的合约实例传递给 sayHello 函数，调用并打印 hello 方法的结果。</span></span><br><span class="line"><span class="title function_">deploy</span>().<span class="title function_">then</span>(sayHello);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>执行本地网络测试</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npx hardhat run ./scripts/deploy-hello.ts --network localhost</span><br></pre></td></tr></table></figure></li>
+</ol>
 
       
     </div>
@@ -409,6 +435,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2025/05/17/web3.js%E7%B4%A2%E5%BC%95Solana%E9%93%BE%E4%B8%8A%E6%95%B0%E6%8D%AE%E6%A1%88%E4%BE%8B%E5%8F%82%E8%80%83/" rel="prev" title="web3.js索引Solana链上数据参考">
+                web3.js索引Solana链上数据参考 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -485,7 +515,7 @@
               
                 <a href="/archives/%20%7C%7C%20archive">
               
-                  <span class="site-state-item-count">51</span>
+                  <span class="site-state-item-count">52</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -496,7 +526,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-count">7</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -507,7 +537,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-count">9</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
